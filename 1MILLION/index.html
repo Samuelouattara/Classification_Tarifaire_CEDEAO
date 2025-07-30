@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classification Tarifaire CEDEAO - TEC SH 2022 - IA Avancée</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles-advanced.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-main">
+                <h1>🏛️ Système de Classification Tarifaire CEDEAO</h1>
+                <p>Tarif Extérieur Commun - Système Harmonisé 2022 - Intelligence Artificielle</p>
+            </div>
+            
+            <div class="header-controls">
+                <div class="sections-dropdown">
+                    <button id="sections-dropdown-btn" class="dropdown-btn">
+                        📚 Aperçu des Sections <span class="dropdown-arrow">▼</span>
+                    </button>
+                    <div id="sections-dropdown-content" class="dropdown-content">
+                        <div class="dropdown-header">
+                            <h4>21 Sections Tarifaires CEDEAO</h4>
+                            <input type="text" id="sections-search" placeholder="Rechercher une section..." class="sections-search">
+                        </div>
+                        <div id="sections-list" class="sections-dropdown-list">
+                            <!-- Les sections seront chargées dynamiquement -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="ai-status" class="ai-status">
+                    <span class="status-loading">🔄 Initialisation...</span>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <!-- Statistiques en temps réel -->
+            <div id="statistics" class="statistics-section">
+                <!-- Les statistiques seront chargées dynamiquement -->
+            </div>
+
+            <!-- Suggestions en temps réel -->
+            <div id="real-time-suggestions" class="suggestions-container hidden">
+                <!-- Les suggestions apparaîtront ici -->
+            </div>
+            <div class="stats-section">
+                <h2>📊 Statistiques du système</h2>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <span class="stat-number">21</span>
+                        <span class="stat-label">Sections</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">97</span>
+                        <span class="stat-label">Chapitres</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">5000+</span>
+                        <span class="stat-label">Codes tarifaires</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">2022</span>
+                        <span class="stat-label">Version SH</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="search-section">
+                <h2>🔍 Recherche de Classification</h2>
+                <div class="input-group">
+                    <label for="product-description">Description du produit :</label>
+                    <textarea 
+                        id="product-description" 
+                        placeholder="Décrivez le produit à classer (ex: riz blanchi, véhicule automobile, textile en coton...)"
+                        rows="3"
+                    ></textarea>
+                </div>
+                <button id="classify-btn" class="classify-button">
+                    🎯 Classifier le produit
+                </button>
+            </div>
+
+            <div id="loading" class="loading hidden">
+                <div class="spinner"></div>
+                <p>Recherche de la classification en cours...</p>
+            </div>
+
+            <div id="results" class="results hidden">
+                <h3>📋 Résultats de la classification</h3>
+                <div id="classification-result">
+                    <!-- Les résultats apparaîtront ici -->
+                </div>
+                
+                <div id="specific-codes" class="specific-codes hidden">
+                    <h4>🎯 Codes tarifaires spécifiques trouvés</h4>
+                    <div id="codes-list">
+                        <!-- Les codes spécifiques apparaîtront ici -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="help-section">
+                <h3>❓ Comment utiliser ce système</h3>
+                <ol>
+                    <li>Saisissez une description détaillée de votre produit</li>
+                    <li>Cliquez sur "Classifier le produit"</li>
+                    <li>Le système analysera la description et proposera la section appropriée</li>
+                    <li>Consultez les détails de la section et les codes tarifaires correspondants</li>
+                </ol>
+                
+                <h4>💡 Exemples de descriptions efficaces</h4>
+                <div class="examples-grid">
+                    <div class="example-item">
+                        <strong>Animaux :</strong> "Cheval reproducteur de race pure", "Poules pondeuses vivantes"
+                    </div>
+                    <div class="example-item">
+                        <strong>Produits alimentaires :</strong> "Riz blanchi long grain", "Tomates fraîches", "Huile d'olive vierge"
+                    </div>
+                    <div class="example-item">
+                        <strong>Textiles :</strong> "Tissu 100% coton", "Chemise en soie", "Jean en denim"
+                    </div>
+                    <div class="example-item">
+                        <strong>Véhicules :</strong> "Voiture d'occasion diesel", "Camion de transport", "Moto 250cc"
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>&copy; 2025 - Système de Classification Tarifaire CEDEAO</p>
+        </footer>
+    </div>
+
+    <script src="codes-tarifaires.js"></script>
+    <script src="ai-classifier.js"></script>
+    <script src="script-advanced.js"></script>
+</body>
+</html>
