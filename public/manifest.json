@@ -1,0 +1,25 @@
+{
+  "name": "Classification Tarifaire CEDEAO",
+  "short_name": "CEDEAO TEC",
+  "description": "Système d'intelligence artificielle pour la classification tarifaire CEDEAO - TEC SH 2022",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4f46e5",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "categories": ["business", "finance", "productivity"],
+  "lang": "fr",
+  "scope": "/"
+}
