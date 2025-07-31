@@ -10,6 +10,9 @@
 !.yarn/releases
 !.yarn/versions
 
+# Next.js app dependencies
+nextjs-app/node_modules
+
 # testing
 /coverage
 
