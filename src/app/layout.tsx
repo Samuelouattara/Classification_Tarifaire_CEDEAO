@@ -29,14 +29,6 @@ export const metadata: Metadata = {
     description: "Système d'IA pour la classification tarifaire automatique",
     url: "https://classification-cedeao.vercel.app",
     siteName: "Classification Tarifaire CEDEAO",
-    images: [
-      {
-        url: "/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "Classification Tarifaire CEDEAO",
-      },
-    ],
     locale: "fr_FR",
     type: "website",
   },
@@ -44,21 +36,12 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Classification Tarifaire CEDEAO",
     description: "Système d'IA pour la classification tarifaire automatique",
-    images: ["/og-image.png"],
   },
   manifest: "/manifest.json",
   icons: {
     icon: "/favicon.ico",
-    shortcut: "/favicon-16x16.png",
-    apple: "/apple-touch-icon.png",
   },
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 1,
-    userScalable: false,
-  },
-  themeColor: "#4f46e5",
+  metadataBase: new URL("https://classification-cedeao.vercel.app"),
 };
 
 export default function RootLayout({
@@ -68,14 +51,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fr">
-      <head>
-        <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#4f46e5" />
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="apple-mobile-web-app-title" content="CEDEAO TEC" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >

@@ -809,7 +809,7 @@ export class TariffAIClassifierComplete {
   // Validation des résultats
   private validateResults(results: ClassificationResult[], originalDescription: string): ClassificationResult[] {
     const validated = results.map(result => {
-      const validation = {
+      const validation: ClassificationResult = {
         ...result,
         validationStatus: "VALID",
         recommendations: [],
