@@ -1,11 +1,48 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { TariffAIClassifier, type ClassificationResult, type AnalysisReport } from '@/lib/tariff-ai-classifier';
+import { TariffAIClassifierComplete } from '@/lib/tariff-ai-classifier-complete';
 import { Search, Brain, BarChart3, FileText, Loader2, CheckCircle, AlertTriangle, Info } from 'lucide-react';
 
+interface ClassificationResult {
+  section: {
+    number: string;
+    title: string;
+    chapters: string[];
+    description: string;
+  };
+  score: number;
+  confidence: number;
+  reasons: string[];
+  warnings: string[];
+  matchedTerms: Array<{
+    keyword: string;
+    type: 'primary' | 'secondary' | 'technical';
+    matches: Array<{
+      type: 'exact' | 'synonym';
+      token: string;
+      synonym?: string;
+    }>;
+  }>;
+  normalizedScore: number;
+  certaintyLevel: string;
+  validationStatus: string;
+  recommendations: string[];
+  requiredClarifications: string[];
+}
+
+interface AnalysisReport {
+  inputDescription: string;
+  analysisTimestamp: string;
+  totalSectionsAnalyzed: number;
+  results: ClassificationResult[];
+  recommendations: string[];
+  confidence: number;
+  needsHumanValidation: boolean;
+}
+
 export default function Home() {
-  const [classifier, setClassifier] = useState<TariffAIClassifier | null>(null);
+  const [classifier, setClassifier] = useState<TariffAIClassifierComplete | null>(null);
   const [description, setDescription] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [results, setResults] = useState<ClassificationResult[]>([]);
@@ -14,7 +51,7 @@ export default function Home() {
 
   useEffect(() => {
     // Initialiser le classificateur côté client
-    setClassifier(new TariffAIClassifier());
+    setClassifier(new TariffAIClassifierComplete());
   }, []);
 
   const handleClassify = async () => {
