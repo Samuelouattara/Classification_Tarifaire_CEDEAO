@@ -625,18 +625,42 @@ function displayStatistics(stats) {
     const statsContainer = document.getElementById('statistics');
     if (statsContainer) {
         statsContainer.innerHTML = `
-            <div class="stats-grid">
-                <div class="stat-item">
-                    <div class="stat-number">${stats.totalClassifications}</div>
-                    <div class="stat-label">Classifications</div>
+            <div class="bg-gradient-to-r from-gray-800/90 to-douane-vert/90 p-6 rounded-2xl shadow-xl mb-6 text-center">
+                <h2 class="text-2xl font-bold text-white mb-6">📊 Statistiques du système</h2>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                    <!-- Stats statiques officielles -->
+                    <div class="bg-white/20 backdrop-blur-sm p-6 rounded-xl border border-douane-or/30 hover:bg-white/30 transition-all duration-300">
+                        <span class="block text-2xl font-bold text-white mb-2">21</span>
+                        <span class="text-sm text-white/80">Sections</span>
+                    </div>
+                    <div class="bg-white/20 backdrop-blur-sm p-6 rounded-xl border border-douane-or/30 hover:bg-white/30 transition-all duration-300">
+                        <span class="block text-2xl font-bold text-white mb-2">97</span>
+                        <span class="text-sm text-white/80">Chapitres</span>
+                    </div>
+                    <div class="bg-white/20 backdrop-blur-sm p-6 rounded-xl border border-douane-or/30 hover:bg-white/30 transition-all duration-300">
+                        <span class="block text-2xl font-bold text-white mb-2">5000+</span>
+                        <span class="text-sm text-white/80">Codes tarifaires</span>
+                    </div>
+                    <div class="bg-white/20 backdrop-blur-sm p-6 rounded-xl border border-douane-or/30 hover:bg-white/30 transition-all duration-300">
+                        <span class="block text-2xl font-bold text-white mb-2">2022</span>
+                        <span class="text-sm text-white/80">Version SH</span>
+                    </div>
                 </div>
-                <div class="stat-item">
-                    <div class="stat-number">${stats.averageConfidence}%</div>
-                    <div class="stat-label">Confiance moyenne</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number">${stats.mostUsedSections.length}</div>
-                    <div class="stat-label">Sections actives</div>
+                
+                <!-- Stats dynamiques en dessous -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6 pt-6 border-t border-white/20">
+                    <div class="bg-douane-vert/30 p-4 rounded-xl border border-douane-or/20">
+                        <span class="block text-xl font-bold text-douane-or mb-1">${stats.totalClassifications || 0}</span>
+                        <span class="text-xs text-white/90">Classifications effectuées</span>
+                    </div>
+                    <div class="bg-douane-vert/30 p-4 rounded-xl border border-douane-or/20">
+                        <span class="block text-xl font-bold text-douane-or mb-1">${stats.averageConfidence || 0}%</span>
+                        <span class="text-xs text-white/90">Confiance moyenne</span>
+                    </div>
+                    <div class="bg-douane-vert/30 p-4 rounded-xl border border-douane-or/20">
+                        <span class="block text-xl font-bold text-douane-or mb-1">${stats.mostUsedSections.length || 0}</span>
+                        <span class="text-xs text-white/90">Sections utilisées</span>
+                    </div>
                 </div>
             </div>
         `;
@@ -757,7 +781,8 @@ function openDropdown() {
     const dropdownContent = document.getElementById('sections-dropdown-content');
     
     dropdownBtn.classList.add('active');
-    dropdownContent.classList.add('show');
+    dropdownContent.classList.remove('opacity-0', 'invisible', 'translate-y-2');
+    dropdownContent.classList.add('opacity-100', 'visible', 'translate-y-0');
 }
 
 function closeDropdown() {
@@ -765,7 +790,8 @@ function closeDropdown() {
     const dropdownContent = document.getElementById('sections-dropdown-content');
     
     dropdownBtn.classList.remove('active');
-    dropdownContent.classList.remove('show');
+    dropdownContent.classList.remove('opacity-100', 'visible', 'translate-y-0');
+    dropdownContent.classList.add('opacity-0', 'invisible', 'translate-y-2');
 }
 
 function filterSections(searchText) {
