@@ -1,0 +1,170 @@
+
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classification Tarifaire CEDEAO - TEC SH 2022 - IA Avancée</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                colors: {
+                    'douane-vert': '#1B5E20',
+                    'douane-or': '#FFD700',
+                    'douane-blanc': '#FFFFFF',
+                    'orange-ci': '#FF8C00',
+                    'vert-ci': '#00B04F',
+                    'lion-or': '#B8860B'
+                }
+            }
+        }
+    }
+    </script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-douane-vert to-gray-800 font-sans text-white m-0 p-0">
+    <!-- Header fixe collé en haut -->
+    <header class="fixed top-0 left-0 right-0 z-50 bg-gray-900/95 backdrop-blur-md border-b border-douane-or/30 shadow-2xl m-0 p-0 w-full">
+        <div class="w-full px-5 py-1 m-0">
+            <div class="flex justify-between items-center flex-wrap gap-5">
+                <div class="header-main">
+                    <h1 class="text-3xl lg:text-4xl font-bold text-white mb-2">🏛️ Système de Classification Tarifaire CEDEAO</h1>
+                    <p class="text-lg lg:text-xl text-douane-or font-medium">Direction Générale des Douanes de Côte d'Ivoire - TEC SH 2022</p>
+                    <div id="ai-status" class="mt-3 px-4 py-2 bg-douane-vert/20 rounded-lg border border-douane-or/30">
+                        <span class="text-douane-or font-semibold">🔄 Initialisation...</span>
+                    </div>
+                </div>
+                
+                <div class="flex flex-wrap items-center gap-5">
+                    <div class="relative z-[1000]">
+                        <button id="sections-dropdown-btn" class="bg-douane-vert/90 backdrop-blur-sm text-white border border-douane-or/50 px-5 py-3 rounded-full text-base font-semibold cursor-pointer flex items-center gap-2.5 transition-all duration-300 shadow-lg hover:bg-douane-or/90 hover:-translate-y-0.5 hover:shadow-xl hover:border-douane-or">
+                            📚 Aperçu des Sections <span class="dropdown-arrow transition-transform duration-300">▼</span>
+                        </button>
+                        
+                        <!-- Dropdown avec ajustement automatique de position -->
+                        <div id="sections-dropdown-content" class="absolute top-full right-0 mt-2 bg-white rounded-2xl shadow-2xl min-w-96 max-w-lg opacity-0 invisible transform translate-y-2 transition-all duration-300">
+                            <div class="bg-gradient-to-r from-douane-vert to-douane-or p-5 text-white rounded-t-2xl">
+                                <h4 class="text-lg font-bold mb-3">21 Sections Tarifaires CEDEAO</h4>
+                                <input type="text" id="sections-search" placeholder="Rechercher une section..." class="w-full px-4 py-2 rounded-full border-none bg-white/90 text-gray-800 placeholder-gray-500">
+                            </div>
+                            
+                            <div id="sections-list" class="max-h-80 overflow-y-auto p-3 text-gray-800 space-y-2">
+                                <!-- Les sections seront chargées dynamiquement -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenu principal avec padding-top pour compenser le header fixe -->
+    <div class="pt-44 lg:pt-42">
+        <div class="max-w-6xl mx-auto p-5">
+            <main>
+                <div id="statistics" class="bg-gradient-to-r from-gray-800/90 to-douane-vert/90 p-6 rounded-2xl shadow-xl mb-6 text-center">
+                    <h2 class="text-2xl font-bold text-white mb-6">📊 Statistiques du système</h2>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                        <div class="bg-white/20 backdrop-blur-sm p-6 rounded-xl border border-douane-or/30 hover:bg-white/30 transition-all duration-300">
+                            <span class="block text-2xl font-bold text-white mb-2">21</span>
+                            <span class="text-sm text-white/80">Sections</span>
+                        </div>
+                        <div class="bg-white/20 backdrop-blur-sm p-6 rounded-xl border border-douane-or/30 hover:bg-white/30 transition-all duration-300">
+                            <span class="block text-2xl font-bold text-white mb-2">97</span>
+                            <span class="text-sm text-white/80">Chapitres</span>
+                        </div>
+                        <div class="bg-white/20 backdrop-blur-sm p-6 rounded-xl border border-douane-or/30 hover:bg-white/30 transition-all duration-300">
+                            <span class="block text-2xl font-bold text-white mb-2">5000+</span>
+                            <span class="text-sm text-white/80">Codes tarifaires</span>
+                        </div>
+                        <div class="bg-white/20 backdrop-blur-sm p-6 rounded-xl border border-douane-or/30 hover:bg-white/30 transition-all duration-300">
+                            <span class="block text-2xl font-bold text-white mb-2">2022</span>
+                            <span class="text-sm text-white/80">Version SH</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="real-time-suggestions" class="hidden bg-vert-50/90 p-4 space-x-4 rounded-xl mb-6 border-l-4 border-douane-vert">
+                    <!-- Les suggestions apparaîtront ici -->
+                </div>
+
+                <div class="bg-white/95 p-8 rounded-2xl shadow-xl mb-8">
+                    <h2 class="text-2xl font-bold text-douane-vert mb-6 flex items-center gap-2">🔍 Recherche de Classification</h2>
+                    <div class="mb-6">
+                        <label for="product-description" class="block mb-2 font-semibold text-gray-700">Description du produit :</label>
+                        <textarea 
+        id="product-description"
+        class="w-full p-4 border-2 border-gray-200 rounded-xl text-base resize-y text-gray-800 bg-white placeholder-gray-500 focus:outline-none focus:border-douane-vert focus:ring-4 focus:ring-douane-vert/20 focus:bg-white transition-all duration-300"
+                            placeholder="Décrivez le produit à classer (ex: riz blanchi, véhicule automobile, textile en coton...)"
+                            rows="3"
+                        ></textarea>
+                    </div>
+                    <button
+                        id="classify-btn"
+                        class="inline-flex items-center gap-3 bg-gradient-to-r from-douane-vert to-douane-or text-white px-8 py-4 text-lg font-semibold rounded-xl hover:-translate-y-1 hover:shadow-2xl transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-douane-or/50"
+                    >
+                        🎯 Classifier le produit
+                    </button>
+                </div>
+
+                <div id="loading" class="hidden text-center bg-white/95 p-12 rounded-2xl shadow-xl mb-8">
+                    <div class="w-16 h-16 border-4 border-gray-200 border-t-douane-vert rounded-full animate-spin mx-auto mb-6"></div>
+                    <p class="text-gray-700 font-medium">Recherche de la classification en cours...</p>
+                </div>
+
+                <div id="results" class="hidden bg-white/95 p-8 rounded-2xl shadow-xl mb-8 text-gray-800">
+        <h3 class="text-2xl font-bold text-douane-vert mb-6">📋 Résultats de la classification</h3>
+        <div id="classification-result" class="text-gray-800">
+            <!-- Les résultats apparaîtront ici -->
+        </div>
+                    
+                    <div id="specific-codes" class="hidden mt-6 pt-6 border-t border-gray-200">
+            <h4 class="text-xl font-bold text-douane-or mb-4">🎯 Codes tarifaires spécifiques trouvés</h4>
+            <div id="codes-list">
+                <!-- Les codes spécifiques apparaîtront ici -->
+            </div>
+        </div>
+    </div>
+
+               <div class="bg-gradient-to-br from-douane-vert/10 to-douane-or/10 p-8 rounded-2xl border border-douane-or/20 mb-8">
+        <h3 class="text-2xl font-bold text-douane-vert mb-6">❓ Comment utiliser ce système</h3>
+        
+        <ol class="list-decimal list-inside space-y-2 mb-8 text-white-700">
+            <li>Saisissez une description détaillée de votre produit</li>
+            <li>Cliquez sur "Classifier le produit"</li>
+            <li>Le système analysera la description et proposera la section appropriée</li>
+            <li>Consultez les détails de la section et les codes tarifaires correspondants</li>
+        </ol>
+        
+        <h4 class="text-xl font-bold text-douane-vert mb-4">💡 Exemples de descriptions efficaces</h4>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-vert p-4 rounded-lg border-l-4 border-douane-vert shadow-sm">
+                <strong class="text-douane-blanc-bold">Animaux :</strong> "Cheval reproducteur de race pure", "Poules pondeuses vivantes"
+            </div>
+            <div class="bg-vert p-4 rounded-lg border-l-4 border-douane-vert shadow-sm">
+                <strong class="text-douane-blanc-bold">Produits alimentaires :</strong> "Riz blanchi long grain", "Tomates fraîches", "Huile d'olive vierge"
+            </div>
+            <div class="bg-vert p-4 rounded-lg border-l-4 border-douane-vert shadow-sm">
+                <strong class="text-douane-blanc-bold">Textiles :</strong> "Tissu 100% coton", "Chemise en soie", "Jean en denim"
+            </div>
+            <div class="bg-vert p-4 rounded-lg border-l-4 border-douane-vert shadow-sm">
+                <strong class="text-douane-blanc-bold">Véhicules :</strong> "Voiture d'occasion diesel", "Camion de transport", "Moto 250cc"
+            </div>
+        </div>
+    </div>
+    </main>
+
+    <footer class="text-center text-white/80 py-8 mt-12 border-t border-white/20">
+        <p>&copy; 2025 - Direction Générale des Douanes de Côte d'Ivoire</p>
+    </footer>
+        </div>
+    </div>
+    
+    <script src="codes-tarifaires.js"></script>
+    <script src="ai-classifier.js"></script>
+    <script src="script-advanced.js"></script>
+</body>
+</html>
