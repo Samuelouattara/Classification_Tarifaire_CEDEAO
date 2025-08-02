@@ -39,11 +39,14 @@
                     <button id="sections-dropdown-btn" class="bg-douane-vert/90 backdrop-blur-sm text-white border border-douane-or/50 px-5 py-3 rounded-full text-base font-semibold cursor-pointer flex items-center gap-2.5 transition-all duration-300 shadow-lg hover:bg-douane-or/90 hover:-translate-y-0.5 hover:shadow-xl hover:border-douane-or">
                         📚 Aperçu des Sections <span class="dropdown-arrow transition-transform duration-300">▼</span>
                     </button>
-                    <div id="sections-dropdown-content" class="absolute top-full right-0 mt-2 bg-white rounded-2xl shadow-2xl min-w-96 max-w-lg max-h-96 overflow-hidden opacity-0 invisible transform translate-y-2 transition-all duration-300">
-                        <div class="bg-gradient-to-r from-douane-vert to-douane-or p-5 text-white">
+                    
+                    <!-- Dropdown avec ajustement automatique de position -->
+                    <div id="sections-dropdown-content" class="absolute top-full right-0 mt-2 bg-white rounded-2xl shadow-2xl min-w-96 max-w-lg opacity-0 invisible transform translate-y-2 transition-all duration-300">
+                        <div class="bg-gradient-to-r from-douane-vert to-douane-or p-5 text-white rounded-t-2xl">
                             <h4 class="text-lg font-bold mb-3">21 Sections Tarifaires CEDEAO</h4>
                             <input type="text" id="sections-search" placeholder="Rechercher une section..." class="w-full px-4 py-2 rounded-full border-none bg-white/90 text-gray-800 placeholder-gray-500">
                         </div>
+                        
                         <div id="sections-list" class="max-h-80 overflow-y-auto p-3 text-gray-800 space-y-2">
                             <!-- Les sections seront chargées dynamiquement -->
                             </div>
@@ -75,7 +78,7 @@
                 </div>
             </div>
 
-            <div id="real-time-suggestions" class="hidden bg-vert-50/90 p-4 rounded-xl mb-6 border-l-4 border-douane-vert">
+            <div id="real-time-suggestions" class="hidden bg-vert-50/90 p-4 space-x-4 rounded-xl mb-6 border-l-4 border-douane-vert">
                 <!-- Les suggestions apparaîtront ici -->
             </div>
 
@@ -152,5 +155,6 @@
     <script src="codes-tarifaires.js"></script>
     <script src="ai-classifier.js"></script>
     <script src="script-advanced.js"></script>
+    <script src="hybrid-extension.js"></script>
 </body>
 </html>

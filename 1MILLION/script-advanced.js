@@ -73,37 +73,48 @@ function initializeFallbackClassifier() {
 function updateAIStatus(ready) {
     const statusElement = document.getElementById('ai-status');
     if (statusElement) {
-        statusElement.innerHTML = ready ? 
-            '<span class="status-ready">🤖 IA Avancée Activée</span>' : 
-            '<span class="status-fallback">📊 Système Classique</span>';
-        statusElement.className = ready ? 'ai-status ready' : 'ai-status fallback';
+        if (ready) {
+            statusElement.innerHTML = '<span class="text-green-400 font-semibold">🤖 IA Avancée Activée</span>';
+            statusElement.className = 'mt-4 px-4 py-2 bg-green-900/20 rounded-lg border border-green-400/30';
+        } else {
+            statusElement.innerHTML = '<span class="text-yellow-400 font-semibold">📊 Système Classique</span>';
+            statusElement.className = 'mt-4 px-4 py-2 bg-yellow-900/20 rounded-lg border border-yellow-400/30';
+        }
     }
 }
 
 // Message de bienvenue
 function showWelcomeMessage() {
     const welcomeDiv = document.createElement('div');
-    welcomeDiv.className = 'welcome-message';
+    // Transformé : welcome-message -> Tailwind
+    welcomeDiv.className = 'fixed top-20 right-8 max-w-md bg-gradient-to-br from-douane-vert to-douane-or rounded-2xl shadow-2xl p-6 text-white z-50 transform translate-x-full transition-all duration-500';
     welcomeDiv.innerHTML = `
-        <div class="welcome-content">
-            <h3>🎯 Système de Classification Tarifaire CEDEAO</h3>
-            <p>Système intelligent basé sur le TEC CEDEAO SH 2022</p>
-            <div class="features">
-                <span class="feature">✅ Analyse sémantique avancée</span>
-                <span class="feature">✅ Reconnaissance des codes tarifaires</span>
-                <span class="feature">✅ Validation multi-niveaux</span>
-                <span class="feature">✅ Apprentissage automatique</span>
+        <div class="space-y-4">
+            <h3 class="text-xl font-bold text-white">🎯 Système de Classification Tarifaire CEDEAO</h3>
+            <p class="text-white/90 text-sm">Système intelligent basé sur le TEC CEDEAO SH 2022</p>
+            <div class="grid grid-cols-2 gap-2 text-xs">
+                <span class="bg-white/20 px-2 py-1 rounded-full text-center">✅ Analyse sémantique avancée</span>
+                <span class="bg-white/20 px-2 py-1 rounded-full text-center">✅ Reconnaissance des codes tarifaires</span>
+                <span class="bg-white/20 px-2 py-1 rounded-full text-center">✅ Validation multi-niveaux</span>
+                <span class="bg-white/20 px-2 py-1 rounded-full text-center">✅ Apprentissage automatique</span>
             </div>
         </div>
-        <button onclick="this.parentElement.remove()" class="close-welcome">×</button>
+        <button onclick="this.parentElement.remove()" class="absolute top-2 right-2 w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center text-white font-bold transition-colors duration-300">×</button>
     `;
     
-    document.querySelector('.container').insertBefore(welcomeDiv, document.querySelector('main'));
+    document.body.appendChild(welcomeDiv);
+    
+    // Animation d'entrée
+    setTimeout(() => {
+        welcomeDiv.classList.remove('translate-x-full');
+        welcomeDiv.classList.add('translate-x-0');
+    }, 100);
     
     // Auto-suppression après 10 secondes
     setTimeout(() => {
         if (welcomeDiv.parentElement) {
-            welcomeDiv.remove();
+            welcomeDiv.classList.add('translate-x-full');
+            setTimeout(() => welcomeDiv.remove(), 500);
         }
     }, 10000);
 }
@@ -303,16 +314,17 @@ function displayAdvancedResults(report) {
     const resultsContainer = document.getElementById('classification-result');
     
     if (!report.results || report.results.length === 0) {
+        // Transformé : no-results -> Tailwind
         resultsContainer.innerHTML = `
-            <div class="no-results">
-                <h4>❌ Aucune classification trouvée</h4>
-                <p>Aucune correspondance satisfaisante n'a été trouvée.</p>
-                <div class="suggestions">
-                    <h5>💡 Suggestions d'amélioration :</h5>
-                    <ul>
-                        <li>Utilisez des termes plus spécifiques</li>
-                        <li>Ajoutez des détails sur la matière ou l'usage</li>
-                        <li>Précisez l'état du produit (brut, transformé, etc.)</li>
+            <div class="bg-red-50 border border-red-200 rounded-xl p-8 text-center space-y-4">
+                <h4 class="text-2xl font-bold text-red-600">❌ Aucune classification trouvée</h4>
+                <p class="text-red-700">Aucune correspondance satisfaisante n'a été trouvée.</p>
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-6">
+                    <h5 class="text-lg font-semibold text-blue-800 mb-3">💡 Suggestions d'amélioration :</h5>
+                    <ul class="text-left text-blue-700 space-y-2 max-w-md mx-auto">
+                        <li class="flex items-start gap-2"><span class="text-blue-500">•</span>Utilisez des termes plus spécifiques</li>
+                        <li class="flex items-start gap-2"><span class="text-blue-500">•</span>Ajoutez des détails sur la matière ou l'usage</li>
+                        <li class="flex items-start gap-2"><span class="text-blue-500">•</span>Précisez l'état du produit (brut, transformé, etc.)</li>
                     </ul>
                 </div>
             </div>
@@ -321,12 +333,12 @@ function displayAdvancedResults(report) {
     }
     
     let html = `
-        <div class="results-header">
-            <h4>📊 Analyse complète - ${report.results.length} résultat(s)</h4>
-            <div class="analysis-info">
-                <span class="info-item">🕒 ${new Date(report.analysisTimestamp).toLocaleTimeString()}</span>
-                <span class="info-item">📈 Confiance globale: ${Math.round(report.confidence)}%</span>
-                ${report.needsHumanValidation ? '<span class="info-item warning">⚠️ Validation requise</span>' : ''}
+        <div class="bg-gradient-to-r from-douane-vert/10 to-douane-or/10 rounded-xl p-6 mb-6 border border-douane-or/20">
+            <h4 class="text-2xl font-bold text-douane-vert mb-3">📊 Analyse complète - ${report.results.length} résultat(s)</h4>
+            <div class="flex flex-wrap gap-4 text-sm">
+                <span class="bg-white/80 px-3 py-1 rounded-full text-gray-700 border border-gray-300">🕒 ${new Date(report.analysisTimestamp).toLocaleTimeString()}</span>
+                <span class="bg-douane-vert/20 px-3 py-1 rounded-full text-douane-vert border border-douane-vert/30">📈 Confiance globale: ${Math.round(report.confidence)}%</span>
+                ${report.needsHumanValidation ? '<span class="bg-yellow-100 px-3 py-1 rounded-full text-yellow-800 border border-yellow-300">⚠️ Validation requise</span>' : ''}
             </div>
         </div>
     `;
@@ -334,76 +346,96 @@ function displayAdvancedResults(report) {
     report.results.forEach((result, index) => {
         const isMainResult = index === 0;
         
+        // Transformé : classification-item, main-result, alternative-result -> Tailwind
+        const itemClass = isMainResult 
+            ? 'bg-gradient-to-r from-douane-vert/5 to-douane-or/5 border-2 border-douane-or rounded-2xl p-6 mb-6 shadow-lg relative'
+            : 'bg-white/95 border border-gray-200 rounded-xl p-6 mb-4 shadow-md hover:shadow-lg transition-shadow duration-300';
+        
         html += `
-            <div class="classification-item ${isMainResult ? 'main-result' : 'alternative-result'}" data-section="${result.section.number}">
-                <div class="result-header">
-                    <div class="section-info">
-                        <div class="section-code">Section ${result.section.number}</div>
-                        <div class="confidence-badge confidence-${getCertaintyClass(result.certaintyLevel)}">
+            <div class="${itemClass}" data-section="${result.section.number}">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="flex items-center gap-4">
+                        <div class="bg-douane-vert text-white px-4 py-2 rounded-full font-bold text-lg">Section ${result.section.number}</div>
+                        <div class="px-4 py-2 rounded-full text-sm font-semibold ${getCertaintyTailwindClass(result.certaintyLevel)}">
                             ${Math.round(result.confidence)}% - ${result.certaintyLevel}
                         </div>
                     </div>
-                    ${isMainResult ? '<div class="main-badge">RECOMMANDÉ</div>' : ''}
+                    ${isMainResult ? '<div class="bg-douane-or text-douane-vert px-4 py-2 rounded-full font-bold text-sm">RECOMMANDÉ</div>' : ''}
                 </div>
                 
-                <h4>${result.section.title}</h4>
+                <h4 class="text-2xl font-bold text-douane-vert mb-6">${result.section.title}</h4>
                 
-                <div class="result-details">
-                    <div class="detail-section">
-                        <strong>📖 Description :</strong>
-                        <p>${result.section.description || 'Description non disponible'}</p>
+                <div class="space-y-4">
+                    <div class="bg-white/80 rounded-lg p-4 border border-gray-200">
+                        <strong class="text-douane-or font-semibold">📖 Description :</strong>
+                        <p class="mt-2 text-gray-700 leading-relaxed">${result.section.description || 'Description non disponible'}</p>
                     </div>
                     
                     ${result.matchedTerms && result.matchedTerms.length > 0 ? `
-                    <div class="detail-section">
-                        <strong>🎯 Termes correspondants :</strong>
-                        <div class="matched-terms">
+                    <div class="bg-white/80 rounded-lg p-4 border border-gray-200">
+                        <strong class="text-douane-or font-semibold">🎯 Termes correspondants :</strong>
+                        <div class="flex flex-wrap gap-2 mt-3">
                             ${result.matchedTerms.map(term => 
-                                `<span class="term-badge term-${term.type}">${term.keyword}</span>`
+                                `<span class="px-3 py-1 rounded-full text-sm font-medium ${getTermBadgeClass(term.type)}">${term.keyword}</span>`
                             ).join('')}
                         </div>
                     </div>
                     ` : ''}
                     
                     ${result.reasons && result.reasons.length > 0 ? `
-                    <div class="detail-section">
-                        <strong>📝 Justifications :</strong>
-                        <ul class="reasons-list">
-                            ${result.reasons.map(reason => `<li>${reason}</li>`).join('')}
+                    <div class="bg-white/80 rounded-lg p-4 border border-gray-200">
+                        <strong class="text-douane-or font-semibold">📝 Justifications :</strong>
+                        <ul class="mt-2 space-y-2 text-gray-700">
+                            ${result.reasons.map(reason => `<li class="flex items-start gap-2"><span class="text-douane-vert mt-1">•</span><span>${reason}</span></li>`).join('')}
                         </ul>
                     </div>
                     ` : ''}
                     
                     ${result.warnings && result.warnings.length > 0 ? `
-                    <div class="detail-section warnings">
-                        <strong>⚠️ Avertissements :</strong>
-                        <ul class="warnings-list">
-                            ${result.warnings.map(warning => `<li>${warning}</li>`).join('')}
+                    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                        <strong class="text-yellow-800 font-semibold">⚠️ Avertissements :</strong>
+                        <ul class="mt-2 space-y-2 text-yellow-700">
+                            ${result.warnings.map(warning => `<li class="flex items-start gap-2"><span class="text-yellow-600 mt-1">•</span><span>${warning}</span></li>`).join('')}
                         </ul>
                     </div>
                     ` : ''}
                     
                     ${result.recommendations && result.recommendations.length > 0 ? `
-                    <div class="detail-section recommendations">
-                        <strong>💡 Recommandations :</strong>
-                        <ul class="recommendations-list">
-                            ${result.recommendations.map(rec => `<li>${rec}</li>`).join('')}
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <strong class="text-blue-800 font-semibold">💡 Recommandations :</strong>
+                        <ul class="mt-2 space-y-2 text-blue-700">
+                            ${result.recommendations.map(rec => `<li class="flex items-start gap-2"><span class="text-blue-600 mt-1">•</span><span>${rec}</span></li>`).join('')}
                         </ul>
                     </div>
                     ` : ''}
                 </div>
                 
-                <div class="result-actions">
-                    <button class="action-btn select-btn" onclick="selectClassification('${result.section.number}', '${result.section.title}')">
+                <div class="flex flex-wrap gap-3 mt-6 pt-4 border-t border-gray-200">
+                    <button 
+                        class="px-6 py-3 bg-douane-vert text-white rounded-xl hover:bg-douane-vert/90 cursor-pointer transition-all duration-300 text-sm font-medium shadow-md hover:shadow-lg transform hover:-translate-y-0.5 flex items-center gap-2"
+                        onclick="selectClassification('${result.section.number}', '${result.section.title}')"
+                    >
                         ✅ Sélectionner cette classification
                     </button>
-                    <button class="action-btn info-btn" onclick="showSectionDetails('${result.section.number}')">
+                    
+                    <button 
+                        class="px-4 py-3 bg-douane-or text-douane-vert rounded-xl hover:bg-douane-or/90 cursor-pointer transition-all duration-300 text-sm font-medium shadow-md hover:shadow-lg transform hover:-translate-y-0.5 flex items-center gap-2"
+                        onclick="showSectionDetails('${result.section.number}')"
+                    >
                         ℹ️ Plus d'infos
                     </button>
-                    <button class="action-btn feedback-btn" onclick="provideFeedback('${result.section.number}', true)">
+                    
+                    <button 
+                        class="px-4 py-3 bg-green-100 text-green-800 border border-green-300 rounded-xl hover:bg-green-200 cursor-pointer transition-all duration-300 text-sm font-medium shadow-sm hover:shadow-md transform hover:-translate-y-0.5 flex items-center gap-2"
+                        onclick="provideFeedback('${result.section.number}', true)"
+                    >
                         👍 Correct
                     </button>
-                    <button class="action-btn feedback-btn" onclick="provideFeedback('${result.section.number}', false)">
+                    
+                    <button 
+                        class="px-4 py-3 bg-red-100 text-red-800 border border-red-300 rounded-xl hover:bg-red-200 cursor-pointer transition-all duration-300 text-sm font-medium shadow-sm hover:shadow-md transform hover:-translate-y-0.5 flex items-center gap-2"
+                        onclick="provideFeedback('${result.section.number}', false)"
+                    >
                         👎 Incorrect
                     </button>
                 </div>
@@ -414,10 +446,10 @@ function displayAdvancedResults(report) {
     // Ajout des recommandations globales
     if (report.recommendations && report.recommendations.length > 0) {
         html += `
-            <div class="global-recommendations">
-                <h5>🔍 Recommandations générales :</h5>
-                <ul>
-                    ${report.recommendations.map(rec => `<li>${rec}</li>`).join('')}
+            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-6 mt-6">
+                <h5 class="text-xl font-bold text-blue-800 mb-4">🔍 Recommandations générales :</h5>
+                <ul class="space-y-3 text-blue-700">
+                    ${report.recommendations.map(rec => `<li class="flex items-start gap-3"><span class="text-blue-500 font-bold mt-1">→</span><span>${rec}</span></li>`).join('')}
                 </ul>
             </div>
         `;
@@ -427,13 +459,22 @@ function displayAdvancedResults(report) {
 }
 
 // Utilitaires pour l'affichage
-function getCertaintyClass(certaintyLevel) {
+function getCertaintyTailwindClass(certaintyLevel) {
     switch(certaintyLevel) {
-        case "TRÈS ÉLEVÉE": return "very-high";
-        case "ÉLEVÉE": return "high";
-        case "MOYENNE": return "medium";
-        case "FAIBLE": return "low";
-        default: return "very-low";
+        case "TRÈS ÉLEVÉE": return "bg-green-100 text-green-800 border border-green-300";
+        case "ÉLEVÉE": return "bg-green-100 text-green-800 border border-green-300";
+        case "MOYENNE": return "bg-yellow-100 text-yellow-800 border border-yellow-300";
+        case "FAIBLE": return "bg-red-100 text-red-800 border border-red-300";
+        default: return "bg-gray-100 text-gray-800 border border-gray-300";
+    }
+}
+
+function getTermBadgeClass(termType) {
+    switch(termType) {
+        case 'exact': return "bg-douane-vert text-white";
+        case 'partial': return "bg-douane-or text-douane-vert";
+        case 'contextual': return "bg-vert-ci text-white";
+        default: return "bg-gray-200 text-gray-800";
     }
 }
 
@@ -486,11 +527,13 @@ function showRealTimeSuggestions(input) {
     
     if (suggestions.length > 0) {
         suggestionsContainer.innerHTML = `
-            <div class="suggestions-content">
-                <h6>💡 Suggestions rapides :</h6>
-                ${suggestions.map(suggestion => 
-                    `<span class="suggestion-tag" onclick="applySuggestion('${suggestion}')">${suggestion}</span>`
-                ).join('')}
+            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-4">
+                <h6 class="font-semibold text-douane-vert mb-3">💡 Suggestions rapides :</h6>
+                <div class="flex flex-wrap gap-2">
+                    ${suggestions.map(suggestion => 
+                        `<span class="px-3 py-2 bg-douane-or hover:bg-douane-or/90 text-douane-vert rounded-full cursor-pointer transition-all duration-300 text-sm font-medium shadow-sm hover:shadow-md transform hover:-translate-y-0.5" onclick="applySuggestion('${suggestion}')">${suggestion}</span>`
+                    ).join('')}
+                </div>
             </div>
         `;
         suggestionsContainer.classList.remove('hidden');
@@ -539,20 +582,35 @@ function showErrorMessage(title, message) {
 
 function showMessage(title, message, type) {
     const messageDiv = document.createElement('div');
-    messageDiv.className = `message-toast ${type}`;
+    // Transformé : message-toast -> Tailwind
+    const typeClasses = type === 'success' 
+        ? 'bg-green-100 border-green-300 text-green-800'
+        : 'bg-red-100 border-red-300 text-red-800';
+    
+    messageDiv.className = `fixed top-4 right-4 max-w-sm ${typeClasses} border rounded-xl p-4 shadow-lg z-50 transform translate-x-full transition-all duration-500`;
     messageDiv.innerHTML = `
-        <div class="message-content">
-            <strong>${title}</strong>
-            <p>${message}</p>
+        <div class="flex justify-between items-start gap-3">
+            <div class="flex-1">
+                <strong class="block font-semibold">${title}</strong>
+                <p class="text-sm mt-1">${message}</p>
+            </div>
+            <button onclick="this.parentElement.parentElement.remove()" class="text-lg font-bold hover:opacity-70 transition-opacity">×</button>
         </div>
-        <button onclick="this.parentElement.remove()" class="close-message">×</button>
     `;
     
     document.body.appendChild(messageDiv);
     
+    // Animation d'entrée
+    setTimeout(() => {
+        messageDiv.classList.remove('translate-x-full');
+        messageDiv.classList.add('translate-x-0');
+    }, 100);
+    
+    // Auto-suppression
     setTimeout(() => {
         if (messageDiv.parentElement) {
-            messageDiv.remove();
+            messageDiv.classList.add('translate-x-full');
+            setTimeout(() => messageDiv.remove(), 500);
         }
     }, 5000);
 }
@@ -712,14 +770,15 @@ function loadSections() {
     
     Object.values(sections).forEach(section => {
         const sectionItem = document.createElement('div');
-        sectionItem.className = 'section-dropdown-item';
+        // Transformé : section-dropdown-item -> Tailwind
+        sectionItem.className = 'flex items-start gap-3 p-3 hover:bg-gray-50 rounded-lg cursor-pointer border-b border-gray-100 last:border-b-0 transition-colors duration-200';
         sectionItem.setAttribute('data-section', section.number);
         sectionItem.innerHTML = `
-            <div class="section-number">${section.number}</div>
-            <div class="section-info">
-                <div class="section-title">${section.title}</div>
-                <div class="section-description">${section.description}</div>
-                <div class="section-chapters">Chapitres: ${section.chapters.join(', ')}</div>
+            <div class="bg-douane-vert text-white px-3 py-1 rounded-full text-sm font-bold min-w-fit">${section.number}</div>
+            <div class="flex-1 min-w-0">
+                <div class="font-semibold text-douane-vert text-sm truncate">${section.title}</div>
+                <div class="text-xs text-gray-600 mt-1 line-clamp-2">${section.description}</div>
+                <div class="text-xs text-gray-500 mt-1">Chapitres: ${section.chapters.join(', ')}</div>
             </div>
         `;
         
@@ -795,17 +854,12 @@ function closeDropdown() {
 }
 
 function filterSections(searchText) {
-    const sectionItems = document.querySelectorAll('.section-dropdown-item');
+    const sectionItems = document.querySelectorAll('[data-section]');
     const searchLower = searchText.toLowerCase();
     
     sectionItems.forEach(item => {
-        const title = item.querySelector('.section-title').textContent.toLowerCase();
-        const description = item.querySelector('.section-description').textContent.toLowerCase();
-        const chapters = item.querySelector('.section-chapters').textContent.toLowerCase();
-        
-        if (title.includes(searchLower) || 
-            description.includes(searchLower) || 
-            chapters.includes(searchLower)) {
+        const text = item.textContent.toLowerCase();
+        if (text.includes(searchLower)) {
             item.style.display = 'flex';
         } else {
             item.style.display = 'none';

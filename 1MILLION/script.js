@@ -158,12 +158,13 @@ function loadSections() {
     
     Object.values(sectionsData).forEach(section => {
         const sectionCard = document.createElement('div');
-        sectionCard.className = 'section-card';
+        // Transformé : section-card -> Tailwind
+        sectionCard.className = 'flex flex-col p-4 bg-white/90 rounded-xl border border-douane-or/30 hover:bg-white hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer text-gray-800 space-y-2';
         sectionCard.innerHTML = `
-            <div class="section-number">Section ${section.number}</div>
-            <h4>${section.title}</h4>
-            <p><strong>Chapitres:</strong> ${section.chapters.join(', ')}</p>
-            <p>${section.description}</p>
+            <div class="text-lg font-bold text-douane-vert bg-douane-or/20 px-3 py-1 rounded-full text-center">Section ${section.number}</div>
+            <h4 class="text-xl font-semibold text-douane-vert">${section.title}</h4>
+            <p class="text-sm text-gray-600"><strong>Chapitres:</strong> ${section.chapters.join(', ')}</p>
+            <p class="text-gray-700 leading-relaxed">${section.description}</p>
         `;
         
         sectionCard.addEventListener('click', () => {
@@ -227,9 +228,9 @@ function displayResults(results) {
     
     if (results.length === 0) {
         resultsContainer.innerHTML = `
-            <div class="classification-item">
-                <h4>❌ Aucune classification trouvée</h4>
-                <p>Essayez avec une description plus détaillée ou consultez manuellement les sections ci-dessous.</p>
+            <div class="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
+                <h4 class="text-xl font-bold text-red-600 mb-3">❌ Aucune classification trouvée</h4>
+                <p class="text-red-700">Essayez avec une description plus détaillée ou consultez manuellement les sections ci-dessous.</p>
             </div>
         `;
         specificCodesContainer.classList.add('hidden');
@@ -240,19 +241,36 @@ function displayResults(results) {
     
     results.forEach((result, index) => {
         const item = document.createElement('div');
-        item.className = 'classification-item fade-in';
+        // Transformé : classification-item fade-in -> Tailwind avec animation
+        item.className = 'bg-white/95 border border-douane-or/30 rounded-xl p-6 mb-4 shadow-lg hover:shadow-xl transition-all duration-300 opacity-0 translate-y-4 animate-fade-in text-gray-800';
         item.style.animationDelay = `${index * 0.1}s`;
+        item.style.animation = `fadeInUp 0.6s ease-out ${index * 0.1}s forwards`;
         
-        const confidenceClass = result.confidence >= 70 ? 'high-confidence' : 
-                               result.confidence >= 40 ? 'medium-confidence' : 'low-confidence';
+        // Transformé : high-confidence, medium-confidence, low-confidence -> Tailwind
+        let confidenceClass;
+        if (result.confidence >= 70) {
+            confidenceClass = 'bg-green-100 text-green-800 border-green-300';
+        } else if (result.confidence >= 40) {
+            confidenceClass = 'bg-yellow-100 text-yellow-800 border-yellow-300';
+        } else {
+            confidenceClass = 'bg-red-100 text-red-800 border-red-300';
+        }
         
         item.innerHTML = `
-            <div class="confidence ${confidenceClass}">${result.confidence}% de confiance</div>
-            <div class="section-code">Section ${result.section.number}</div>
-            <h4>${result.section.title}</h4>
-            <p><strong>Chapitres concernés:</strong> ${result.section.chapters.join(', ')}</p>
-            <p><strong>Description:</strong> ${result.section.description}</p>
-            <p><strong>Mots-clés correspondants:</strong> ${result.matchedKeywords.join(', ')}</p>
+            <div class="flex justify-between items-center mb-4">
+                <span class="px-4 py-2 rounded-full text-sm font-semibold border ${confidenceClass}">${result.confidence}% de confiance</span>
+                <span class="bg-douane-vert text-white px-4 py-2 rounded-full font-bold text-lg">Section ${result.section.number}</span>
+            </div>
+            <h4 class="text-2xl font-bold text-douane-vert mb-3">${result.section.title}</h4>
+            <p class="mb-3"><strong class="text-douane-or">Chapitres concernés:</strong> <span class="text-gray-700">${result.section.chapters.join(', ')}</span></p>
+            <p class="mb-3"><strong class="text-douane-or">Description:</strong> <span class="text-gray-700">${result.section.description}</span></p>
+            <p><strong class="text-douane-or">Mots-clés correspondants:</strong> 
+                <span class="inline-flex flex-wrap gap-2 mt-1">
+                    ${result.matchedKeywords.map(keyword => 
+                        `<span class="bg-douane-vert/20 text-douane-vert px-3 py-1 rounded-full text-sm font-medium border border-douane-vert/30">${keyword}</span>`
+                    ).join('')}
+                </span>
+            </p>
         `;
         
         resultsContainer.appendChild(item);
@@ -280,21 +298,37 @@ function displaySpecificCodes(codes) {
     
     codes.forEach(code => {
         const item = document.createElement('div');
-        item.className = 'code-item fade-in';
+        // Transformé : code-item fade-in -> Tailwind
+        item.className = 'flex items-start gap-4 p-4 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 hover:border-douane-or/50 transition-all duration-300 opacity-0 translate-y-2 animate-fade-in';
         
         let typeLabel = '';
+        let typeBadgeClass = '';
         switch(code.type) {
-            case 'code_principal': typeLabel = '📂 Code principal'; break;
-            case 'sous_code': typeLabel = '🎯 Code spécifique'; break;
-            case 'mot_cle': typeLabel = '🔍 Trouvé par mot-clé'; break;
+            case 'code_principal': 
+                typeLabel = '📂 Code principal';
+                typeBadgeClass = 'bg-douane-vert text-white';
+                break;
+            case 'sous_code': 
+                typeLabel = '🎯 Code spécifique';
+                typeBadgeClass = 'bg-douane-or text-douane-vert';
+                break;
+            case 'mot_cle': 
+                typeLabel = '🔍 Trouvé par mot-clé';
+                typeBadgeClass = 'bg-vert-ci text-white';
+                break;
         }
         
         item.innerHTML = `
-            <div class="code-number">${code.code}</div>
-            <div class="code-description">
-                <strong>${typeLabel}:</strong> ${code.description}
-                ${code.motCle ? `<br><em>Mot-clé: "${code.motCle}"</em>` : ''}
-                ${code.codeParent ? `<br><em>Code parent: ${code.codeParent}</em>` : ''}
+            <div class="bg-douane-vert/10 border border-douane-vert/30 rounded-lg px-4 py-2 min-w-fit">
+                <span class="font-mono text-lg font-bold text-douane-vert">${code.code}</span>
+            </div>
+            <div class="flex-1 space-y-2">
+                <div class="flex items-center gap-2">
+                    <span class="px-3 py-1 rounded-full text-sm font-medium ${typeBadgeClass}">${typeLabel}</span>
+                </div>
+                <p class="text-gray-800 leading-relaxed">${code.description}</p>
+                ${code.motCle ? `<p class="text-sm text-gray-600 italic">Mot-clé: "${code.motCle}"</p>` : ''}
+                ${code.codeParent ? `<p class="text-sm text-gray-600 italic">Code parent: ${code.codeParent}</p>` : ''}
             </div>
         `;
         
@@ -309,6 +343,25 @@ function showSectionDetails(section) {
 
 // Événements
 document.addEventListener('DOMContentLoaded', function() {
+    // Ajouter les animations CSS avec Tailwind
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(1rem);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .animate-fade-in {
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+    `;
+    document.head.appendChild(style);
+    
     // Charger les sections
     loadSections();
     
