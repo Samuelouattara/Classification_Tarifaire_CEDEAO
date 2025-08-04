@@ -507,7 +507,12 @@ class TariffAIClassifier {
                 confidence: 0,
                 reasons: [],
                 warnings: [],
-                matchedTerms: []
+                matchedTerms: [],
+                subSectionAnalysis: {
+                    chapterMatches: [],
+                    specificCodes: [],
+                    precision: 'section'
+                }
             };
         });
 
@@ -518,6 +523,295 @@ class TariffAIClassifier {
         this.applyContextualRules(semanticAnalysis, scores);
         
         // Score basé sur les codes tarifaires
+        this.applyTariffCodeMatching(semanticAnalysis, scores);
+        
+        // NOUVEAU: Analyse des sous-sections et codes spécifiques
+        this.analyzeSubSections(description, semanticAnalysis, scores);
+        
+        // Score basé sur les exclusions
+        this.applyExclusionRules(semanticAnalysis, scores);
+        
+        // Calcul final des scores et confiance
+        this.calculateFinalScores(scores);
+        
+        // Tri et filtrage des résultats
+        const results = this.filterAndSortResults(scores);
+        
+        // Validation et recommandations
+        const validatedResults = this.validateResults(results, description);
+        
+        return validatedResults;
+    }
+
+    // NOUVELLE MÉTHODE: Analyse des sous-sections
+    analyzeSubSections(description, analysis, scores) {
+        const descriptionLower = description.toLowerCase();
+        
+        // Recherche dans les codes spécifiques si disponibles
+        if (typeof codesSpecifiques !== 'undefined') {
+            Object.keys(this.sectionsData).forEach(sectionKey => {
+                const section = this.sectionsData[sectionKey];
+                const subSectionData = this.analyzeChaptersForSection(descriptionLower, section, analysis);
+                
+                // Mettre à jour les scores avec l'analyse des sous-sections
+                if (subSectionData.totalMatches > 0) {
+                    scores[sectionKey].score += subSectionData.bonusScore;
+                    scores[sectionKey].subSectionAnalysis = subSectionData;
+                    scores[sectionKey].reasons.push(`Correspondances spécifiques: ${subSectionData.totalMatches} codes`);
+                    
+                    // Ajuster la confiance selon la précision
+                    if (subSectionData.specificCodes.length > 0) {
+                        scores[sectionKey].confidence += 25; // Bonus pour codes très spécifiques
+                    }
+                }
+            });
+        }
+    }
+
+    // NOUVELLE MÉTHODE: Analyse des chapitres pour une section donnée
+    analyzeChaptersForSection(description, sectionData, analysis) {
+        const chapterMatches = [];
+        const specificCodes = [];
+        let bonusScore = 0;
+        let precision = 'section';
+        
+        if (typeof codesSpecifiques !== 'undefined') {
+            for (const chapter of sectionData.chapters) {
+                const chapterCodes = Object.keys(codesSpecifiques).filter(code => code.startsWith(chapter));
+                
+                for (const code of chapterCodes) {
+                    const codeData = codesSpecifiques[code];
+                    
+                    // Vérifier correspondance avec la description du code
+                    const matchScore = this.calculateCodeMatchScore(description, codeData, analysis);
+                    
+                    if (matchScore > 0.3) { // Seuil de correspondance
+                        chapterMatches.push({
+                            chapter: chapter,
+                            code: code,
+                            description: codeData.description,
+                            matchScore: matchScore,
+                            type: 'chapitre'
+                        });
+                        bonusScore += matchScore * 15;
+                        precision = 'chapitre';
+                    }
+                    
+                    // Analyser les sous-codes spécifiques
+                    if (codeData.sousCodes) {
+                        const subCodeMatches = this.analyzeSpecificSubCodes(description, code, codeData.sousCodes, analysis);
+                        
+                        for (const subMatch of subCodeMatches) {
+                            specificCodes.push(subMatch);
+                            bonusScore += subMatch.matchScore * 25; // Score plus élevé pour sous-codes
+                            precision = 'sous-code';
+                        }
+                    }
+                }
+            }
+        }
+        
+        return {
+            chapterMatches: chapterMatches,
+            specificCodes: specificCodes,
+            totalMatches: chapterMatches.length + specificCodes.length,
+            bonusScore: Math.min(bonusScore, 100), // Limiter le bonus
+            precision: precision,
+            recommendedCode: this.getRecommendedTariffCode(sectionData.number, chapterMatches, specificCodes)
+        };
+    }
+
+    // NOUVELLE MÉTHODE: Analyse des sous-codes spécifiques
+    analyzeSpecificSubCodes(description, parentCode, sousCodes, analysis) {
+        const matches = [];
+        
+        for (const [subCode, subDescription] of Object.entries(sousCodes)) {
+            const matchScore = this.calculateSubCodeMatchScore(description, subDescription, analysis);
+            
+            if (matchScore > 0.4) { // Seuil plus strict pour sous-codes
+                matches.push({
+                    subCode: subCode,
+                    description: subDescription,
+                    parentCode: parentCode,
+                    matchScore: matchScore,
+                    type: 'sous-code'
+                });
+            }
+        }
+        
+        return matches.sort((a, b) => b.matchScore - a.matchScore);
+    }
+
+    // NOUVELLE MÉTHODE: Calcul du score de correspondance pour un code
+    calculateCodeMatchScore(description, codeData, analysis) {
+        let score = 0;
+        const descWords = description.split(/\s+/).filter(w => w.length > 2);
+        const codeDesc = codeData.description.toLowerCase();
+        const codeWords = codeDesc.split(/\s+/).filter(w => w.length > 2);
+        
+        // Correspondance exacte de phrase
+        if (description.includes(codeDesc)) {
+            score += 1.0;
+        }
+        
+        // Correspondance de mots-clés principaux
+        let wordMatches = 0;
+        for (const word of codeWords) {
+            if (descWords.some(dw => dw.includes(word) || word.includes(dw))) {
+                wordMatches++;
+            }
+        }
+        score += (wordMatches / codeWords.length) * 0.7;
+        
+        // Bonus pour mots-clés spéciaux du code
+        if (codeData.keywords) {
+            for (const keyword of codeData.keywords) {
+                if (description.includes(keyword.toLowerCase())) {
+                    score += 0.3;
+                    break;
+                }
+            }
+        }
+        
+        // Pénalité pour longueur très différente
+        const lengthRatio = Math.min(description.length, codeDesc.length) / Math.max(description.length, codeDesc.length);
+        if (lengthRatio < 0.3) {
+            score *= 0.8;
+        }
+        
+        return Math.min(score, 1.0);
+    }
+
+    // NOUVELLE MÉTHODE: Calcul du score pour sous-code spécifique
+    calculateSubCodeMatchScore(description, subDescription, analysis) {
+        let score = 0;
+        const subDesc = subDescription.toLowerCase();
+        
+        // Correspondance exacte prioritaire
+        if (description.includes(subDesc)) {
+            score += 1.0;
+        }
+        
+        // Analyse des termes techniques spécifiques
+        const technicalTerms = this.extractTechnicalTermsFromSubCode(subDesc);
+        for (const term of technicalTerms) {
+            if (description.includes(term)) {
+                score += 0.4;
+            }
+        }
+        
+        // Analyse des spécifications (poids, taille, etc.)
+        const specifications = this.extractSpecifications(description, subDesc);
+        if (specifications.matches > 0) {
+            score += specifications.score;
+        }
+        
+        return Math.min(score, 1.0);
+    }
+
+    // NOUVELLE MÉTHODE: Extraction des termes techniques d'un sous-code
+    extractTechnicalTermsFromSubCode(subDescription) {
+        const technicalPatterns = [
+            /reproducteur/gi,
+            /race pure/gi,
+            /poids.*?(\d+)\s*kg/gi,
+            /≤(\d+)g/gi,
+            /inférieur à (\d+)/gi,
+            /supérieur à (\d+)/gi,
+            /domestique/gi,
+            /sauvage/gi,
+            /frais/gi,
+            /congelé/gi,
+            /séché/gi
+        ];
+        
+        const terms = [];
+        for (const pattern of technicalPatterns) {
+            const matches = subDescription.match(pattern);
+            if (matches) {
+                terms.push(...matches.map(m => m.toLowerCase()));
+            }
+        }
+        
+        return terms;
+    }
+
+    // NOUVELLE MÉTHODE: Extraction des spécifications
+    extractSpecifications(description, subDescription) {
+        const specs = {
+            matches: 0,
+            score: 0
+        };
+        
+        // Recherche de spécifications de poids
+        const weightPatterns = [
+            /(\d+)\s*kg/gi,
+            /(\d+)\s*g/gi,
+            /poids.*?(\d+)/gi
+        ];
+        
+        for (const pattern of weightPatterns) {
+            const descMatch = description.match(pattern);
+            const subMatch = subDescription.match(pattern);
+            
+            if (descMatch && subMatch) {
+                specs.matches++;
+                specs.score += 0.3;
+            }
+        }
+        
+        // Recherche d'autres spécifications
+        const otherSpecs = ['reproducteur', 'race pure', 'domestique', 'frais', 'congelé'];
+        for (const spec of otherSpecs) {
+            if (description.includes(spec) && subDescription.includes(spec)) {
+                specs.matches++;
+                specs.score += 0.2;
+            }
+        }
+        
+        return specs;
+    }
+
+    // NOUVELLE MÉTHODE: Obtenir le code tarifaire recommandé
+    getRecommendedTariffCode(sectionNumber, chapterMatches, specificCodes) {
+        // Priorité aux codes spécifiques les plus précis
+        if (specificCodes.length > 0) {
+            const bestSpecific = specificCodes.sort((a, b) => b.matchScore - a.matchScore)[0];
+            return {
+                code: bestSpecific.subCode,
+                description: bestSpecific.description,
+                level: 'sous-code',
+                confidence: 'haute'
+            };
+        }
+        
+        // Sinon, utiliser le meilleur chapitre
+        if (chapterMatches.length > 0) {
+            const bestChapter = chapterMatches.sort((a, b) => b.matchScore - a.matchScore)[0];
+            return {
+                code: bestChapter.code + ".00.00.00",
+                description: bestChapter.description,
+                level: 'chapitre',
+                confidence: 'moyenne'
+            };
+        }
+        
+        // Code générique de section
+        const sectionCodes = {
+            'I': '0101', 'II': '0601', 'III': '1501', 'IV': '1601', 'V': '2501',
+            'VI': '2801', 'VII': '3901', 'VIII': '4101', 'IX': '4401', 'X': '4701',
+            'XI': '5001', 'XII': '6401', 'XIII': '6801', 'XIV': '7101', 'XV': '7201',
+            'XVI': '8401', 'XVII': '8601', 'XVIII': '9001', 'XIX': '9301', 'XX': '9401',
+            'XXI': '9701'
+        };
+        
+        return {
+            code: (sectionCodes[sectionNumber] || '9999') + ".00.00.00",
+            description: "Code générique de section",
+            level: 'section',
+            confidence: 'faible'
+        };
+    }
         this.applyTariffCodeMatching(semanticAnalysis, scores);
         
         // Score basé sur les exclusions

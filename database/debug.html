@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Base de Données - Classification CEDEAO</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background: #1a1a1a;
+            color: #00ff00;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: #2a2a2a;
+            padding: 30px;
+            border-radius: 10px;
+            border: 2px solid #00ff00;
+        }
+        
+        h1, h2 {
+            color: #00ffff;
+            text-align: center;
+            text-shadow: 0 0 10px #00ffff;
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, #00ff00, #00cc00);
+            color: #000;
+            border: none;
+            padding: 15px 30px;
+            margin: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            transition: transform 0.2s;
+        }
+        
+        .btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .output {
+            background: #000;
+            color: #00ff00;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+            min-height: 200px;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            border: 1px solid #00ff00;
+            overflow-y: auto;
+            max-height: 500px;
+        }
+        
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .status.success {
+            background: #4CAF50;
+            color: white;
+        }
+        
+        .status.error {
+            background: #f44336;
+            color: white;
+        }
+        
+        .status.warning {
+            background: #ff9800;
+            color: white;
+        }
+        
+        .buttons {
+            text-align: center;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Diagnostic Base de Données</h1>
+        <h2>Classification Tarifaire CEDEAO</h2>
+        
+        <div class="buttons">
+            <button class="btn" onclick="testConnection()">🔗 Tester Connexion</button>
+            <button class="btn" onclick="fixPasswords()">🔧 Corriger Mots de Passe</button>
+            <button class="btn" onclick="testLogin()">🔐 Tester Login</button>
+            <button class="btn" onclick="clearOutput()">🗑️ Effacer</button>
+        </div>
+        
+        <div id="status"></div>
+        <div id="output" class="output">Cliquez sur un bouton pour commencer les tests...</div>
+    </div>
+
+    <script>
+        async function testConnection() {
+            showStatus('Test de connexion en cours...', 'warning');
+            try {
+                const response = await fetch('test_connection.php');
+                const text = await response.text();
+                document.getElementById('output').textContent = text;
+                showStatus('Test de connexion terminé', 'success');
+            } catch (error) {
+                document.getElementById('output').textContent = 'Erreur: ' + error.message;
+                showStatus('Erreur lors du test de connexion', 'error');
+            }
+        }
+
+        async function fixPasswords() {
+            showStatus('Correction des mots de passe en cours...', 'warning');
+            try {
+                const response = await fetch('fix_passwords.php');
+                const text = await response.text();
+                document.getElementById('output').textContent = text;
+                showStatus('Correction des mots de passe terminée', 'success');
+            } catch (error) {
+                document.getElementById('output').textContent = 'Erreur: ' + error.message;
+                showStatus('Erreur lors de la correction', 'error');
+            }
+        }
+
+        async function testLogin() {
+            showStatus('Test de login en cours...', 'warning');
+            try {
+                const response = await fetch('api.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: 'login',
+                        email: 'admin@douane.gov',
+                        password: 'admin123'
+                    })
+                });
+
+                const data = await response.json();
+                document.getElementById('output').textContent = JSON.stringify(data, null, 2);
+                
+                if (data.success) {
+                    showStatus('✅ Login réussi!', 'success');
+                } else {
+                    showStatus('❌ Login échoué: ' + data.message, 'error');
+                }
+            } catch (error) {
+                document.getElementById('output').textContent = 'Erreur: ' + error.message;
+                showStatus('Erreur lors du test de login', 'error');
+            }
+        }
+
+        function clearOutput() {
+            document.getElementById('output').textContent = 'Sortie effacée...';
+            document.getElementById('status').innerHTML = '';
+        }
+
+        function showStatus(message, type) {
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerHTML = message;
+            statusDiv.className = `status ${type}`;
+        }
+    </script>
+</body>
+</html>

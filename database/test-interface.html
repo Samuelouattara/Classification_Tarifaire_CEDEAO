@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Interface - Système de Classification Tarifaire CEDEAO</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            padding: 30px;
+        }
+
+        .section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 5px solid #3498db;
+        }
+
+        .section h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #34495e;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #27ae60 0%, #219a52 100%);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        }
+
+        .results-area {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .status-success { background: #27ae60; }
+        .status-warning { background: #f39c12; }
+        .status-error { background: #e74c3c; }
+        .status-info { background: #3498db; }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .user-info {
+            background: #ecf0f1;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .user-info h4 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .classification-result {
+            background: #f1f2f6;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border-left: 4px solid #3498db;
+        }
+
+        .confidence-bar {
+            background: #e0e0e0;
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #e74c3c 0%, #f39c12 50%, #27ae60 100%);
+            transition: width 0.5s ease;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌍 Système de Classification Tarifaire CEDEAO</h1>
+            <p>Interface de Test - Base de Données et Intelligence Artificielle</p>
+        </div>
+
+        <div class="main-content">
+            <!-- Section Authentification -->
+            <div class="section">
+                <h3>🔐 Authentification Utilisateur</h3>
+                
+                <div class="user-info" id="userInfo" style="display: none;">
+                    <h4>Utilisateur Connecté:</h4>
+                    <div id="currentUserDetails"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="loginIdentifiant">Identifiant:</label>
+                    <select id="loginIdentifiant">
+                        <option value="">Sélectionner un utilisateur de test</option>
+                        <option value="admin">admin (Administrateur)</option>
+                        <option value="mkouadio">mkouadio (Marie Kouadio)</option>
+                        <option value="adiallo">adiallo (Ahmed Diallo)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="loginPassword">Mot de passe:</label>
+                    <input type="password" id="loginPassword" placeholder="Mot de passe">
+                    <small style="color: #7f8c8d; font-size: 12px;">
+                        Mots de passe de test: admin123, marie123, ahmed123
+                    </small>
+                </div>
+
+                <button class="btn" onclick="testLogin()">
+                    <span id="loginLoadingIndicator"></span>Se Connecter
+                </button>
+                <button class="btn btn-warning" onclick="testLogout()">Déconnexion</button>
+
+                <div class="results-area" id="authResults">
+Résultats d'authentification s'afficheront ici...
+                </div>
+            </div>
+
+            <!-- Section Classification IA -->
+            <div class="section">
+                <h3>🤖 Classification Intelligence Artificielle</h3>
+                
+                <div class="form-group">
+                    <label for="productDescription">Description du Produit:</label>
+                    <textarea id="productDescription" placeholder="Décrivez le produit à classifier...">Smartphone Android avec écran tactile 6 pouces, processeur octa-core, 128GB de stockage, caméra 48MP, importé de Chine</textarea>
+                </div>
+
+                <button class="btn btn-success" onclick="testClassification()">
+                    <span id="classifyLoadingIndicator"></span>Classifier avec IA
+                </button>
+                <button class="btn" onclick="testClassificationExamples()">Tester Exemples</button>
+
+                <div id="classificationResults"></div>
+            </div>
+
+            <!-- Section Enregistrement Produit -->
+            <div class="section">
+                <h3>📦 Enregistrement de Produit</h3>
+                
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label for="origineProduct">Origine:</label>
+                        <select id="origineProduct">
+                            <option value="Côte d'Ivoire">Côte d'Ivoire</option>
+                            <option value="Sénégal">Sénégal</option>
+                            <option value="Ghana">Ghana</option>
+                            <option value="Mali">Mali</option>
+                            <option value="Burkina Faso">Burkina Faso</option>
+                            <option value="Niger">Niger</option>
+                            <option value="Chine">Chine</option>
+                            <option value="Allemagne">Allemagne</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="valeurProduct">Valeur Déclarée (FCFA):</label>
+                        <input type="number" id="valeurProduct" value="150000" step="0.01">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="poidsProduct">Poids (kg):</label>
+                        <input type="number" id="poidsProduct" value="2.5" step="0.001">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="numeroSerie">Numéro de Série:</label>
+                        <input type="text" id="numeroSerie" placeholder="Optionnel">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="isGroupe"> Produit groupé/paquet
+                    </label>
+                </div>
+
+                <button class="btn btn-success" onclick="testProductRegistration()">
+                    <span id="registerLoadingIndicator"></span>Enregistrer Produit
+                </button>
+                <button class="btn" onclick="testPackageRegistration()">Tester Paquet</button>
+
+                <div class="results-area" id="registrationResults">
+Résultats d'enregistrement s'afficheront ici...
+                </div>
+            </div>
+
+            <!-- Section Gestion Database -->
+            <div class="section">
+                <h3>🗄️ Gestion Base de Données</h3>
+                
+                <button class="btn" onclick="testDatabaseConnection()">Test Connexion</button>
+                <button class="btn btn-success" onclick="testStatistics()">Générer Statistiques</button>
+                <button class="btn btn-warning" onclick="testSearchProducts()">Rechercher Produits</button>
+                <button class="btn" onclick="testGetUserProducts()">Mes Produits</button>
+                
+                <div class="form-group" style="margin-top: 20px;">
+                    <label for="searchQuery">Recherche:</label>
+                    <input type="text" id="searchQuery" placeholder="Terme de recherche..." value="machine">
+                </div>
+
+                <div class="results-area" id="databaseResults">
+Résultats de base de données s'afficheront ici...
+                </div>
+            </div>
+
+            <!-- Section Tests Complets -->
+            <div class="section full-width">
+                <h3>🧪 Tests Système Complets</h3>
+                
+                <button class="btn btn-success" onclick="runCompleteSystemTest()">
+                    <span id="systemTestLoadingIndicator"></span>Test Système Complet
+                </button>
+                <button class="btn" onclick="testWorkflowComplete()">Test Workflow Utilisateur</button>
+                <button class="btn btn-warning" onclick="clearAllResults()">Effacer Résultats</button>
+                <button class="btn btn-danger" onclick="resetTestData()">Réinitialiser Tests</button>
+
+                <div class="results-area" id="systemTestResults">
+=== SYSTÈME DE TEST PRÊT ===
+1. Connectez-vous avec un utilisateur de test
+2. Testez la classification IA avec des descriptions
+3. Enregistrez des produits dans la base
+4. Consultez les statistiques et recherches
+
+Attendez les résultats des tests...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="ai-classifier.js"></script>
+    <script src="database-manager.js"></script>
+    <script>
+        // Variables globales
+        let dbManager;
+        let aiClassifier;
+        let integration;
+        let currentUser = null;
+
+        // Initialisation au chargement
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                aiClassifier = new TariffAIClassifier();
+                dbManager = new DatabaseManager();
+                integration = new TariffDatabaseIntegration();
+                
+                updateSystemTestResults('✓ Système initialisé avec succès\n');
+                updateSystemTestResults('📋 Classes chargées: TariffAIClassifier, DatabaseManager\n');
+                updateSystemTestResults('🔧 Prêt pour les tests...\n\n');
+            } catch (error) {
+                updateSystemTestResults('❌ Erreur d\'initialisation: ' + error.message + '\n');
+            }
+        });
+
+        // Fonction utilitaire pour mettre à jour les résultats
+        function updateResults(elementId, message, append = false) {
+            const element = document.getElementById(elementId);
+            if (append) {
+                element.textContent += message;
+            } else {
+                element.textContent = message;
+            }
+            element.scrollTop = element.scrollHeight;
+        }
+
+        function updateSystemTestResults(message, append = true) {
+            updateResults('systemTestResults', message, append);
+        }
+
+        // Fonction de test de connexion
+        async function testLogin() {
+            const loadingIndicator = document.getElementById('loginLoadingIndicator');
+            loadingIndicator.innerHTML = '<div class="loading"></div>';
+            
+            try {
+                const identifiant = document.getElementById('loginIdentifiant').value;
+                const password = document.getElementById('loginPassword').value;
+                
+                if (!identifiant || !password) {
+                    updateResults('authResults', '❌ Veuillez saisir identifiant et mot de passe');
+                    return;
+                }
+
+                await dbManager.connect();
+                const result = await dbManager.authenticateUser(identifiant, password);
+                
+                if (result.success) {
+                    currentUser = result.user;
+                    updateResults('authResults', 
+                        `✓ Connexion réussie!\n` +
+                        `👤 Nom: ${result.user.nom_user}\n` +
+                        `📧 Email: ${result.user.email}\n` +
+                        `🔐 Admin: ${result.user.is_admin ? 'Oui' : 'Non'}\n` +
+                        `📊 Produits classés: ${result.user.nombre_produits_classes}\n` +
+                        `⏰ ${new Date().toLocaleString()}`
+                    );
+                    
+                    // Afficher les infos utilisateur
+                    document.getElementById('userInfo').style.display = 'block';
+                    document.getElementById('currentUserDetails').innerHTML = 
+                        `<strong>${result.user.nom_user}</strong> (${result.user.identifiant_user})<br>` +
+                        `<span class="status-indicator status-success"></span>Connecté`;
+                } else {
+                    updateResults('authResults', `❌ ${result.message}`);
+                }
+            } catch (error) {
+                updateResults('authResults', `❌ Erreur: ${error.message}`);
+            } finally {
+                loadingIndicator.innerHTML = '';
+            }
+        }
+
+        async function testLogout() {
+            if (dbManager) {
+                await dbManager.logout();
+                currentUser = null;
+                document.getElementById('userInfo').style.display = 'none';
+                updateResults('authResults', '✓ Déconnexion effectuée');
+            }
+        }
+
+        // Test de classification IA
+        async function testClassification() {
+            const loadingIndicator = document.getElementById('classifyLoadingIndicator');
+            loadingIndicator.innerHTML = '<div class="loading"></div>';
+            
+            try {
+                const description = document.getElementById('productDescription').value;
+                if (!description.trim()) {
+                    alert('Veuillez saisir une description de produit');
+                    return;
+                }
+
+                const results = aiClassifier.classifyWithAI(description);
+                displayClassificationResults(results, description);
+                
+            } catch (error) {
+                updateResults('classificationResults', `❌ Erreur de classification: ${error.message}`);
+            } finally {
+                loadingIndicator.innerHTML = '';
+            }
+        }
+
+        async function displayClassificationResults(results, description) {
+            const container = document.getElementById('classificationResults');
+            
+            if (results.length === 0) {
+                container.innerHTML = '<div class="classification-result">❌ Aucune classification trouvée</div>';
+                return;
+            }
+
+            let html = `<h4>📊 Résultats pour: "${description.substring(0, 50)}..."</h4>`;
+            
+            for (let index = 0; index < Math.min(results.length, 3); index++) {
+                const result = results[index];
+                const confidencePercent = Math.round(result.confidence);
+                const tariffRate = await integration.dbManager.getTariffRate(result.section.number);
+                
+                html += `
+                    <div class="classification-result">
+                        <strong>${index + 1}. ${result.section.title}</strong>
+                        <div>Section ${result.section.number} - Chapitres: ${result.section.chapters.join(', ')}</div>
+                        <div>Confiance: ${confidencePercent}% (${result.certaintyLevel})</div>
+                        <div class="confidence-bar">
+                            <div class="confidence-fill" style="width: ${confidencePercent}%"></div>
+                        </div>
+                        <div>Taux d'imposition estimé: ${tariffRate}%</div>
+                    </div>
+                `;
+            }
+            
+            container.innerHTML = html;
+        }
+
+        async function testClassificationExamples() {
+            const examples = [
+                "Ordinateur portable Dell Inspiron 15 pouces Intel Core i7",
+                "Huile de palme raffinée en bidons de 5 litres",
+                "Tissu en coton imprimé made in Ghana",
+                "Cacao en fèves séchées origine Côte d'Ivoire"
+            ];
+            
+            let results = "🧪 Test d'exemples de classification:\n\n";
+            
+            for (const example of examples) {
+                const classification = aiClassifier.classifyWithAI(example);
+                if (classification.length > 0) {
+                    const best = classification[0];
+                    results += `📦 "${example}"\n`;
+                    results += `   → Section ${best.section.number}: ${best.section.title}\n`;
+                    results += `   → Confiance: ${Math.round(best.confidence)}%\n\n`;
+                }
+            }
+            
+            updateResults('classificationResults', results);
+        }
+
+        // Test d'enregistrement de produit
+        async function testProductRegistration() {
+            const loadingIndicator = document.getElementById('registerLoadingIndicator');
+            loadingIndicator.innerHTML = '<div class="loading"></div>';
+            
+            try {
+                if (!currentUser) {
+                    updateResults('registrationResults', '❌ Veuillez vous connecter d\'abord');
+                    return;
+                }
+
+                const productData = {
+                    origine_produit: document.getElementById('origineProduct').value,
+                    description_produit: document.getElementById('productDescription').value,
+                    valeur_declaree: parseFloat(document.getElementById('valeurProduct').value),
+                    poids_kg: parseFloat(document.getElementById('poidsProduct').value),
+                    numero_serie: document.getElementById('numeroSerie').value,
+                    is_groupe: document.getElementById('isGroupe').checked
+                };
+
+                const result = await integration.classifyAndRegister(productData.description_produit, productData);
+                
+                if (result.success) {
+                    updateResults('registrationResults',
+                        `✓ Produit enregistré avec succès!\n` +
+                        `🆔 ID: ${result.product_id}\n` +
+                        `📋 Section: ${result.classification.section.number} - ${result.classification.section.title}\n` +
+                        `🎯 Confiance: ${Math.round(result.classification.confidence)}%\n` +
+                        `💰 Taux: ${await integration.dbManager.getTariffRate(result.classification.section.number)}%\n` +
+                        `⏰ ${new Date().toLocaleString()}`
+                    );
+                } else {
+                    updateResults('registrationResults', `❌ ${result.message}`);
+                }
+                
+            } catch (error) {
+                updateResults('registrationResults', `❌ Erreur: ${error.message}`);
+            } finally {
+                loadingIndicator.innerHTML = '';
+            }
+        }
+
+        async function testPackageRegistration() {
+            if (!currentUser) {
+                updateResults('registrationResults', '❌ Veuillez vous connecter d\'abord');
+                return;
+            }
+
+            // Simulation d'enregistrement d'un paquet
+            const packageData = {
+                origine_produit: 'Test Multi-pays',
+                description_produit: 'Paquet de test avec produits variés',
+                is_groupe: true,
+                nombre_produits: 3,
+                valeur_declaree: 5000.00
+            };
+
+            const membersData = [
+                {
+                    nom_produit_membre: 'Smartphone test',
+                    section_produit_membre: 'XVI',
+                    origine_produit_membre: 'Chine',
+                    description_produit_membre: 'Téléphone Android',
+                    valeur_unitaire_membre: 200.00
+                },
+                {
+                    nom_produit_membre: 'Textile test',
+                    section_produit_membre: 'XI',
+                    origine_produit_membre: 'Ghana',
+                    description_produit_membre: 'Tissu coton',
+                    valeur_unitaire_membre: 50.00
+                }
+            ];
+
+            const productResult = await dbManager.registerProduct(packageData);
+            if (productResult.success) {
+                const membersResult = await dbManager.registerProductMembers(productResult.product_id, membersData);
+                
+                updateResults('registrationResults',
+                    `✓ Paquet enregistré!\n` +
+                    `🆔 ID Paquet: ${productResult.product_id}\n` +
+                    `📦 Membres: ${membersResult.members_count}\n` +
+                    `⏰ ${new Date().toLocaleString()}`
+                );
+            }
+        }
+
+        // Tests de base de données
+        async function testDatabaseConnection() {
+            const connected = await dbManager.connect();
+            const message = connected ? 
+                '✓ Connexion à la base réussie' : 
+                '❌ Échec de connexion à la base';
+            updateResults('databaseResults', message);
+        }
+
+        async function testStatistics() {
+            const stats = await dbManager.generateStatistics();
+            if (stats.success) {
+                const s = stats.statistics;
+                updateResults('databaseResults',
+                    `📊 STATISTIQUES SYSTÈME\n` +
+                    `━━━━━━━━━━━━━━━━━━━━━━━━\n` +
+                    `📦 Total produits: ${s.total_products}\n` +
+                    `✅ Validés: ${s.validated_products}\n` +
+                    `⏳ En attente: ${s.pending_products}\n` +
+                    `❌ Rejetés: ${s.rejected_products}\n` +
+                    `💰 Droits de douane: ${s.total_duty_amount.toLocaleString()} FCFA\n` +
+                    `🏆 Section la + classée: ${s.most_classified_section}\n` +
+                    `⏱️ Temps moyen traitement: ${s.average_processing_time}\n` +
+                    `👥 Utilisateurs actifs: ${s.active_users}\n` +
+                    `📅 Généré le: ${new Date().toLocaleString()}`
+                );
+            }
+        }
+
+        async function testSearchProducts() {
+            const query = document.getElementById('searchQuery').value;
+            const searchResult = await dbManager.searchProducts({ 
+                description: query,
+                section: '',
+                status: 'all' 
+            });
+            
+            if (searchResult.success) {
+                let results = `🔍 RÉSULTATS DE RECHERCHE: "${query}"\n`;
+                results += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
+                
+                searchResult.results.forEach((product, index) => {
+                    results += `${index + 1}. ${product.description_produit}\n`;
+                    results += `   Section: ${product.section_produit} | Origine: ${product.origine_produit}\n`;
+                    results += `   Statut: ${product.statut_validation}\n\n`;
+                });
+                
+                updateResults('databaseResults', results);
+            }
+        }
+
+        async function testGetUserProducts() {
+            if (!currentUser) {
+                updateResults('databaseResults', '❌ Veuillez vous connecter d\'abord');
+                return;
+            }
+
+            const products = await dbManager.getUserProducts(currentUser.user_id);
+            if (products.success) {
+                let results = `📋 MES PRODUITS (${currentUser.nom_user})\n`;
+                results += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
+                
+                products.products.forEach((product, index) => {
+                    results += `${index + 1}. ${product.description_produit}\n`;
+                    results += `   ID: ${product.id_produit} | Section: ${product.section_produit}\n`;
+                    results += `   Origine: ${product.origine_produit} | Taux: ${product.taux_imposition}%\n`;
+                    results += `   Statut: ${product.statut_validation} | Valeur: ${product.valeur_declaree} FCFA\n`;
+                    results += `   Date: ${product.date_classification}\n\n`;
+                });
+                
+                updateResults('databaseResults', results);
+            }
+        }
+
+        // Test système complet
+        async function runCompleteSystemTest() {
+            const loadingIndicator = document.getElementById('systemTestLoadingIndicator');
+            loadingIndicator.innerHTML = '<div class="loading"></div>';
+            
+            try {
+                updateSystemTestResults('🚀 DÉBUT DU TEST SYSTÈME COMPLET\n', false);
+                updateSystemTestResults('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
+                
+                await integration.runSystemTest();
+                
+                updateSystemTestResults('\n✅ TOUS LES TESTS TERMINÉS AVEC SUCCÈS\n');
+                updateSystemTestResults('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
+                updateSystemTestResults(`⏰ Terminé à: ${new Date().toLocaleString()}\n`);
+                
+            } catch (error) {
+                updateSystemTestResults(`\n❌ ERREUR LORS DU TEST: ${error.message}\n`);
+            } finally {
+                loadingIndicator.innerHTML = '';
+            }
+        }
+
+        async function testWorkflowComplete() {
+            updateSystemTestResults('🔄 TEST DU WORKFLOW UTILISATEUR COMPLET\n', false);
+            updateSystemTestResults('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
+            
+            // Étape 1: Connexion
+            updateSystemTestResults('1️⃣ Test de connexion automatique...\n');
+            await dbManager.connect();
+            const authResult = await dbManager.authenticateUser('mkouadio', 'marie123');
+            if (authResult.success) {
+                currentUser = authResult.user;
+                updateSystemTestResults(`   ✓ Connecté comme: ${authResult.user.nom_user}\n`);
+            }
+            
+            // Étape 2: Classification
+            updateSystemTestResults('2️⃣ Test de classification IA...\n');
+            const testDescription = 'Machine à café électrique automatique importée d\'Allemagne';
+            const classification = aiClassifier.classifyWithAI(testDescription);
+            if (classification.length > 0) {
+                updateSystemTestResults(`   ✓ Classifié en Section ${classification[0].section.number}\n`);
+                updateSystemTestResults(`   ✓ Confiance: ${Math.round(classification[0].confidence)}%\n`);
+            }
+            
+            // Étape 3: Enregistrement
+            updateSystemTestResults('3️⃣ Test d\'enregistrement...\n');
+            const productData = {
+                origine_produit: 'Allemagne',
+                valeur_declaree: 85000,
+                poids_kg: 15.5
+            };
+            const registerResult = await integration.classifyAndRegister(testDescription, productData);
+            if (registerResult.success) {
+                updateSystemTestResults(`   ✓ Produit enregistré avec ID: ${registerResult.product_id}\n`);
+            }
+            
+            // Étape 4: Statistiques
+            updateSystemTestResults('4️⃣ Test de génération de statistiques...\n');
+            const stats = await dbManager.generateStatistics();
+            if (stats.success) {
+                updateSystemTestResults(`   ✓ Statistiques générées: ${stats.statistics.total_products} produits\n`);
+            }
+            
+            updateSystemTestResults('\n🎉 WORKFLOW COMPLET TERMINÉ AVEC SUCCÈS!\n');
+        }
+
+        function clearAllResults() {
+            const resultAreas = ['authResults', 'classificationResults', 'registrationResults', 'databaseResults', 'systemTestResults'];
+            resultAreas.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.textContent = `Zone de résultats ${id.replace('Results', '')} effacée...`;
+                }
+            });
+        }
+
+        function resetTestData() {
+            // Réinitialiser les formulaires
+            document.getElementById('productDescription').value = 'Smartphone Android avec écran tactile 6 pouces, processeur octa-core, 128GB de stockage, caméra 48MP, importé de Chine';
+            document.getElementById('valeurProduct').value = '150000';
+            document.getElementById('poidsProduct').value = '2.5';
+            document.getElementById('numeroSerie').value = '';
+            document.getElementById('isGroupe').checked = false;
+            document.getElementById('searchQuery').value = 'machine';
+            
+            // Déconnexion
+            if (currentUser) {
+                testLogout();
+            }
+            
+            updateSystemTestResults('🔄 Données de test réinitialisées\n', false);
+        }
+
+        // Auto-remplissage selon l'identifiant sélectionné
+        document.getElementById('loginIdentifiant').addEventListener('change', function() {
+            const passwords = {
+                'admin': 'admin123',
+                'mkouadio': 'marie123',
+                'adiallo': 'ahmed123'
+            };
+            
+            const selectedUser = this.value;
+            if (passwords[selectedUser]) {
+                document.getElementById('loginPassword').value = passwords[selectedUser];
+            }
+        });
+    </script>
+</body>
+</html>

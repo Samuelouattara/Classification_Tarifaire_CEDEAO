@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interface de Classification Tarifaire CEDEAO</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(90deg, #2c3e50, #34495e);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            padding: 30px;
+        }
+
+        .form-section, .result-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            border: 1px solid #e9ecef;
+        }
+
+        .section-title {
+            font-size: 1.4em;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-align: center;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 10px rgba(52, 152, 219, 0.3);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(45deg, #2980b9, #3498db);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(52, 152, 219, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, #27ae60, #229954);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: linear-gradient(45deg, #229954, #27ae60);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(39, 174, 96, 0.3);
+        }
+
+        .btn-warning {
+            background: linear-gradient(45deg, #f39c12, #e67e22);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: linear-gradient(45deg, #e67e22, #f39c12);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(243, 156, 18, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        .classification-result {
+            background: white;
+            border: 2px solid #27ae60;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .classification-result h3 {
+            color: #27ae60;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+        }
+
+        .result-label {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .result-value {
+            color: #7f8c8d;
+            text-align: right;
+        }
+
+        .confidence-bar {
+            width: 100%;
+            height: 20px;
+            background: #ecf0f1;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #e74c3c, #f39c12, #27ae60);
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        .temp-classification {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .temp-classification h3 {
+            color: #856404;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .validation-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            justify-content: center;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            color: #3498db;
+            font-style: italic;
+            margin: 20px 0;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 5px solid;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border-color: #27ae60;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border-color: #e74c3c;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border-color: #ffc107;
+        }
+
+        .user-info {
+            background: #e8f4f8;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .stat-card h4 {
+            font-size: 2em;
+            margin-bottom: 5px;
+        }
+
+        .stat-card p {
+            opacity: 0.9;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .validation-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+
+        .icon {
+            width: 20px;
+            height: 20px;
+            display: inline-block;
+        }
+
+        .icon-check {
+            color: #27ae60;
+        }
+
+        .icon-clock {
+            color: #f39c12;
+        }
+
+        .icon-search {
+            color: #3498db;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏛️ Classification Tarifaire CEDEAO</h1>
+            <p>Système de Classification Intelligente avec Validation</p>
+        </div>
+
+        <div id="loginSection" class="main-content" style="grid-template-columns: 1fr; text-align: center;">
+            <div class="form-section">
+                <h2 class="section-title">🔐 Connexion Utilisateur</h2>
+                <div class="form-group">
+                    <label for="loginEmail">Email:</label>
+                    <input type="email" id="loginEmail" placeholder="Votre email">
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Mot de passe:</label>
+                    <input type="password" id="loginPassword" placeholder="Votre mot de passe">
+                </div>
+                <button class="btn btn-primary" onclick="login()">Se connecter</button>
+                <div id="loginAlert"></div>
+            </div>
+        </div>
+
+        <div id="mainInterface" class="main-content" style="display: none;">
+            <div class="form-section">
+                <div id="userInfo" class="user-info"></div>
+                
+                <h2 class="section-title">📝 Informations du Produit</h2>
+                
+                <div class="form-group">
+                    <label for="origine">Pays d'origine:</label>
+                    <select id="origine">
+                        <option value="">Sélectionnez le pays</option>
+                        <option value="Bénin">Bénin</option>
+                        <option value="Burkina Faso">Burkina Faso</option>
+                        <option value="Côte d'Ivoire">Côte d'Ivoire</option>
+                        <option value="Guinée-Bissau">Guinée-Bissau</option>
+                        <option value="Mali">Mali</option>
+                        <option value="Niger">Niger</option>
+                        <option value="Sénégal">Sénégal</option>
+                        <option value="Togo">Togo</option>
+                        <option value="Ghana">Ghana</option>
+                        <option value="Guinée">Guinée</option>
+                        <option value="Liberia">Liberia</option>
+                        <option value="Sierra Leone">Sierra Leone</option>
+                        <option value="Cap-Vert">Cap-Vert</option>
+                        <option value="Gambie">Gambie</option>
+                        <option value="Mauritanie">Mauritanie</option>
+                        <option value="Autre">Autre</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Description du produit:</label>
+                    <textarea id="description" placeholder="Décrivez le produit en détail..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="numeroSerie">Numéro de série (optionnel):</label>
+                    <input type="text" id="numeroSerie" placeholder="Numéro de série du produit">
+                </div>
+
+                <div class="form-group">
+                    <label for="valeurDeclaree">Valeur déclarée (FCFA):</label>
+                    <input type="number" id="valeurDeclaree" placeholder="Valeur en FCFA">
+                </div>
+
+                <div class="form-group">
+                    <label for="poids">Poids (kg):</label>
+                    <input type="number" step="0.01" id="poids" placeholder="Poids en kilogrammes">
+                </div>
+
+                <div class="form-group">
+                    <label for="uniteMesure">Unité de mesure:</label>
+                    <select id="uniteMesure">
+                        <option value="unité">Unité</option>
+                        <option value="kg">Kilogramme</option>
+                        <option value="litre">Litre</option>
+                        <option value="mètre">Mètre</option>
+                        <option value="m²">Mètre carré</option>
+                        <option value="m³">Mètre cube</option>
+                        <option value="tonne">Tonne</option>
+                    </select>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="isGroupe">
+                    <label for="isGroupe">Produit groupé/ensemble</label>
+                </div>
+
+                <div class="form-group" id="nombreProduitsGroup" style="display: none;">
+                    <label for="nombreProduits">Nombre de produits dans le groupe:</label>
+                    <input type="number" id="nombreProduits" min="1" value="1">
+                </div>
+
+                <div class="form-group">
+                    <label for="commentaires">Commentaires (optionnel):</label>
+                    <textarea id="commentaires" placeholder="Commentaires additionnels..."></textarea>
+                </div>
+
+                <button class="btn btn-primary" onclick="classifyProduct()">
+                    <span class="icon icon-search">🔍</span> Classifier le Produit
+                </button>
+
+                <div id="loadingClassification" class="loading">
+                    <p>🤖 Classification en cours...</p>
+                </div>
+            </div>
+
+            <div class="result-section">
+                <h2 class="section-title">📊 Résultats de Classification</h2>
+                
+                <div id="tempClassificationResult" style="display: none;">
+                    <!-- Résultat temporaire affiché ici -->
+                </div>
+
+                <div id="noResult" style="text-align: center; color: #7f8c8d; margin-top: 50px;">
+                    <h3>Aucune classification en cours</h3>
+                    <p>Remplissez le formulaire et cliquez sur "Classifier le Produit"</p>
+                </div>
+
+                <div class="stats-grid" id="userStats" style="display: none;">
+                    <!-- Statistiques utilisateur -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="ai-classifier.js"></script>
+    <script src="../database/database-manager.js"></script>
+    
+    <script>
+        let currentTempClassification = null;
+        let dbManager = null;
+        let aiClassifier = null;
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Page chargée, initialisation...');
+            
+            try {
+                dbManager = new DatabaseManager();
+                console.log('✅ DatabaseManager créé');
+            } catch (error) {
+                console.error('❌ Erreur DatabaseManager:', error);
+            }
+            
+            try {
+                aiClassifier = new TariffAIClassifier();
+                console.log('✅ TariffAIClassifier créé');
+            } catch (error) {
+                console.error('❌ Erreur TariffAIClassifier:', error);
+            }
+            
+            // Gestion du checkbox groupe
+            document.getElementById('isGroupe').addEventListener('change', function() {
+                const nombreProduitsGroup = document.getElementById('nombreProduitsGroup');
+                if (this.checked) {
+                    nombreProduitsGroup.style.display = 'block';
+                } else {
+                    nombreProduitsGroup.style.display = 'none';
+                    document.getElementById('nombreProduits').value = 1;
+                }
+            });
+
+            // Vérifier si l'utilisateur est déjà connecté
+            console.log('🔍 Vérification utilisateur connecté...');
+            checkCurrentUser();
+        });
+
+        async function checkCurrentUser() {
+            const user = await dbManager.getCurrentUser();
+            if (user) {
+                showMainInterface(user);
+            }
+        }
+
+        async function login() {
+            // Debug visible dans l'interface
+            const alertDiv = document.getElementById('loginAlert');
+            alertDiv.innerHTML = '<div class="alert alert-warning">🔄 Test de connexion en cours...</div>';
+            
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            if (!email || !password) {
+                showAlert(alertDiv, 'Veuillez remplir tous les champs', 'error');
+                return;
+            }
+
+            // Debug: afficher les valeurs dans l'interface
+            alertDiv.innerHTML = `<div class="alert alert-warning">📧 Email: ${email}<br>🔑 Password: ${password}<br>🔄 Connexion en cours...</div>`;
+
+            try {
+                // Test direct de l'API
+                const response = await fetch('../database/api.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: 'login',
+                        email: email,
+                        password: password
+                    })
+                });
+
+                alertDiv.innerHTML += `<br>📡 Statut réponse: ${response.status}`;
+                
+                const data = await response.json();
+                alertDiv.innerHTML += `<br>📋 Données: ${JSON.stringify(data, null, 2)}`;
+                
+                if (data.success) {
+                    showAlert(alertDiv, '✅ Connexion réussie! Redirection...', 'success');
+                    setTimeout(() => {
+                        showMainInterface(data.user);
+                    }, 2000);
+                } else {
+                    showAlert(alertDiv, `❌ ${data.message || 'Identifiants incorrects'}`, 'error');
+                }
+            } catch (error) {
+                showAlert(alertDiv, `❌ Erreur: ${error.message}`, 'error');
+            }
+        }
+
+        function showMainInterface(user) {
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('mainInterface').style.display = 'grid';
+            
+            // Afficher les informations utilisateur
+            const userInfoDiv = document.getElementById('userInfo');
+            userInfoDiv.innerHTML = `
+                <h3>👋 Bienvenue, ${user.nom_complet}</h3>
+                <p>📧 ${user.email} | 🏢 ${user.organisation}</p>
+                <p>👤 ${user.role} | 📅 Connecté le ${new Date().toLocaleDateString()}</p>
+            `;
+
+            // Charger les statistiques utilisateur
+            loadUserStats(user);
+        }
+
+        async function loadUserStats(user) {
+            try {
+                const stats = await dbManager.getUserStats(user.user_id);
+                const statsDiv = document.getElementById('userStats');
+                
+                statsDiv.innerHTML = `
+                    <div class="stat-card">
+                        <h4>${stats.total_classifications || 0}</h4>
+                        <p>Classifications Total</p>
+                    </div>
+                    <div class="stat-card">
+                        <h4>${stats.classifications_today || 0}</h4>
+                        <p>Aujourd'hui</p>
+                    </div>
+                    <div class="stat-card">
+                        <h4>${stats.accuracy_rate || 0}%</h4>
+                        <p>Taux de Précision</p>
+                    </div>
+                `;
+                statsDiv.style.display = 'grid';
+            } catch (error) {
+                console.error('Erreur lors du chargement des statistiques:', error);
+            }
+        }
+
+        async function classifyProduct() {
+            const description = document.getElementById('description').value;
+            const origine = document.getElementById('origine').value;
+
+            if (!description || !origine) {
+                alert('Veuillez remplir au moins la description et le pays d\'origine');
+                return;
+            }
+
+            // Afficher le loading
+            document.getElementById('loadingClassification').classList.add('show');
+            document.getElementById('noResult').style.display = 'none';
+
+            try {
+                // Classification IA
+                const classificationResult = await aiClassifier.classifyProduct(description);
+                
+                // Préparer les données du produit
+                const productData = {
+                    origine_produit: origine,
+                    description_produit: description,
+                    numero_serie: document.getElementById('numeroSerie').value,
+                    is_groupe: document.getElementById('isGroupe').checked,
+                    nombre_produits: document.getElementById('isGroupe').checked ? 
+                                   parseInt(document.getElementById('nombreProduits').value) : 1,
+                    valeur_declaree: parseFloat(document.getElementById('valeurDeclaree').value) || 0,
+                    poids_kg: parseFloat(document.getElementById('poids').value) || 0,
+                    unite_mesure: document.getElementById('uniteMesure').value,
+                    commentaires: document.getElementById('commentaires').value
+                };
+
+                // Sauvegarde temporaire
+                const saveResult = await dbManager.saveTemporaryClassification(productData, classificationResult);
+
+                if (saveResult.success) {
+                    currentTempClassification = saveResult;
+                    displayTempClassification(saveResult.classification, classificationResult);
+                } else {
+                    throw new Error(saveResult.message);
+                }
+
+            } catch (error) {
+                console.error('Erreur lors de la classification:', error);
+                alert('Erreur lors de la classification: ' + error.message);
+            } finally {
+                document.getElementById('loadingClassification').classList.remove('show');
+            }
+        }
+
+        function displayTempClassification(classification, aiResult) {
+            const resultDiv = document.getElementById('tempClassificationResult');
+            
+            resultDiv.innerHTML = `
+                <div class="temp-classification">
+                    <h3><span class="icon icon-clock">⏳</span> Classification Temporaire</h3>
+                    <div class="alert alert-warning">
+                        <strong>⚠️ Attention:</strong> Cette classification n'est pas encore sauvegardée. 
+                        Veuillez valider pour l'enregistrer définitivement.
+                    </div>
+                    
+                    <div class="result-item">
+                        <span class="result-label">Section CEDEAO:</span>
+                        <span class="result-value">${aiResult.section.number} - ${aiResult.section.title}</span>
+                    </div>
+                    
+                    <div class="result-item">
+                        <span class="result-label">Chapitres:</span>
+                        <span class="result-value">${aiResult.section.chapters.join(', ')}</span>
+                    </div>
+                    
+                    <div class="result-item">
+                        <span class="result-label">Taux d'imposition:</span>
+                        <span class="result-value">${classification.taux_imposition}%</span>
+                    </div>
+                    
+                    <div class="result-item">
+                        <span class="result-label">Confiance IA:</span>
+                        <span class="result-value">${Math.round(aiResult.confidence)}%</span>
+                    </div>
+                    
+                    <div class="confidence-bar">
+                        <div class="confidence-fill" style="width: ${aiResult.confidence}%">
+                            ${Math.round(aiResult.confidence)}%
+                        </div>
+                    </div>
+                    
+                    <div class="result-item">
+                        <span class="result-label">Justification:</span>
+                        <span class="result-value">${aiResult.reasoning}</span>
+                    </div>
+                    
+                    <div class="result-item">
+                        <span class="result-label">Valeur déclarée:</span>
+                        <span class="result-value">${classification.valeur_declaree.toLocaleString()} FCFA</span>
+                    </div>
+                    
+                    <div class="result-item">
+                        <span class="result-label">Poids:</span>
+                        <span class="result-value">${classification.poids_kg} kg</span>
+                    </div>
+                    
+                    <div class="validation-buttons">
+                        <button class="btn btn-success" onclick="validateClassification()">
+                            <span class="icon icon-check">✅</span> Valider et Enregistrer
+                        </button>
+                        <button class="btn btn-warning" onclick="modifyClassification()">
+                            📝 Modifier
+                        </button>
+                        <button class="btn btn-secondary" onclick="cancelClassification()">
+                            ❌ Annuler
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            resultDiv.style.display = 'block';
+        }
+
+        async function validateClassification() {
+            if (!currentTempClassification) {
+                alert('Aucune classification à valider');
+                return;
+            }
+
+            try {
+                const result = await dbManager.validateAndRegisterProduct(
+                    currentTempClassification.temp_id, 
+                    true
+                );
+
+                if (result.success) {
+                    // Afficher le succès
+                    const resultDiv = document.getElementById('tempClassificationResult');
+                    resultDiv.innerHTML = `
+                        <div class="classification-result">
+                            <h3><span class="icon icon-check">✅</span> Classification Validée</h3>
+                            <div class="alert alert-success">
+                                <strong>Succès!</strong> Le produit a été enregistré avec succès dans l'historique.
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">ID Produit:</span>
+                                <span class="result-value">#${result.product_id}</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">Code Tarifaire:</span>
+                                <span class="result-value">${result.product.code_tarifaire}</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">Statut:</span>
+                                <span class="result-value">Validé ✅</span>
+                            </div>
+                        </div>
+                    `;
+
+                    // Réinitialiser
+                    currentTempClassification = null;
+                    resetForm();
+                    
+                    // Recharger les statistiques
+                    const user = await dbManager.getCurrentUser();
+                    if (user) {
+                        loadUserStats(user);
+                    }
+
+                } else {
+                    throw new Error(result.message);
+                }
+
+            } catch (error) {
+                console.error('Erreur lors de la validation:', error);
+                alert('Erreur lors de la validation: ' + error.message);
+            }
+        }
+
+        function modifyClassification() {
+            // Permettre à l'utilisateur de modifier la classification
+            alert('Fonctionnalité de modification en cours de développement');
+        }
+
+        function cancelClassification() {
+            currentTempClassification = null;
+            document.getElementById('tempClassificationResult').style.display = 'none';
+            document.getElementById('noResult').style.display = 'block';
+        }
+
+        function resetForm() {
+            document.getElementById('description').value = '';
+            document.getElementById('origine').value = '';
+            document.getElementById('numeroSerie').value = '';
+            document.getElementById('valeurDeclaree').value = '';
+            document.getElementById('poids').value = '';
+            document.getElementById('uniteMesure').value = 'unité';
+            document.getElementById('isGroupe').checked = false;
+            document.getElementById('nombreProduits').value = 1;
+            document.getElementById('nombreProduitsGroup').style.display = 'none';
+            document.getElementById('commentaires').value = '';
+        }
+
+        function showAlert(container, message, type) {
+            container.innerHTML = `
+                <div class="alert alert-${type}">
+                    ${message}
+                </div>
+            `;
+            
+            setTimeout(() => {
+                container.innerHTML = '';
+            }, 5000);
+        }
+
+        // Fonction pour aller à l'historique
+        function goToHistory() {
+            window.location.href = 'historique.html';
+        }
+
+        // Raccourci clavier pour la classification
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.key === 'Enter') {
+                classifyProduct();
+            }
+        });
+    </script>
+</body>
+</html>

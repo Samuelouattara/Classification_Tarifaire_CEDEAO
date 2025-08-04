@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historique des Classifications - CEDEAO</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(90deg, #2c3e50, #34495e);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header-actions {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, #27ae60, #229954);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(45deg, #95a5a6, #7f8c8d);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        .stats-dashboard {
+            background: #f8f9fa;
+            padding: 30px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(52, 152, 219, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card h3 {
+            font-size: 2.5em;
+            margin-bottom: 8px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .stat-card p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .filters-section {
+            background: white;
+            padding: 25px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-group label {
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .filter-group input,
+        .filter-group select {
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            transition: border-color 0.3s ease;
+        }
+
+        .filter-group input:focus,
+        .filter-group select:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .table-container {
+            background: white;
+            padding: 25px;
+            overflow-x: auto;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 15px 12px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .data-table th {
+            background: linear-gradient(45deg, #34495e, #2c3e50);
+            color: white;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .data-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-valide {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-en-attente {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-rejete {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .pagination button {
+            padding: 8px 16px;
+            border: 1px solid #dee2e6;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .pagination button:hover:not(:disabled) {
+            background: #3498db;
+            color: white;
+        }
+
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .pagination .current {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: #3498db;
+            font-size: 1.1em;
+        }
+
+        .loading.hidden {
+            display: none;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #7f8c8d;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .detail-item {
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border-left: 4px solid #3498db;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .detail-value {
+            color: #7f8c8d;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            z-index: 1001;
+            animation: slideIn 0.3s ease;
+        }
+
+        .notification.success {
+            background: #27ae60;
+        }
+
+        .notification.error {
+            background: #e74c3c;
+        }
+
+        .notification.warning {
+            background: #f39c12;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .header-actions {
+                position: relative;
+                top: auto;
+                right: auto;
+                margin-top: 15px;
+                justify-content: center;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filters-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .table-container {
+                padding: 15px;
+            }
+
+            .data-table {
+                font-size: 12px;
+            }
+
+            .data-table th,
+            .data-table td {
+                padding: 10px 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Historique des Classifications</h1>
+            <p>Système de Suivi et Gestion des Produits Classifiés</p>
+            <div class="header-actions">
+                <a href="classification-interface.html" class="btn btn-primary">
+                    ➕ Nouvelle Classification
+                </a>
+                <button class="btn btn-success" onclick="exportToCSV()">
+                    📊 Exporter CSV
+                </button>
+                <button class="btn btn-secondary" onclick="logout()">
+                    🚪 Déconnexion
+                </button>
+            </div>
+        </div>
+
+        <div id="loginSection" style="display: none; padding: 40px; text-align: center;">
+            <h2>🔐 Connexion Requise</h2>
+            <p>Veuillez vous connecter pour accéder à l'historique</p>
+            <div style="max-width: 400px; margin: 20px auto;">
+                <div style="margin-bottom: 15px;">
+                    <input type="email" id="loginEmail" placeholder="Email" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 6px;">
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <input type="password" id="loginPassword" placeholder="Mot de passe" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 6px;">
+                </div>
+                <button class="btn btn-primary" onclick="login()">Se Connecter</button>
+            </div>
+            <div id="loginAlert"></div>
+        </div>
+
+        <div id="mainContent" style="display: none;">
+            <div class="stats-dashboard">
+                <div id="userInfo" style="text-align: center; margin-bottom: 20px;"></div>
+                <div class="stats-grid" id="statsGrid">
+                    <div class="stat-card">
+                        <h3 id="totalProducts">0</h3>
+                        <p>Produits Total</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="validatedProducts">0</h3>
+                        <p>Validés</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="pendingProducts">0</h3>
+                        <p>En Attente</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="todayProducts">0</h3>
+                        <p>Aujourd'hui</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="filters-section">
+                <div class="filters-grid">
+                    <div class="filter-group">
+                        <label for="searchFilter">🔍 Recherche:</label>
+                        <input type="text" id="searchFilter" placeholder="Description, numéro de série...">
+                    </div>
+                    <div class="filter-group">
+                        <label for="sectionFilter">📋 Section:</label>
+                        <select id="sectionFilter">
+                            <option value="">Toutes les sections</option>
+                            <option value="I">Section I - Animaux vivants</option>
+                            <option value="II">Section II - Produits végétaux</option>
+                            <option value="III">Section III - Graisses et huiles</option>
+                            <option value="IV">Section IV - Produits alimentaires</option>
+                            <option value="V">Section V - Produits minéraux</option>
+                            <option value="VI">Section VI - Produits chimiques</option>
+                            <option value="VII">Section VII - Matières plastiques</option>
+                            <option value="VIII">Section VIII - Cuirs et peaux</option>
+                            <option value="IX">Section IX - Bois et ouvrages</option>
+                            <option value="X">Section X - Pâtes de bois</option>
+                            <option value="XI">Section XI - Matières textiles</option>
+                            <option value="XII">Section XII - Chaussures</option>
+                            <option value="XIII">Section XIII - Ouvrages en pierre</option>
+                            <option value="XIV">Section XIV - Perles fines</option>
+                            <option value="XV">Section XV - Métaux de base</option>
+                            <option value="XVI">Section XVI - Machines et appareils</option>
+                            <option value="XVII">Section XVII - Matériel de transport</option>
+                            <option value="XVIII">Section XVIII - Instruments d'optique</option>
+                            <option value="XIX">Section XIX - Armes et munitions</option>
+                            <option value="XX">Section XX - Marchandises diverses</option>
+                            <option value="XXI">Section XXI - Objets d'art</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="statusFilter">⚡ Statut:</label>
+                        <select id="statusFilter">
+                            <option value="">Tous les statuts</option>
+                            <option value="valide">Validé</option>
+                            <option value="en_attente">En attente</option>
+                            <option value="rejete">Rejeté</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="dateFromFilter">📅 Date début:</label>
+                        <input type="date" id="dateFromFilter">
+                    </div>
+                    <div class="filter-group">
+                        <label for="dateToFilter">📅 Date fin:</label>
+                        <input type="date" id="dateToFilter">
+                    </div>
+                    <div class="filter-group" style="display: flex; align-items: end;">
+                        <button class="btn btn-primary" onclick="clearFilters()">🔄 Réinitialiser</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <div id="loadingIndicator" class="loading">
+                    🔄 Chargement de l'historique...
+                </div>
+
+                <table class="data-table" id="historyTable" style="display: none;">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Description</th>
+                            <th>Section</th>
+                            <th>Code Tarifaire</th>
+                            <th>Origine</th>
+                            <th>Statut</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyTableBody">
+                        <!-- Les données seront chargées ici -->
+                    </tbody>
+                </table>
+
+                <div class="pagination" id="pagination" style="display: none;">
+                    <!-- Pagination sera générée ici -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal pour les détails -->
+    <div id="detailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📋 Détails de la Classification</h2>
+                <button class="close-modal" onclick="closeModal()">&times;</button>
+            </div>
+            <div id="modalContent">
+                <!-- Contenu du modal sera chargé ici -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../database/database-manager.js"></script>
+    <script>
+        let dbManager = null;
+        let currentUser = null;
+        let allClassifications = [];
+        let filteredClassifications = [];
+        let currentPage = 1;
+        const itemsPerPage = 10;
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            dbManager = new DatabaseManager();
+            setupEventListeners();
+            checkUserLogin();
+        });
+
+        function setupEventListeners() {
+            // Filtres
+            document.getElementById('searchFilter').addEventListener('input', applyFilters);
+            document.getElementById('sectionFilter').addEventListener('change', applyFilters);
+            document.getElementById('statusFilter').addEventListener('change', applyFilters);
+            document.getElementById('dateFromFilter').addEventListener('change', applyFilters);
+            document.getElementById('dateToFilter').addEventListener('change', applyFilters);
+
+            // Modal
+            document.getElementById('detailModal').addEventListener('click', function(e) {
+                if (e.target === this) closeModal();
+            });
+        }
+
+        async function checkUserLogin() {
+            try {
+                currentUser = await dbManager.getCurrentUser();
+                if (currentUser) {
+                    showMainContent();
+                    await loadClassificationHistory();
+                } else {
+                    showLoginSection();
+                }
+            } catch (error) {
+                console.error('Erreur lors de la vérification de l\'utilisateur:', error);
+                showLoginSection();
+            }
+        }
+
+        async function login() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const alertDiv = document.getElementById('loginAlert');
+
+            if (!email || !password) {
+                showAlert(alertDiv, 'Veuillez remplir tous les champs', 'error');
+                return;
+            }
+
+            try {
+                const result = await dbManager.authenticateUser(email, password);
+                
+                if (result.success) {
+                    currentUser = result.user;
+                    showAlert(alertDiv, 'Connexion réussie!', 'success');
+                    setTimeout(() => {
+                        showMainContent();
+                        loadClassificationHistory();
+                    }, 1000);
+                } else {
+                    showAlert(alertDiv, result.message, 'error');
+                }
+            } catch (error) {
+                showAlert(alertDiv, 'Erreur de connexion', 'error');
+            }
+        }
+
+        function showLoginSection() {
+            document.getElementById('loginSection').style.display = 'block';
+            document.getElementById('mainContent').style.display = 'none';
+        }
+
+        function showMainContent() {
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'block';
+            
+            // Afficher les informations utilisateur
+            const userInfoDiv = document.getElementById('userInfo');
+            userInfoDiv.innerHTML = `
+                <h3>👋 ${currentUser.nom_complet}</h3>
+                <p>📧 ${currentUser.email} | 🏢 ${currentUser.organisation} | 👤 ${currentUser.role}</p>
+            `;
+        }
+
+        async function loadClassificationHistory() {
+            try {
+                setLoading(true);
+                
+                // Récupérer l'historique depuis le localStorage
+                const historique = JSON.parse(localStorage.getItem('classification_history') || '[]');
+                
+                if (historique.length === 0) {
+                    document.getElementById('historyTableBody').innerHTML = `
+                        <tr>
+                            <td colspan="8" style="text-align: center; color: #7f8c8d; padding: 40px;">
+                                📭 Aucun produit classifié trouvé
+                                <br><br>
+                                <small>Les produits apparaîtront ici après validation dans l'interface de classification</small>
+                            </td>
+                        </tr>
+                    `;
+                    updateStats([]);
+                    return;
+                }
+
+                // Filtrer par utilisateur si nécessaire
+                let filteredHistory = historique;
+                if (currentUser && currentUser.role !== 'administrateur') {
+                    filteredHistory = historique.filter(item => item.user_id === currentUser.user_id);
+                }
+
+                allClassifications = filteredHistory;
+                applyFilters();
+                updateStats(filteredHistory);
+
+            } catch (error) {
+                console.error('Erreur lors du chargement de l\'historique:', error);
+                showNotification('Erreur lors du chargement de l\'historique', 'error');
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        function setLoading(isLoading) {
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            const table = document.getElementById('historyTable');
+            
+            if (isLoading) {
+                loadingIndicator.classList.remove('hidden');
+                table.style.display = 'none';
+            } else {
+                loadingIndicator.classList.add('hidden');
+                table.style.display = 'table';
+            }
+        }
+
+        function applyFilters() {
+            const searchTerm = document.getElementById('searchFilter').value.toLowerCase();
+            const sectionFilter = document.getElementById('sectionFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+            const dateFrom = document.getElementById('dateFromFilter').value;
+            const dateTo = document.getElementById('dateToFilter').value;
+
+            filteredClassifications = allClassifications.filter(item => {
+                // Recherche textuelle
+                const matchesSearch = !searchTerm || 
+                    item.description_produit.toLowerCase().includes(searchTerm) ||
+                    (item.numero_serie && item.numero_serie.toLowerCase().includes(searchTerm)) ||
+                    (item.code_tarifaire && item.code_tarifaire.toLowerCase().includes(searchTerm));
+
+                // Filtre section
+                const matchesSection = !sectionFilter || item.section_produit === sectionFilter;
+
+                // Filtre statut
+                const matchesStatus = !statusFilter || item.statut_validation === statusFilter;
+
+                // Filtre date
+                const itemDate = new Date(item.date_classification).toISOString().split('T')[0];
+                const matchesDateFrom = !dateFrom || itemDate >= dateFrom;
+                const matchesDateTo = !dateTo || itemDate <= dateTo;
+
+                return matchesSearch && matchesSection && matchesStatus && matchesDateFrom && matchesDateTo;
+            });
+
+            currentPage = 1;
+            displayClassifications();
+            setupPagination();
+        }
+
+        function displayClassifications() {
+            const tbody = document.getElementById('historyTableBody');
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const pageItems = filteredClassifications.slice(startIndex, endIndex);
+
+            if (pageItems.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" style="text-align: center; color: #7f8c8d; padding: 40px;">
+                            🔍 Aucun résultat trouvé pour les filtres appliqués
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = pageItems.map(item => `
+                <tr>
+                    <td>#${item.id_produit}</td>
+                    <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" 
+                        title="${item.description_produit}">
+                        ${item.description_produit}
+                    </td>
+                    <td>${item.section_produit}</td>
+                    <td>${item.code_tarifaire || 'N/A'}</td>
+                    <td>${item.origine_produit}</td>
+                    <td>
+                        <span class="status-badge status-${item.statut_validation}">
+                            ${getStatusText(item.statut_validation)}
+                        </span>
+                    </td>
+                    <td>${new Date(item.date_classification).toLocaleDateString()}</td>
+                    <td>
+                        <button class="btn btn-primary" onclick="showDetails(${item.id_produit})" 
+                                style="padding: 6px 12px; font-size: 12px;">
+                            👁️ Voir
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function getStatusText(status) {
+            switch(status) {
+                case 'valide': return '✅ Validé';
+                case 'en_attente': return '⏳ En attente';
+                case 'rejete': return '❌ Rejeté';
+                default: return status;
+            }
+        }
+
+        function setupPagination() {
+            const totalPages = Math.ceil(filteredClassifications.length / itemsPerPage);
+            const pagination = document.getElementById('pagination');
+            
+            if (totalPages <= 1) {
+                pagination.style.display = 'none';
+                return;
+            }
+
+            pagination.style.display = 'flex';
+            
+            let paginationHTML = `
+                <button onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>
+                    ◀ Précédent
+                </button>
+            `;
+
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === currentPage) {
+                    paginationHTML += `<button class="current">${i}</button>`;
+                } else if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
+                    paginationHTML += `<button onclick="changePage(${i})">${i}</button>`;
+                } else if (i === currentPage - 3 || i === currentPage + 3) {
+                    paginationHTML += `<span>...</span>`;
+                }
+            }
+
+            paginationHTML += `
+                <button onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>
+                    Suivant ▶
+                </button>
+            `;
+
+            pagination.innerHTML = paginationHTML;
+        }
+
+        function changePage(page) {
+            const totalPages = Math.ceil(filteredClassifications.length / itemsPerPage);
+            if (page >= 1 && page <= totalPages) {
+                currentPage = page;
+                displayClassifications();
+                setupPagination();
+            }
+        }
+
+        function updateStats(data) {
+            const total = data.length;
+            const validated = data.filter(item => item.statut_validation === 'valide').length;
+            const pending = data.filter(item => item.statut_validation === 'en_attente').length;
+            
+            const today = new Date().toISOString().split('T')[0];
+            const todayCount = data.filter(item => {
+                const itemDate = new Date(item.date_classification).toISOString().split('T')[0];
+                return itemDate === today;
+            }).length;
+
+            document.getElementById('totalProducts').textContent = total;
+            document.getElementById('validatedProducts').textContent = validated;
+            document.getElementById('pendingProducts').textContent = pending;
+            document.getElementById('todayProducts').textContent = todayCount;
+        }
+
+        function showDetails(productId) {
+            const product = allClassifications.find(item => item.id_produit === productId);
+            if (!product) return;
+
+            const modalContent = document.getElementById('modalContent');
+            modalContent.innerHTML = `
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <div class="detail-label">ID Produit</div>
+                        <div class="detail-value">#${product.id_produit}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Statut</div>
+                        <div class="detail-value">
+                            <span class="status-badge status-${product.statut_validation}">
+                                ${getStatusText(product.statut_validation)}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="detail-item" style="grid-column: 1 / -1;">
+                        <div class="detail-label">Description</div>
+                        <div class="detail-value">${product.description_produit}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Pays d'origine</div>
+                        <div class="detail-value">${product.origine_produit}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Section CEDEAO</div>
+                        <div class="detail-value">${product.section_produit}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Code Tarifaire</div>
+                        <div class="detail-value">${product.code_tarifaire || 'N/A'}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Taux d'imposition</div>
+                        <div class="detail-value">${product.taux_imposition}%</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Valeur déclarée</div>
+                        <div class="detail-value">${product.valeur_declaree?.toLocaleString() || 'N/A'} FCFA</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Poids</div>
+                        <div class="detail-value">${product.poids_kg || 'N/A'} kg</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Unité de mesure</div>
+                        <div class="detail-value">${product.unite_mesure || 'N/A'}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Date de classification</div>
+                        <div class="detail-value">${new Date(product.date_classification).toLocaleString()}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Numéro de série</div>
+                        <div class="detail-value">${product.numero_serie || 'N/A'}</div>
+                    </div>
+                </div>
+                
+                ${product.commentaires ? `
+                    <div class="detail-item" style="margin-top: 15px;">
+                        <div class="detail-label">Commentaires</div>
+                        <div class="detail-value">${product.commentaires}</div>
+                    </div>
+                ` : ''}
+                
+                ${product.classification_confidence ? `
+                    <div class="detail-item" style="margin-top: 15px;">
+                        <div class="detail-label">Confiance IA</div>
+                        <div class="detail-value">${Math.round(product.classification_confidence)}%</div>
+                    </div>
+                ` : ''}
+            `;
+
+            document.getElementById('detailModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('detailModal').style.display = 'none';
+        }
+
+        function clearFilters() {
+            document.getElementById('searchFilter').value = '';
+            document.getElementById('sectionFilter').value = '';
+            document.getElementById('statusFilter').value = '';
+            document.getElementById('dateFromFilter').value = '';
+            document.getElementById('dateToFilter').value = '';
+            applyFilters();
+        }
+
+        function exportToCSV() {
+            if (filteredClassifications.length === 0) {
+                showNotification('Aucune donnée à exporter', 'warning');
+                return;
+            }
+
+            const csvContent = generateCSV(filteredClassifications);
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            
+            if (link.download !== undefined) {
+                const url = URL.createObjectURL(blob);
+                link.setAttribute('href', url);
+                link.setAttribute('download', `historique_classifications_${new Date().toISOString().split('T')[0]}.csv`);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                showNotification('Export CSV réussi', 'success');
+            }
+        }
+
+        function generateCSV(data) {
+            const headers = [
+                'ID', 'Description', 'Section', 'Code Tarifaire', 'Origine', 
+                'Statut', 'Date Classification', 'Taux Imposition', 'Valeur Déclarée', 'Poids'
+            ];
+            
+            const csvRows = [headers.join(';')];
+            
+            data.forEach(item => {
+                const row = [
+                    item.id_produit,
+                    `"${item.description_produit.replace(/"/g, '""')}"`,
+                    item.section_produit,
+                    item.code_tarifaire || '',
+                    item.origine_produit,
+                    item.statut_validation,
+                    new Date(item.date_classification).toLocaleDateString(),
+                    item.taux_imposition + '%',
+                    item.valeur_declaree || '',
+                    item.poids_kg || ''
+                ];
+                csvRows.push(row.join(';'));
+            });
+            
+            return csvRows.join('\n');
+        }
+
+        async function logout() {
+            await dbManager.logout();
+            currentUser = null;
+            allClassifications = [];
+            filteredClassifications = [];
+            showLoginSection();
+            showNotification('Déconnexion réussie', 'success');
+        }
+
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                document.body.removeChild(notification);
+            }, 3000);
+        }
+
+        function showAlert(container, message, type) {
+            container.innerHTML = `
+                <div style="margin-top: 15px; padding: 10px; border-radius: 6px; 
+                           background: ${type === 'success' ? '#d4edda' : '#f8d7da'}; 
+                           color: ${type === 'success' ? '#155724' : '#721c24'};">
+                    ${message}
+                </div>
+            `;
+            
+            setTimeout(() => {
+                container.innerHTML = '';
+            }, 5000);
+        }
+
+        // Raccourcis clavier
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && document.getElementById('detailModal').style.display === 'block') {
+                closeModal();
+            }
+            
+            if (e.ctrlKey && e.key === 'f') {
+                e.preventDefault();
+                document.getElementById('searchFilter').focus();
+            }
+        });
+    </script>
+</body>
+</html>
