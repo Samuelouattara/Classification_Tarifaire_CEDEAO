@@ -1,251 +1,148 @@
 <?php
-header('Content-Type: application/json; charset=utf-8');
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: POST, GET, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type');
+// API PHP pour les opérations de base de données
+// Fichier: database/api.php
 
-// Gestion des requêtes OPTIONS pour CORS
+header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type, Authorization');
+
+// Gestion des requêtes OPTIONS (CORS)
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
     exit();
 }
 
-// Configuration de la base de données
-$host = 'localhost:4240';
-$dbname = 'douane';
-$username = 'root';
-$password = 'root';
+require_once 'config.php';
 
 try {
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch(PDOException $e) {
-    echo json_encode([
-        'success' => false,
-        'message' => 'Erreur de connexion à la base de données: ' . $e->getMessage()
-    ]);
-    exit();
+    $pdo = DatabaseConfig::getConnection();
+    
+    $method = $_SERVER['REQUEST_METHOD'];
+    $input = json_decode(file_get_contents('php://input'), true);
+    
+    // Récupérer l'action depuis URL ou depuis le body JSON
+    $request = $_GET['action'] ?? $input['action'] ?? '';
+    
+    switch($method) {
+        case 'POST':
+            handlePost($pdo, $request, $input);
+            break;
+        case 'GET':
+            handleGet($pdo, $request);
+            break;
+        case 'PUT':
+            handlePut($pdo, $request, $input);
+            break;
+        case 'DELETE':
+            handleDelete($pdo, $request, $input);
+            break;
+        default:
+            http_response_code(405);
+            echo json_encode(['error' => 'Méthode non autorisée']);
+            break;
+    }
+    
+} catch (Exception $e) {
+    http_response_code(500);
+    echo json_encode(['error' => $e->getMessage()]);
 }
 
-// Récupération et décodage des données
-$input = file_get_contents('php://input');
-$data = json_decode($input, true);
-
-if (!$data || !isset($data['action'])) {
-    echo json_encode([
-        'success' => false,
-        'message' => 'Action non spécifiée'
-    ]);
-    exit();
-}
-
-// Traitement selon l'action
-switch ($data['action']) {
-    case 'save_classified_product':
-        saveClassifiedProduct($pdo, $data);
-        break;
-    
-    case 'login':
-        authenticateUser($pdo, $data);
-        break;
-    
-    case 'get_user_stats':
-        getUserStats($pdo, $data);
-        break;
-    
-    case 'get_user_history':
-        getUserHistory($pdo, $data);
-        break;
-    
-    default:
-        echo json_encode([
-            'success' => false,
-            'message' => 'Action non reconnue'
-        ]);
-        break;
-}
-
-/**
- * Sauvegarde un produit classifié automatiquement
- */
-function saveClassifiedProduct($pdo, $data) {
-    try {
-        if (!isset($data['product'])) {
-            throw new Exception('Données du produit manquantes');
-        }
-        
-        $product = $data['product'];
-        
-        // Valeurs par défaut et validation
-        $origine_produit = $product['origine_produit'] ?? 'Non spécifié';
-        $description_produit = $product['description_produit'] ?? '';
-        $section_produit = $product['section_produit'] ?? '';
-        $code_tarifaire = $product['code_tarifaire'] ?? null;
-        $taux_imposition = floatval($product['taux_imposition'] ?? 0);
-        $valeur_declaree = floatval($product['valeur_declaree'] ?? 0);
-        $poids_kg = floatval($product['poids_kg'] ?? 0);
-        $unite_mesure = $product['unite_mesure'] ?? 'unité';
-        $statut_validation = $product['statut_validation'] ?? 'en_attente';
-        $commentaires = $product['commentaires'] ?? '';
-        
-        // Validation des champs obligatoires
-        if (empty($description_produit)) {
-            throw new Exception('Description du produit obligatoire');
-        }
-        
-        if (empty($section_produit)) {
-            throw new Exception('Section du produit obligatoire');
-        }
-        
-        // Obtenir l'utilisateur par défaut (user_id = 1 pour le système automatique)
-        // En production, utiliser l'utilisateur connecté
-        $user_id = getCurrentUserId($pdo);
-        
-        // Préparer la requête d'insertion
-        $sql = "INSERT INTO produits (
-            origine_produit, 
-            description_produit, 
-            section_produit, 
-            code_tarifaire, 
-            taux_imposition, 
-            valeur_declaree, 
-            poids_kg, 
-            unite_mesure, 
-            user_id, 
-            statut_validation, 
-            commentaires,
-            date_classification
-        ) VALUES (
-            :origine_produit, 
-            :description_produit, 
-            :section_produit, 
-            :code_tarifaire, 
-            :taux_imposition, 
-            :valeur_declaree, 
-            :poids_kg, 
-            :unite_mesure, 
-            :user_id, 
-            :statut_validation, 
-            :commentaires,
-            NOW()
-        )";
-        
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([
-            ':origine_produit' => $origine_produit,
-            ':description_produit' => $description_produit,
-            ':section_produit' => $section_produit,
-            ':code_tarifaire' => $code_tarifaire,
-            ':taux_imposition' => $taux_imposition,
-            ':valeur_declaree' => $valeur_declaree,
-            ':poids_kg' => $poids_kg,
-            ':unite_mesure' => $unite_mesure,
-            ':user_id' => $user_id,
-            ':statut_validation' => $statut_validation,
-            ':commentaires' => $commentaires
-        ]);
-        
-        $product_id = $pdo->lastInsertId();
-        
-        // Ajouter une entrée dans l'historique
-        addToHistory($pdo, $product_id, $user_id, 'creation', 'Création automatique via système de classification IA');
-        
-        echo json_encode([
-            'success' => true,
-            'message' => 'Produit sauvegardé avec succès',
-            'product_id' => $product_id,
-            'data' => [
-                'id' => $product_id,
-                'section' => $section_produit,
-                'code_tarifaire' => $code_tarifaire,
-                'taux_imposition' => $taux_imposition,
-                'statut' => $statut_validation
-            ]
-        ]);
-        
-    } catch (Exception $e) {
-        echo json_encode([
-            'success' => false,
-            'message' => 'Erreur lors de la sauvegarde: ' . $e->getMessage()
-        ]);
+function handlePost($pdo, $action, $data) {
+    switch($action) {
+        case 'login':
+            login($pdo, $data);
+            break;
+        case 'register_user':
+            registerUser($pdo, $data);
+            break;
+        case 'save_temp_classification':
+            saveTempClassification($pdo, $data);
+            break;
+        case 'validate_product':
+            validateProduct($pdo, $data);
+            break;
+        default:
+            http_response_code(404);
+            echo json_encode(['error' => 'Action non trouvée']);
     }
 }
 
-/**
- * Authentification utilisateur
- */
-function authenticateUser($pdo, $data) {
+function handleGet($pdo, $action) {
+    switch($action) {
+        case 'test_connection':
+            echo json_encode(DatabaseConfig::testConnection());
+            break;
+        case 'get_tariff_rates':
+            getTariffRates($pdo);
+            break;
+        case 'get_classifications':
+            getClassifications($pdo);
+            break;
+        case 'get_user_stats':
+            getUserStats($pdo, $_GET['user_id'] ?? null);
+            break;
+        default:
+            http_response_code(404);
+            echo json_encode(['error' => 'Action non trouvée']);
+    }
+}
+
+function handlePut($pdo, $action, $data) {
+    switch($action) {
+        case 'update_product':
+            updateProduct($pdo, $data);
+            break;
+        default:
+            http_response_code(404);
+            echo json_encode(['error' => 'Action non trouvée']);
+    }
+}
+
+function handleDelete($pdo, $action, $data) {
+    switch($action) {
+        case 'delete_product':
+            deleteProduct($pdo, $data);
+            break;
+        default:
+            http_response_code(404);
+            echo json_encode(['error' => 'Action non trouvée']);
+    }
+}
+
+// Fonction de connexion utilisateur
+function login($pdo, $data) {
     try {
-        if (!isset($data['email']) || !isset($data['password'])) {
+        $email = $data['email'] ?? '';
+        $password = $data['password'] ?? '';
+        
+        if (empty($email) || empty($password)) {
             throw new Exception('Email et mot de passe requis');
         }
         
-        $email = $data['email'];
-        $password = $data['password'];
+        $stmt = $pdo->prepare("SELECT * FROM User WHERE email = ? AND statut_compte = 'actif'");
+        $stmt->execute([$email]);
+        $user = $stmt->fetch();
         
-        // Requête pour trouver l'utilisateur
-        $sql = "SELECT user_id, nom_user, identifiant_user, email, mot_de_passe, is_admin, statut_compte 
-                FROM user 
-                WHERE email = :email AND statut_compte = 'actif'";
-        
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([':email' => $email]);
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
-        
-        if (!$user) {
-            throw new Exception('Utilisateur non trouvé ou compte inactif');
-        }
-        
-        // Vérification du mot de passe (utilisation de password_verify en production)
-        // Pour le test, on utilise une vérification simple
-        if (!password_verify($password, $user['mot_de_passe'])) {
-            // Vérification de secours pour les mots de passe de test
-            $testPasswords = [
-                'admin123' => 'admin@douane.gov',
-                'marie123' => 'marie@douane.gov',
-                'ahmed123' => 'ahmed@douane.gov',
-                'fatou123' => 'fatou@douane.gov'
-            ];
-            
-            $validTestLogin = false;
-            foreach ($testPasswords as $testPass => $testEmail) {
-                if ($password === $testPass && $email === $testEmail) {
-                    $validTestLogin = true;
-                    break;
-                }
-            }
-            
-            if (!$validTestLogin) {
-                throw new Exception('Mot de passe incorrect');
-            }
+        if (!$user || !password_verify($password, $user['mot_de_passe'])) {
+            throw new Exception('Email ou mot de passe incorrect');
         }
         
         // Mettre à jour la dernière connexion
-        $updateSql = "UPDATE user SET derniere_connexion = NOW() WHERE user_id = :user_id";
-        $updateStmt = $pdo->prepare($updateSql);
-        $updateStmt->execute([':user_id' => $user['user_id']]);
+        $updateStmt = $pdo->prepare("UPDATE User SET derniere_connexion = NOW() WHERE user_id = ?");
+        $updateStmt->execute([$user['user_id']]);
         
-        // Créer une session simple (en production, utiliser des tokens JWT)
-        session_start();
-        $_SESSION['user_id'] = $user['user_id'];
-        $_SESSION['user_email'] = $user['email'];
+        // Nettoyer les données sensibles
+        unset($user['mot_de_passe']);
         
         echo json_encode([
             'success' => true,
-            'message' => 'Connexion réussie',
-            'user' => [
-                'user_id' => $user['user_id'],
-                'nom_complet' => $user['nom_user'],
-                'nom_user' => $user['nom_user'], // Compatibility
-                'identifiant_user' => $user['identifiant_user'],
-                'email' => $user['email'],
-                'is_admin' => $user['is_admin'],
-                'role' => $user['is_admin'] ? 'administrateur' : 'utilisateur',
-                'organisation' => 'Direction Générale des Douanes'
-            ]
+            'user' => $user,
+            'message' => 'Connexion réussie'
         ]);
         
     } catch (Exception $e) {
+        http_response_code(400);
         echo json_encode([
             'success' => false,
             'message' => $e->getMessage()
@@ -253,26 +150,206 @@ function authenticateUser($pdo, $data) {
     }
 }
 
-/**
- * Obtenir les statistiques d'un utilisateur
- */
-function getUserStats($pdo, $data) {
+// Fonction d'enregistrement d'utilisateur
+function registerUser($pdo, $data) {
     try {
-        $user_id = getCurrentUserId($pdo);
+        $nom = $data['nom_user'] ?? '';
+        $identifiant = $data['identifiant_user'] ?? '';
+        $email = $data['email'] ?? '';
+        $password = $data['password'] ?? '';
         
-        // Statistiques de base
-        $sql = "SELECT 
-                    COUNT(*) as total_classifications,
-                    SUM(CASE WHEN statut_validation = 'valide' THEN 1 ELSE 0 END) as classifications_validees,
-                    SUM(CASE WHEN statut_validation = 'en_attente' THEN 1 ELSE 0 END) as classifications_en_attente,
-                    SUM(CASE WHEN DATE(date_classification) = CURDATE() THEN 1 ELSE 0 END) as classifications_today,
-                    ROUND(AVG(CASE WHEN statut_validation = 'valide' THEN 100 ELSE 0 END), 1) as accuracy_rate
-                FROM produits 
-                WHERE user_id = :user_id";
+        if (empty($nom) || empty($identifiant) || empty($email) || empty($password)) {
+            throw new Exception('Tous les champs sont requis');
+        }
+        
+        // Vérifier si l'utilisateur existe
+        $checkStmt = $pdo->prepare("SELECT user_id FROM User WHERE email = ? OR identifiant_user = ?");
+        $checkStmt->execute([$email, $identifiant]);
+        if ($checkStmt->fetch()) {
+            throw new Exception('Email ou identifiant déjà utilisé');
+        }
+        
+        // Hasher le mot de passe
+        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+        
+        // Insérer l'utilisateur
+        $stmt = $pdo->prepare("
+            INSERT INTO User (nom_user, identifiant_user, email, mot_de_passe) 
+            VALUES (?, ?, ?, ?)
+        ");
+        $stmt->execute([$nom, $identifiant, $email, $hashedPassword]);
+        
+        $userId = $pdo->lastInsertId();
+        
+        echo json_encode([
+            'success' => true,
+            'user_id' => $userId,
+            'message' => 'Utilisateur créé avec succès'
+        ]);
+        
+    } catch (Exception $e) {
+        http_response_code(400);
+        echo json_encode([
+            'success' => false,
+            'message' => $e->getMessage()
+        ]);
+    }
+}
+
+// Fonction pour sauvegarder une classification temporaire
+function saveTempClassification($pdo, $data) {
+    try {
+        // Ici on peut stocker temporairement ou directement selon le besoin
+        // Pour l'instant, on stocke directement avec statut 'en_attente'
+        
+        $stmt = $pdo->prepare("
+            INSERT INTO Produits (
+                origine_produit, description_produit, numero_serie, is_groupe, 
+                nombre_produits, taux_imposition, section_produit, sous_section_produit,
+                user_id, statut_validation, code_tarifaire, valeur_declaree, 
+                poids_kg, unite_mesure, commentaires
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'en_attente', ?, ?, ?, ?, ?)
+        ");
+        
+        $stmt->execute([
+            $data['origine_produit'],
+            $data['description_produit'],
+            $data['numero_serie'] ?? null,
+            $data['is_groupe'] ? 1 : 0,
+            $data['nombre_produits'] ?? 1,
+            $data['taux_imposition'],
+            $data['section_produit'],
+            $data['sous_section_produit'] ?? null,
+            $data['user_id'],
+            $data['code_tarifaire'] ?? null,
+            $data['valeur_declaree'] ?? 0,
+            $data['poids_kg'] ?? 0,
+            $data['unite_mesure'] ?? 'unité',
+            $data['commentaires'] ?? null
+        ]);
+        
+        $productId = $pdo->lastInsertId();
+        
+        echo json_encode([
+            'success' => true,
+            'temp_id' => $productId,
+            'message' => 'Classification temporaire sauvegardée'
+        ]);
+        
+    } catch (Exception $e) {
+        http_response_code(400);
+        echo json_encode([
+            'success' => false,
+            'message' => $e->getMessage()
+        ]);
+    }
+}
+
+// Fonction pour valider un produit
+function validateProduct($pdo, $data) {
+    try {
+        $productId = $data['product_id'];
+        $validatorId = $data['validator_id'];
+        
+        $pdo->beginTransaction();
+        
+        // Mettre à jour le statut du produit
+        $stmt = $pdo->prepare("UPDATE Produits SET statut_validation = 'valide' WHERE id_produit = ?");
+        $stmt->execute([$productId]);
+        
+        // Ajouter à l'historique
+        $historyStmt = $pdo->prepare("
+            INSERT INTO Historique_Classifications (id_produit, user_id, action_effectuee, commentaire_historique)
+            VALUES (?, ?, 'validation', 'Produit validé')
+        ");
+        $historyStmt->execute([$productId, $validatorId]);
+        
+        $pdo->commit();
+        
+        echo json_encode([
+            'success' => true,
+            'message' => 'Produit validé avec succès'
+        ]);
+        
+    } catch (Exception $e) {
+        $pdo->rollBack();
+        http_response_code(400);
+        echo json_encode([
+            'success' => false,
+            'message' => $e->getMessage()
+        ]);
+    }
+}
+
+// Fonction pour récupérer les taux tarifaires
+function getTariffRates($pdo) {
+    try {
+        $stmt = $pdo->query("SELECT * FROM Taux_Imposition WHERE statut_taux = 'actif'");
+        $rates = $stmt->fetchAll();
+        
+        echo json_encode([
+            'success' => true,
+            'rates' => $rates
+        ]);
+        
+    } catch (Exception $e) {
+        http_response_code(400);
+        echo json_encode([
+            'success' => false,
+            'message' => $e->getMessage()
+        ]);
+    }
+}
+
+// Fonction pour récupérer les classifications
+function getClassifications($pdo) {
+    try {
+        $userId = $_GET['user_id'] ?? null;
+        $status = $_GET['status'] ?? null;
+        
+        $sql = "SELECT p.*, u.nom_user, u.email FROM Produits p JOIN User u ON p.user_id = u.user_id WHERE 1=1";
+        $params = [];
+        
+        if ($userId) {
+            $sql .= " AND p.user_id = ?";
+            $params[] = $userId;
+        }
+        
+        if ($status) {
+            $sql .= " AND p.statut_validation = ?";
+            $params[] = $status;
+        }
+        
+        $sql .= " ORDER BY p.date_classification DESC";
         
         $stmt = $pdo->prepare($sql);
-        $stmt->execute([':user_id' => $user_id]);
-        $stats = $stmt->fetch(PDO::FETCH_ASSOC);
+        $stmt->execute($params);
+        $classifications = $stmt->fetchAll();
+        
+        echo json_encode([
+            'success' => true,
+            'classifications' => $classifications
+        ]);
+        
+    } catch (Exception $e) {
+        http_response_code(400);
+        echo json_encode([
+            'success' => false,
+            'message' => $e->getMessage()
+        ]);
+    }
+}
+
+// Fonction pour récupérer les statistiques utilisateur
+function getUserStats($pdo, $userId) {
+    try {
+        if (!$userId) {
+            throw new Exception('ID utilisateur requis');
+        }
+        
+        $stmt = $pdo->prepare("CALL GetUserStatistics(?)");
+        $stmt->execute([$userId]);
+        $stats = $stmt->fetch();
         
         echo json_encode([
             'success' => true,
@@ -280,168 +357,21 @@ function getUserStats($pdo, $data) {
         ]);
         
     } catch (Exception $e) {
+        http_response_code(400);
         echo json_encode([
             'success' => false,
-            'message' => 'Erreur lors de la récupération des statistiques: ' . $e->getMessage()
+            'message' => $e->getMessage()
         ]);
     }
 }
 
-/**
- * Obtenir l'historique d'un utilisateur
- */
-function getUserHistory($pdo, $data) {
-    try {
-        $user_id = getCurrentUserId($pdo);
-        $limit = isset($data['limit']) ? intval($data['limit']) : 50;
-        $offset = isset($data['offset']) ? intval($data['offset']) : 0;
-        
-        // Récupérer l'historique avec pagination
-        $sql = "SELECT 
-                    p.id_produit,
-                    p.origine_produit,
-                    p.description_produit,
-                    p.section_produit,
-                    p.code_tarifaire,
-                    p.taux_imposition,
-                    p.statut_validation,
-                    p.date_classification,
-                    p.valeur_declaree,
-                    p.poids_kg,
-                    p.unite_mesure,
-                    p.commentaires
-                FROM produits p
-                WHERE p.user_id = :user_id
-                ORDER BY p.date_classification DESC
-                LIMIT :limit OFFSET :offset";
-        
-        $stmt = $pdo->prepare($sql);
-        $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
-        $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
-        $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
-        $stmt->execute();
-        
-        $history = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        
-        // Compter le total pour la pagination
-        $countSql = "SELECT COUNT(*) as total FROM produits WHERE user_id = :user_id";
-        $countStmt = $pdo->prepare($countSql);
-        $countStmt->execute([':user_id' => $user_id]);
-        $total = $countStmt->fetch(PDO::FETCH_ASSOC)['total'];
-        
-        echo json_encode([
-            'success' => true,
-            'history' => $history,
-            'pagination' => [
-                'total' => intval($total),
-                'limit' => $limit,
-                'offset' => $offset,
-                'has_more' => ($offset + $limit) < $total
-            ]
-        ]);
-        
-    } catch (Exception $e) {
-        echo json_encode([
-            'success' => false,
-            'message' => 'Erreur lors de la récupération de l\'historique: ' . $e->getMessage()
-        ]);
-    }
+function updateProduct($pdo, $data) {
+    // Implémentation de la mise à jour de produit
+    echo json_encode(['success' => false, 'message' => 'Non implémenté']);
 }
 
-/**
- * Ajouter une entrée dans l'historique des classifications
- */
-function addToHistory($pdo, $product_id, $user_id, $action, $comment) {
-    try {
-        $sql = "INSERT INTO historique_classifications 
-                (id_produit, user_id, action_effectuee, commentaire_historique, date_action) 
-                VALUES (:product_id, :user_id, :action, :comment, NOW())";
-        
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([
-            ':product_id' => $product_id,
-            ':user_id' => $user_id,
-            ':action' => $action,
-            ':comment' => $comment
-        ]);
-        
-        return true;
-    } catch (Exception $e) {
-        error_log("Erreur ajout historique: " . $e->getMessage());
-        return false;
-    }
+function deleteProduct($pdo, $data) {
+    // Implémentation de la suppression de produit
+    echo json_encode(['success' => false, 'message' => 'Non implémenté']);
 }
-
-/**
- * Obtenir l'ID de l'utilisateur courant
- */
-function getCurrentUserId($pdo) {
-    // En production, récupérer depuis la session/token
-    session_start();
-    
-    if (isset($_SESSION['user_id'])) {
-        return $_SESSION['user_id'];
-    }
-    
-    // Fallback : utiliser le premier utilisateur admin
-    $sql = "SELECT user_id FROM user WHERE is_admin = 1 AND statut_compte = 'actif' LIMIT 1";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute();
-    $result = $stmt->fetch(PDO::FETCH_ASSOC);
-    
-    return $result ? $result['user_id'] : 5; // ID 5 = admin par défaut
-}
-
-/**
- * Créer un utilisateur de test
- */
-function createTestUser($pdo, $name, $email, $password, $is_admin = false) {
-    try {
-        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-        
-        $sql = "INSERT INTO user (nom_user, identifiant_user, email, mot_de_passe, is_admin, statut_compte) 
-                VALUES (:nom, :identifiant, :email, :password, :is_admin, 'actif')";
-        
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([
-            ':nom' => $name,
-            ':identifiant' => explode('@', $email)[0],
-            ':email' => $email,
-            ':password' => $hashedPassword,
-            ':is_admin' => $is_admin ? 1 : 0
-        ]);
-        
-        return $pdo->lastInsertId();
-        
-    } catch (Exception $e) {
-        error_log("Erreur création utilisateur test: " . $e->getMessage());
-        return false;
-    }
-}
-
-// Initialisation des utilisateurs de test si nécessaire
-function initializeTestUsers($pdo) {
-    try {
-        // Vérifier si les utilisateurs existent déjà
-        $sql = "SELECT COUNT(*) as count FROM user";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute();
-        $count = $stmt->fetch(PDO::FETCH_ASSOC)['count'];
-        
-        if ($count == 0) {
-            // Créer les utilisateurs de test
-            createTestUser($pdo, 'Administrateur Système', 'admin@douane.gov', 'admin123', true);
-            createTestUser($pdo, 'Marie Douanière', 'marie@douane.gov', 'marie123', false);
-            createTestUser($pdo, 'Ahmed Classificateur', 'ahmed@douane.gov', 'ahmed123', false);
-            createTestUser($pdo, 'Fatou Inspectrice', 'fatou@douane.gov', 'fatou123', false);
-        }
-        
-    } catch (Exception $e) {
-        error_log("Erreur initialisation utilisateurs: " . $e->getMessage());
-    }
-}
-
-// Appeler l'initialisation si nécessaire
-// initializeTestUsers($pdo);
-
 ?>
