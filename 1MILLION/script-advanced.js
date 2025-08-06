@@ -164,6 +164,15 @@ function setupEventListeners() {
                 handleClassification();
             }
         });
+
+        // Fonction pour quand on presse sur la touche entrer ca classifie le produit
+        document.getElementById("product-description").addEventListener("keydown", function(event) {
+    // Vérifie que la touche Entrée est pressée sans Shift (pour éviter les sauts de ligne)
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault(); // Empêche la création d'une nouvelle ligne
+      document.getElementById("classify-btn").click(); // Déclenche le bouton
+    }
+  });
         
         // Suggestions en temps réel (debounced)
         let suggestionTimeout;
