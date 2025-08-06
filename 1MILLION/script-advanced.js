@@ -564,9 +564,18 @@ async function selectAndStoreClassification(sectionNumber, sectionTitle, confide
     }
 }
 
+
 // Fonction de sauvegarde en base de données
 async function saveProductToDatabase(productInfo, classificationResult) {
     try {
+        // Vérifier que le DatabaseManager est disponible
+        if (!window.dbManager || typeof window.dbManager.saveClassifiedProduct !== 'function') {
+            console.warn('⚠️ DatabaseManager non disponible, sauvegarde locale uniquement');
+            // Fallback vers sauvegarde locale
+            saveToHistory(productInfo.description, classificationResult);
+            return { success: false, message: 'Base de données non disponible' };
+        }
+
         const productData = {
             origine_produit: productInfo.origin || 'Non spécifié',
             description_produit: productInfo.description,
@@ -574,31 +583,26 @@ async function saveProductToDatabase(productInfo, classificationResult) {
             code_tarifaire: classificationResult.code,
             taux_imposition: getTaxRate(classificationResult.section.number),
             valeur_declaree: productInfo.value || 0,
-            poids_kg: 0, // Peut être étendu
+            poids_kg: productInfo.weight || 0,
             unite_mesure: 'unité',
             statut_validation: classificationResult.confidence > 80 ? 'valide' : 'en_attente',
             commentaires: `Classification automatique - Confiance: ${classificationResult.confidence}%`
         };
+
+        console.log('🔄 Sauvegarde en base de données...', productData);
         
-        const response = await fetch('../database/api.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                action: 'save_classified_product',
-                product: productData
-            })
-        });
-
-        if (!response.ok) {
-            throw new Error(`Erreur HTTP: ${response.status}`);
-        }
-
-        const result = await response.json();
+        const result = await window.dbManager.saveClassifiedProduct(productData);
         
         if (result.success) {
             console.log('✅ Produit sauvegardé en base avec ID:', result.product_id);
+            
+            // Sauvegarder aussi dans l'historique local comme backup
+            if (typeof window.dbManager.saveToLocalHistory === 'function') {
+                window.dbManager.saveToLocalHistory(productInfo.description, classificationResult);
+            } else {
+                saveToHistory(productInfo.description, classificationResult);
+            }
+            
             return result.product_id;
         } else {
             throw new Error(result.message || 'Erreur lors de la sauvegarde');
@@ -606,6 +610,11 @@ async function saveProductToDatabase(productInfo, classificationResult) {
         
     } catch (error) {
         console.error('❌ Erreur sauvegarde base de données:', error);
+        
+        // Fallback: sauvegarder seulement en local
+        console.log('🔄 Sauvegarde de secours en local...');
+        saveToHistory(productInfo.description, classificationResult);
+        
         throw error;
     }
 }

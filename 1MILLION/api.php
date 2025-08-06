@@ -59,12 +59,18 @@ function handlePost($pdo, $action, $data) {
         case 'save_temp_classification':
             saveTempClassification($pdo, $data);
             break;
+        case 'save_classified_product':  // NOUVELLE ACTION AJOUTÉE
+            saveClassifiedProduct($pdo, $data);
+            break;
+        case 'save_product':  // NOUVELLE ACTION AJOUTÉE
+            saveProduct($pdo, $data);
+            break;
         case 'validate_product':
             validateProduct($pdo, $data);
             break;
         default:
             http_response_code(404);
-            echo json_encode(['error' => 'Action non trouvée']);
+            echo json_encode(['error' => 'Action non trouvée: ' . $action]);
     }
 }
 
@@ -196,11 +202,17 @@ function registerUser($pdo, $data) {
     }
 }
 
-// Fonction pour sauvegarder une classification temporaire
-function saveTempClassification($pdo, $data) {
+// NOUVELLE FONCTION: Sauvegarder un produit classifié
+function saveClassifiedProduct($pdo, $data) {
     try {
-        // Ici on peut stocker temporairement ou directement selon le besoin
-        // Pour l'instant, on stocke directement avec statut 'en_attente'
+        $product = $data['product'] ?? [];
+        
+        if (empty($product)) {
+            throw new Exception('Données produit manquantes');
+        }
+        
+        // Utiliser un utilisateur par défaut si non spécifié (à adapter selon vos besoins)
+        $defaultUserId = 5; // ID de l'admin par défaut
         
         $stmt = $pdo->prepare("
             INSERT INTO Produits (
@@ -208,33 +220,114 @@ function saveTempClassification($pdo, $data) {
                 nombre_produits, taux_imposition, section_produit, sous_section_produit,
                 user_id, statut_validation, code_tarifaire, valeur_declaree, 
                 poids_kg, unite_mesure, commentaires
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'en_attente', ?, ?, ?, ?, ?)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ");
         
         $stmt->execute([
-            $data['origine_produit'],
-            $data['description_produit'],
-            $data['numero_serie'] ?? null,
-            $data['is_groupe'] ? 1 : 0,
-            $data['nombre_produits'] ?? 1,
-            $data['taux_imposition'],
-            $data['section_produit'],
-            $data['sous_section_produit'] ?? null,
-            $data['user_id'],
-            $data['code_tarifaire'] ?? null,
-            $data['valeur_declaree'] ?? 0,
-            $data['poids_kg'] ?? 0,
-            $data['unite_mesure'] ?? 'unité',
-            $data['commentaires'] ?? null
+            $product['origine_produit'] ?? 'Non spécifié',
+            $product['description_produit'] ?? '',
+            $product['numero_serie'] ?? null,
+            ($product['is_groupe'] ?? false) ? 1 : 0,
+            $product['nombre_produits'] ?? 1,
+            $product['taux_imposition'] ?? 0,
+            $product['section_produit'] ?? 'I',
+            $product['sous_section_produit'] ?? null,
+            $defaultUserId, // À modifier selon votre système d'authentification
+            $product['statut_validation'] ?? 'valide',
+            $product['code_tarifaire'] ?? null,
+            $product['valeur_declaree'] ?? 0,
+            $product['poids_kg'] ?? 0,
+            $product['unite_mesure'] ?? 'unité',
+            $product['commentaires'] ?? null
         ]);
         
         $productId = $pdo->lastInsertId();
         
         echo json_encode([
             'success' => true,
-            'temp_id' => $productId,
-            'message' => 'Classification temporaire sauvegardée'
+            'product_id' => $productId,
+            'message' => 'Produit classifié sauvegardé avec succès'
         ]);
+        
+    } catch (Exception $e) {
+        http_response_code(400);
+        echo json_encode([
+            'success' => false,
+            'message' => $e->getMessage()
+        ]);
+    }
+}
+
+// NOUVELLE FONCTION: Sauvegarder un produit générique
+function saveProduct($pdo, $data) {
+    try {
+        $product = $data['product'] ?? [];
+        
+        if (empty($product)) {
+            throw new Exception('Données produit manquantes');
+        }
+        
+        // Utiliser un utilisateur par défaut si non spécifié
+        $defaultUserId = 5;
+        
+        // Obtenir le taux d'imposition pour la section
+        $taxRate = getTaxRateForSection($pdo, $product['section'] ?? 'I');
+        
+        $stmt = $pdo->prepare("
+            INSERT INTO Produits (
+                origine_produit, description_produit, section_produit, 
+                code_tarifaire, taux_imposition, valeur_declaree, 
+                user_id, statut_validation, commentaires
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ");
+        
+        $stmt->execute([
+            $product['origin'] ?? 'Non spécifié',
+            $product['description'] ?? '',
+            $product['section'] ?? 'I',
+            $product['code'] ?? null,
+            $taxRate,
+            $product['value'] ?? 0,
+            $defaultUserId,
+            ($product['confidence'] ?? 0) > 80 ? 'valide' : 'en_attente',
+            'Classification automatique - Confiance: ' . ($product['confidence'] ?? 0) . '%'
+        ]);
+        
+        $productId = $pdo->lastInsertId();
+        
+        echo json_encode([
+            'success' => true,
+            'product_id' => $productId,
+            'message' => 'Produit sauvegardé avec succès'
+        ]);
+        
+    } catch (Exception $e) {
+        http_response_code(400);
+        echo json_encode([
+            'success' => false,
+            'message' => $e->getMessage()
+        ]);
+    }
+}
+
+// Fonction utilitaire pour obtenir le taux d'imposition d'une section
+function getTaxRateForSection($pdo, $section) {
+    try {
+        $stmt = $pdo->prepare("SELECT taux_pourcentage FROM Taux_Imposition WHERE section = ? AND statut_taux = 'actif'");
+        $stmt->execute([$section]);
+        $result = $stmt->fetch();
+        
+        return $result ? $result['taux_pourcentage'] : 10.00; // Taux par défaut
+    } catch (Exception $e) {
+        return 10.00; // Taux par défaut en cas d'erreur
+    }
+}
+
+// Fonction pour sauvegarder une classification temporaire
+function saveTempClassification($pdo, $data) {
+    try {
+        // Réutiliser la fonction saveClassifiedProduct
+        saveClassifiedProduct($pdo, ['product' => $data]);
         
     } catch (Exception $e) {
         http_response_code(400);
@@ -366,12 +459,64 @@ function getUserStats($pdo, $userId) {
 }
 
 function updateProduct($pdo, $data) {
-    // Implémentation de la mise à jour de produit
-    echo json_encode(['success' => false, 'message' => 'Non implémenté']);
+    try {
+        $productId = $data['product_id'] ?? null;
+        $updates = $data['updates'] ?? [];
+        
+        if (!$productId || empty($updates)) {
+            throw new Exception('ID produit et données de mise à jour requis');
+        }
+        
+        $setParts = [];
+        $params = [];
+        
+        foreach ($updates as $field => $value) {
+            $setParts[] = "$field = ?";
+            $params[] = $value;
+        }
+        
+        $params[] = $productId;
+        
+        $sql = "UPDATE Produits SET " . implode(', ', $setParts) . " WHERE id_produit = ?";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($params);
+        
+        echo json_encode([
+            'success' => true,
+            'message' => 'Produit mis à jour avec succès'
+        ]);
+        
+    } catch (Exception $e) {
+        http_response_code(400);
+        echo json_encode([
+            'success' => false,
+            'message' => $e->getMessage()
+        ]);
+    }
 }
 
 function deleteProduct($pdo, $data) {
-    // Implémentation de la suppression de produit
-    echo json_encode(['success' => false, 'message' => 'Non implémenté']);
+    try {
+        $productId = $data['product_id'] ?? null;
+        
+        if (!$productId) {
+            throw new Exception('ID produit requis');
+        }
+        
+        $stmt = $pdo->prepare("DELETE FROM Produits WHERE id_produit = ?");
+        $stmt->execute([$productId]);
+        
+        echo json_encode([
+            'success' => true,
+            'message' => 'Produit supprimé avec succès'
+        ]);
+        
+    } catch (Exception $e) {
+        http_response_code(400);
+        echo json_encode([
+            'success' => false,
+            'message' => $e->getMessage()
+        ]);
+    }
 }
 ?>

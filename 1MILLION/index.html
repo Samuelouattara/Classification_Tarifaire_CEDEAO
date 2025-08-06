@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr" class="scroll-smooth">
 <head>
@@ -154,8 +155,118 @@
 <footer class="text-center text-white/80 py-8 mt-12 border-t border-white/20">
     <p>&copy; 2025 - Direction Générale des Douanes de Côte d'Ivoire</p>
 </footer>
+</div>
+
+    <!-- Chargement des scripts dans le bon ordre -->
     <script src="codes-tarifaires.js"></script>
+    <script>
+        // Vérification du chemin de database-manager.js
+        const script = document.createElement('script');
+        script.src = './database-manager.js'; // Essayer d'abord dans le même dossier
+        script.onerror = function() {
+            // Si échec, essayer le dossier database
+            console.warn('database-manager.js non trouvé dans le dossier actuel, essai dossier database...');
+            const script2 = document.createElement('script');
+            script2.src = '../database/database-manager.js';
+            script2.onerror = function() {
+                console.error('database-manager.js introuvable, utilisation du fallback');
+                // Créer un DatabaseManager de base inline
+                window.createFallbackDatabaseManager();
+            };
+            document.head.appendChild(script2);
+        };
+        document.head.appendChild(script);
+        
+        // Fonction fallback si le fichier n'est pas trouvé
+        window.createFallbackDatabaseManager = function() {
+            console.log('🔧 Création du DatabaseManager fallback');
+            window.DatabaseManager = class {
+                constructor() {
+                    this.apiUrl = '../database/api.php';
+                    console.log('DatabaseManager fallback initialisé');
+                }
+                
+                async saveClassifiedProduct(productData) {
+                    try {
+                        const response = await fetch(this.apiUrl, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                action: 'save_classified_product',
+                                product: productData
+                            })
+                        });
+                        const result = await response.json();
+                        return result;
+                    } catch (error) {
+                        console.error('Erreur sauvegarde:', error);
+                        return { success: false, message: error.message };
+                    }
+                }
+                
+                saveToLocalHistory(description, result) {
+                    try {
+                        let history = JSON.parse(localStorage.getItem('classification_history') || '[]');
+                        const entry = {
+                            timestamp: new Date().toISOString(),
+                            description: description,
+                            section: result.section?.number || 'Inconnu',
+                            title: result.section?.title || 'Section inconnue',
+                            confidence: result.confidence || 0,
+                            code: result.code || 'N/A'
+                        };
+                        history.unshift(entry);
+                        if (history.length > 100) history = history.slice(0, 100);
+                        localStorage.setItem('classification_history', JSON.stringify(history));
+                        return entry;
+                    } catch (error) {
+                        console.error('Erreur sauvegarde locale:', error);
+                        return null;
+                    }
+                }
+                
+                async testConnection() {
+                    try {
+                        const response = await fetch(this.apiUrl + '?action=test_connection');
+                        return await response.json();
+                    } catch (error) {
+                        return { success: false, message: error.message };
+                    }
+                }
+            };
+        };
+    </script>
     <script src="ai-classifier.js"></script>
+    <script>
+        // Script de diagnostic intégré
+        (function() {
+            console.log('🔧 DIAGNOSTIC DU SYSTÈME');
+            
+            const checks = [
+                { name: 'DatabaseManager', obj: window.DatabaseManager },
+                { name: 'TariffAIClassifier', obj: window.TariffAIClassifier },
+                { name: 'codesSpecifiques', obj: window.codesSpecifiques }
+            ];
+            
+            checks.forEach(check => {
+                if (check.obj) {
+                    console.log(`✅ ${check.name} : Disponible`);
+                } else {
+                    console.error(`❌ ${check.name} : MANQUANT`);
+                }
+            });
+            
+            // Fonction pour débugger manuellement
+            window.debugSystem = function() {
+                console.log('🐛 DEBUG MANUEL');
+                console.log('DatabaseManager:', typeof window.DatabaseManager);
+                console.log('dbManager:', window.dbManager);
+                if (window.dbManager) {
+                    console.log('dbManager methods:', Object.keys(window.dbManager));
+                }
+            };
+        })();
+    </script>
     <script src="script-advanced.js"></script>
 </body>
 </html>
