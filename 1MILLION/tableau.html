@@ -25,6 +25,44 @@
             margin-bottom: 20px;
             font-size: 18px;
         }
+        .controls {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 10px;
+            background: #E8F5E8;
+            border-radius: 8px;
+        }
+        .controls button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 11px;
+        }
+        .controls button:hover {
+            background: #45a049;
+        }
+        .notification {
+            display: none;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 12px;
+        }
+        .notification.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .notification.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
         .table-container {
             overflow-x: auto;
             border: 2px solid #4CAF50;
@@ -60,12 +98,6 @@
             color: #FFC107;
             margin-bottom: 8px;
             display: block;
-        }
-        .section-notes {
-            font-size: 7px;
-            color: #C8E6C9;
-            margin-top: 5px;
-            line-height: 1.1;
         }
         .chapter-row {
             background-color: #2E7D32;
@@ -107,10 +139,36 @@
             vertical-align: middle;
             font-size: 9px;
             background: white;
+            position: relative;
         }
         .data-cell:hover {
             background-color: #F1F8E9;
             border-color: #4CAF50;
+        }
+        .data-cell.has-product {
+            background-color: #E8F5E8;
+            border-color: #4CAF50;
+            font-weight: bold;
+        }
+        .product-info {
+            max-width: 120px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            margin: 2px 0;
+        }
+        .product-code {
+            color: #1B5E20;
+            font-weight: bold;
+            font-size: 8px;
+        }
+        .product-description {
+            color: #2E7D32;
+            font-size: 7px;
+        }
+        .product-value {
+            color: #FF5722;
+            font-size: 7px;
         }
         .input-row {
             background-color: #FFF9C4;
@@ -135,178 +193,316 @@
             border-color: #4CAF50;
             box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.1);
         }
+        .section-stats {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            background: #FF5722;
+            color: white;
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            font-size: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Interface de Saisie - Système Harmonisé Complet (21 Sections - 97 Chapitres)</h1>
         
+        <div class="controls">
+            <button onclick="clearAllData()">🗑️ Vider le tableau</button>
+            <button onclick="exportTableData()">📊 Exporter données</button>
+            <button onclick="viewStatistics()">📈 Voir statistiques</button>
+        </div>
+
+        <div id="notification" class="notification"></div>
+        
         <div class="table-container">
-            <table>
+            <table id="mainTable">
                 <!-- En-têtes des sections -->
                 <tr>
-                    <td class="section-header" colspan="5"><span class="section-number">I</span><span class="section-code">0101</span>ANIMAUX VIVANTS ET PRODUITS DU REGNE ANIMAL<div class="section-notes">Notes de Section</div></td>
-                    <td class="section-header" colspan="9"><span class="section-number">II</span><span class="section-code">0601</span>PRODUITS DU REGNE VEGETAL<div class="section-notes">Note de Section</div></td>
-                    <td class="section-header" colspan="1"><span class="section-number">III</span><span class="section-code">1501</span>GRAISSES ET HUILES</td>
-                    <td class="section-header" colspan="9"><span class="section-number">IV</span><span class="section-code">1601</span>PRODUITS INDUSTRIES ALIMENTAIRES<div class="section-notes">Note de Section</div></td>
-                    <td class="section-header" colspan="3"><span class="section-number">V</span><span class="section-code">2501</span>PRODUITS MINERAUX</td>
-                    <td class="section-header" colspan="11"><span class="section-number">VI</span><span class="section-code">2801</span>PRODUITS INDUSTRIES CHIMIQUES<div class="section-notes">Notes de Section</div></td>
-                    <td class="section-header" colspan="2"><span class="section-number">VII</span><span class="section-code">3901</span>PLASTIQUES ET CAOUTCHOUC<div class="section-notes">Notes de Section</div></td>
-                    <td class="section-header" colspan="3"><span class="section-number">VIII</span><span class="section-code">4101</span>PEAUX, CUIRS, PELLETERIES</td>
-                    <td class="section-header" colspan="3"><span class="section-number">IX</span><span class="section-code">4401</span>BOIS, LIEGE, SPARTERIE</td>
-                    <td class="section-header" colspan="3"><span class="section-number">X</span><span class="section-code">4701</span>PATES BOIS, PAPIER, CARTON</td>
-                    <td class="section-header" colspan="14"><span class="section-number">XI</span><span class="section-code">5001</span>MATIERES TEXTILES ET OUVRAGES<div class="section-notes">Notes de Section</div></td>
-                    <td class="section-header" colspan="4"><span class="section-number">XII</span><span class="section-code">6401</span>CHAUSSURES, COIFFURES</td>
-                    <td class="section-header" colspan="3"><span class="section-number">XIII</span><span class="section-code">6801</span>PIERRES, CERAMIQUE, VERRE</td>
-                    <td class="section-header" colspan="1"><span class="section-number">XIV</span><span class="section-code">7101</span>METAUX PRECIEUX, BIJOUX</td>
-                    <td class="section-header" colspan="11"><span class="section-number">XV</span><span class="section-code">7201</span>METAUX COMMUNS ET OUVRAGES<div class="section-notes">Notes de Section</div></td>
-                    <td class="section-header" colspan="2"><span class="section-number">XVI</span><span class="section-code">8401</span>MACHINES ET APPAREILS<div class="section-notes">Notes de Section</div></td>
-                    <td class="section-header" colspan="4"><span class="section-number">XVII</span><span class="section-code">8601</span>MATERIEL DE TRANSPORT<div class="section-notes">Notes de Section</div></td>
-                    <td class="section-header" colspan="3"><span class="section-number">XVIII</span><span class="section-code">9001</span>INSTRUMENTS PRECISION, MUSIQUE</td>
-                    <td class="section-header" colspan="1"><span class="section-number">XIX</span><span class="section-code">9301</span>ARMES, MUNITIONS</td>
-                    <td class="section-header" colspan="3"><span class="section-number">XX</span><span class="section-code">9401</span>MARCHANDISES DIVERSES</td>
-                    <td class="section-header" colspan="1"><span class="section-number">XXI</span><span class="section-code">9701</span>OBJETS D'ART, ANTIQUITES</td>
+                    <td class="section-header" colspan="5" data-section="I">
+                        <span class="section-number">I</span>
+                        <span class="section-code">0101</span>
+                        ANIMAUX VIVANTS ET PRODUITS DU REGNE ANIMAL
+                        
+                        <div class="section-stats" id="stats-I">0</div>
+                    </td>
+                    <td class="section-header" colspan="9" data-section="II">
+                        <span class="section-number">II</span>
+                        <span class="section-code">0601</span>
+                        PRODUITS DU REGNE VEGETAL
+                        
+                        <div class="section-stats" id="stats-II">0</div>
+                    </td>
+                    <td class="section-header" colspan="1" data-section="III">
+                        <span class="section-number">III</span>
+                        <span class="section-code">1501</span>
+                        GRAISSES ET HUILES
+                        <div class="section-stats" id="stats-III">0</div>
+                    </td>
+                    <td class="section-header" colspan="9" data-section="IV">
+                        <span class="section-number">IV</span>
+                        <span class="section-code">1601</span>
+                        PRODUITS INDUSTRIES ALIMENTAIRES
+                        
+                        <div class="section-stats" id="stats-IV">0</div>
+                    </td>
+                    <td class="section-header" colspan="3" data-section="V">
+                        <span class="section-number">V</span>
+                        <span class="section-code">2501</span>
+                        PRODUITS MINERAUX
+                        <div class="section-stats" id="stats-V">0</div>
+                    </td>
+                    <td class="section-header" colspan="11" data-section="VI">
+                        <span class="section-number">VI</span>
+                        <span class="section-code">2801</span>
+                        PRODUITS INDUSTRIES CHIMIQUES
+                        
+                        <div class="section-stats" id="stats-VI">0</div>
+                    </td>
+                    <td class="section-header" colspan="2" data-section="VII">
+                        <span class="section-number">VII</span>
+                        <span class="section-code">3901</span>
+                        PLASTIQUES ET CAOUTCHOUC
+                        
+                        <div class="section-stats" id="stats-VII">0</div>
+                    </td>
+                    <td class="section-header" colspan="3" data-section="VIII">
+                        <span class="section-number">VIII</span>
+                        <span class="section-code">4101</span>
+                        PEAUX, CUIRS, PELLETERIES
+                        <div class="section-stats" id="stats-VIII">0</div>
+                    </td>
+                    <td class="section-header" colspan="3" data-section="IX">
+                        <span class="section-number">IX</span>
+                        <span class="section-code">4401</span>
+                        BOIS, LIEGE, SPARTERIE
+                        <div class="section-stats" id="stats-IX">0</div>
+                    </td>
+                    <td class="section-header" colspan="3" data-section="X">
+                        <span class="section-number">X</span>
+                        <span class="section-code">4701</span>
+                        PATES BOIS, PAPIER, CARTON
+                        <div class="section-stats" id="stats-X">0</div>
+                    </td>
+                    <td class="section-header" colspan="14" data-section="XI">
+                        <span class="section-number">XI</span>
+                        <span class="section-code">5001</span>
+                        MATIERES TEXTILES ET OUVRAGES
+                        
+                        <div class="section-stats" id="stats-XI">0</div>
+                    </td>
+                    <td class="section-header" colspan="4" data-section="XII">
+                        <span class="section-number">XII</span>
+                        <span class="section-code">6401</span>
+                        CHAUSSURES, COIFFURES
+                        <div class="section-stats" id="stats-XII">0</div>
+                    </td>
+                    <td class="section-header" colspan="3" data-section="XIII">
+                        <span class="section-number">XIII</span>
+                        <span class="section-code">6801</span>
+                        PIERRES, CERAMIQUE, VERRE
+                        <div class="section-stats" id="stats-XIII">0</div>
+                    </td>
+                    <td class="section-header" colspan="1" data-section="XIV">
+                        <span class="section-number">XIV</span>
+                        <span class="section-code">7101</span>
+                        METAUX PRECIEUX, BIJOUX
+                        <div class="section-stats" id="stats-XIV">0</div>
+                    </td>
+                    <td class="section-header" colspan="11" data-section="XV">
+                        <span class="section-number">XV</span>
+                        <span class="section-code">7201</span>
+                        METAUX COMMUNS ET OUVRAGES
+                        
+                        <div class="section-stats" id="stats-XV">0</div>
+                    </td>
+                    <td class="section-header" colspan="2" data-section="XVI">
+                        <span class="section-number">XVI</span>
+                        <span class="section-code">8401</span>
+                        MACHINES ET APPAREILS
+                        
+                        <div class="section-stats" id="stats-XVI">0</div>
+                    </td>
+                    <td class="section-header" colspan="4" data-section="XVII">
+                        <span class="section-number">XVII</span>
+                        <span class="section-code">8601</span>
+                        MATERIEL DE TRANSPORT
+                        
+                        <div class="section-stats" id="stats-XVII">0</div>
+                    </td>
+                    <td class="section-header" colspan="3" data-section="XVIII">
+                        <span class="section-number">XVIII</span>
+                        <span class="section-code">9001</span>
+                        INSTRUMENTS PRECISION, MUSIQUE
+                        <div class="section-stats" id="stats-XVIII">0</div>
+                    </td>
+                    <td class="section-header" colspan="1" data-section="XIX">
+                        <span class="section-number">XIX</span>
+                        <span class="section-code">9301</span>
+                        ARMES, MUNITIONS
+                        <div class="section-stats" id="stats-XIX">0</div>
+                    </td>
+                    <td class="section-header" colspan="3" data-section="XX">
+                        <span class="section-number">XX</span>
+                        <span class="section-code">9401</span>
+                        MARCHANDISES DIVERSES
+                        <div class="section-stats" id="stats-XX">0</div>
+                    </td>
+                    <td class="section-header" colspan="1" data-section="XXI">
+                        <span class="section-number">XXI</span>
+                        <span class="section-code">9701</span>
+                        OBJETS D'ART, ANTIQUITES
+                        <div class="section-stats" id="stats-XXI">0</div>
+                    </td>
                 </tr>
                 
                 <!-- Ligne des chapitres -->
                 <tr>
                     <!-- Section I -->
-                    <td class="chapter-row"><div class="chapter-number">01</div><div class="chapter-note">Animaux vivants</div></td>
-                    <td class="chapter-row"><div class="chapter-number">02</div><div class="chapter-note">Viandes et abats</div></td>
-                    <td class="chapter-row"><div class="chapter-number">03</div><div class="chapter-note">Poissons, crustacés</div></td>
-                    <td class="chapter-row"><div class="chapter-number">04</div><div class="chapter-note">Laits, œufs, miel</div></td>
-                    <td class="chapter-row"><div class="chapter-number">05</div><div class="chapter-note">Autres produits animaux</div></td>
+                    <td class="chapter-row" data-chapter="01"><div class="chapter-number">01</div><div class="chapter-note">Animaux vivants</div></td>
+                    <td class="chapter-row" data-chapter="02"><div class="chapter-number">02</div><div class="chapter-note">Viandes et abats</div></td>
+                    <td class="chapter-row" data-chapter="03"><div class="chapter-number">03</div><div class="chapter-note">Poissons, crustacés</div></td>
+                    <td class="chapter-row" data-chapter="04"><div class="chapter-number">04</div><div class="chapter-note">Laits, œufs, miel</div></td>
+                    <td class="chapter-row" data-chapter="05"><div class="chapter-number">05</div><div class="chapter-note">Autres produits animaux</div></td>
                     
                     <!-- Section II -->
-                    <td class="chapter-row"><div class="chapter-number">06</div><div class="chapter-note">Plantes vivantes</div></td>
-                    <td class="chapter-row"><div class="chapter-number">07</div><div class="chapter-note">Légumes</div></td>
-                    <td class="chapter-row"><div class="chapter-number">08</div><div class="chapter-note">Fruits</div></td>
-                    <td class="chapter-row"><div class="chapter-number">09</div><div class="chapter-note">Café, thé, épices</div></td>
-                    <td class="chapter-row"><div class="chapter-number">10</div><div class="chapter-note">Céréales</div></td>
-                    <td class="chapter-row"><div class="chapter-number">11</div><div class="chapter-note">Minoterie</div></td>
-                    <td class="chapter-row"><div class="chapter-number">12</div><div class="chapter-note">Graines oléagineuses</div></td>
-                    <td class="chapter-row"><div class="chapter-number">13</div><div class="chapter-note">Gommes, résines</div></td>
-                    <td class="chapter-row"><div class="chapter-number">14</div><div class="chapter-note">Matières à tresser</div></td>
+                    <td class="chapter-row" data-chapter="06"><div class="chapter-number">06</div><div class="chapter-note">Plantes vivantes</div></td>
+                    <td class="chapter-row" data-chapter="07"><div class="chapter-number">07</div><div class="chapter-note">Légumes</div></td>
+                    <td class="chapter-row" data-chapter="08"><div class="chapter-number">08</div><div class="chapter-note">Fruits</div></td>
+                    <td class="chapter-row" data-chapter="09"><div class="chapter-number">09</div><div class="chapter-note">Café, thé, épices</div></td>
+                    <td class="chapter-row" data-chapter="10"><div class="chapter-number">10</div><div class="chapter-note">Céréales</div></td>
+                    <td class="chapter-row" data-chapter="11"><div class="chapter-number">11</div><div class="chapter-note">Minoterie</div></td>
+                    <td class="chapter-row" data-chapter="12"><div class="chapter-number">12</div><div class="chapter-note">Graines oléagineuses</div></td>
+                    <td class="chapter-row" data-chapter="13"><div class="chapter-number">13</div><div class="chapter-note">Gommes, résines</div></td>
+                    <td class="chapter-row" data-chapter="14"><div class="chapter-number">14</div><div class="chapter-note">Matières à tresser</div></td>
                     
                     <!-- Section III -->
-                    <td class="chapter-row"><div class="chapter-number">15</div><div class="chapter-note">Graisses et huiles</div></td>
+                    <td class="chapter-row" data-chapter="15"><div class="chapter-number">15</div><div class="chapter-note">Graisses et huiles</div></td>
                     
                     <!-- Section IV -->
-                    <td class="chapter-row"><div class="chapter-number">16</div><div class="chapter-note">Prép. viande/poisson</div></td>
-                    <td class="chapter-row"><div class="chapter-number">17</div><div class="chapter-note">Sucres</div></td>
-                    <td class="chapter-row"><div class="chapter-number">18</div><div class="chapter-note">Cacao</div></td>
-                    <td class="chapter-row"><div class="chapter-number">19</div><div class="chapter-note">Prép. céréales</div></td>
-                    <td class="chapter-row"><div class="chapter-number">20</div><div class="chapter-note">Prép. légumes/fruits</div></td>
-                    <td class="chapter-row"><div class="chapter-number">21</div><div class="chapter-note">Prép. alimentaires</div></td>
-                    <td class="chapter-row"><div class="chapter-number">22</div><div class="chapter-note">Boissons</div></td>
-                    <td class="chapter-row"><div class="chapter-number">23</div><div class="chapter-note">Aliments animaux</div></td>
-                    <td class="chapter-row"><div class="chapter-number">24</div><div class="chapter-note">Tabacs</div></td>
+                    <td class="chapter-row" data-chapter="16"><div class="chapter-number">16</div><div class="chapter-note">Prép. viande/poisson</div></td>
+                    <td class="chapter-row" data-chapter="17"><div class="chapter-number">17</div><div class="chapter-note">Sucres</div></td>
+                    <td class="chapter-row" data-chapter="18"><div class="chapter-number">18</div><div class="chapter-note">Cacao</div></td>
+                    <td class="chapter-row" data-chapter="19"><div class="chapter-number">19</div><div class="chapter-note">Prép. céréales</div></td>
+                    <td class="chapter-row" data-chapter="20"><div class="chapter-number">20</div><div class="chapter-note">Prép. légumes/fruits</div></td>
+                    <td class="chapter-row" data-chapter="21"><div class="chapter-number">21</div><div class="chapter-note">Prép. alimentaires</div></td>
+                    <td class="chapter-row" data-chapter="22"><div class="chapter-number">22</div><div class="chapter-note">Boissons</div></td>
+                    <td class="chapter-row" data-chapter="23"><div class="chapter-number">23</div><div class="chapter-note">Aliments animaux</div></td>
+                    <td class="chapter-row" data-chapter="24"><div class="chapter-number">24</div><div class="chapter-note">Tabacs</div></td>
                     
+                    <!-- Continuez pour toutes les sections... -->
                     <!-- Section V -->
-                    <td class="chapter-row"><div class="chapter-number">25</div><div class="chapter-note">Sel, soufre, pierres</div></td>
-                    <td class="chapter-row"><div class="chapter-number">26</div><div class="chapter-note">Minerais</div></td>
-                    <td class="chapter-row"><div class="chapter-number">27</div><div class="chapter-note">Combustibles</div></td>
+                    <td class="chapter-row" data-chapter="25"><div class="chapter-number">25</div><div class="chapter-note">Sel, soufre, pierres</div></td>
+                    <td class="chapter-row" data-chapter="26"><div class="chapter-number">26</div><div class="chapter-note">Minerais</div></td>
+                    <td class="chapter-row" data-chapter="27"><div class="chapter-number">27</div><div class="chapter-note">Combustibles</div></td>
                     
                     <!-- Section VI -->
-                    <td class="chapter-row"><div class="chapter-number">28</div><div class="chapter-note">Prod. chim. inorg.</div></td>
-                    <td class="chapter-row"><div class="chapter-number">29</div><div class="chapter-note">Prod. chim. org.</div></td>
-                    <td class="chapter-row"><div class="chapter-number">30</div><div class="chapter-note">Pharmaceutiques</div></td>
-                    <td class="chapter-row"><div class="chapter-number">31</div><div class="chapter-note">Engrais</div></td>
-                    <td class="chapter-row"><div class="chapter-number">32</div><div class="chapter-note">Colorants</div></td>
-                    <td class="chapter-row"><div class="chapter-number">33</div><div class="chapter-note">Parfumerie</div></td>
-                    <td class="chapter-row"><div class="chapter-number">34</div><div class="chapter-note">Savons</div></td>
-                    <td class="chapter-row"><div class="chapter-number">35</div><div class="chapter-note">Albuminoïdes</div></td>
-                    <td class="chapter-row"><div class="chapter-number">36</div><div class="chapter-note">Explosifs</div></td>
-                    <td class="chapter-row"><div class="chapter-number">37</div><div class="chapter-note">Photo/cinéma</div></td>
-                    <td class="chapter-row"><div class="chapter-number">38</div><div class="chapter-note">Prod. chim. divers</div></td>
+                    <td class="chapter-row" data-chapter="28"><div class="chapter-number">28</div><div class="chapter-note">Prod. chim. inorg.</div></td>
+                    <td class="chapter-row" data-chapter="29"><div class="chapter-number">29</div><div class="chapter-note">Prod. chim. org.</div></td>
+                    <td class="chapter-row" data-chapter="30"><div class="chapter-number">30</div><div class="chapter-note">Pharmaceutiques</div></td>
+                    <td class="chapter-row" data-chapter="31"><div class="chapter-number">31</div><div class="chapter-note">Engrais</div></td>
+                    <td class="chapter-row" data-chapter="32"><div class="chapter-number">32</div><div class="chapter-note">Colorants</div></td>
+                    <td class="chapter-row" data-chapter="33"><div class="chapter-number">33</div><div class="chapter-note">Parfumerie</div></td>
+                    <td class="chapter-row" data-chapter="34"><div class="chapter-number">34</div><div class="chapter-note">Savons</div></td>
+                    <td class="chapter-row" data-chapter="35"><div class="chapter-number">35</div><div class="chapter-note">Albuminoïdes</div></td>
+                    <td class="chapter-row" data-chapter="36"><div class="chapter-number">36</div><div class="chapter-note">Explosifs</div></td>
+                    <td class="chapter-row" data-chapter="37"><div class="chapter-number">37</div><div class="chapter-note">Photo/cinéma</div></td>
+                    <td class="chapter-row" data-chapter="38"><div class="chapter-number">38</div><div class="chapter-note">Prod. chim. divers</div></td>
                     
                     <!-- Section VII -->
-                    <td class="chapter-row"><div class="chapter-number">39</div><div class="chapter-note">Matières plastiques</div></td>
-                    <td class="chapter-row"><div class="chapter-number">40</div><div class="chapter-note">Caoutchouc</div></td>
+                    <td class="chapter-row" data-chapter="39"><div class="chapter-number">39</div><div class="chapter-note">Matières plastiques</div></td>
+                    <td class="chapter-row" data-chapter="40"><div class="chapter-number">40</div><div class="chapter-note">Caoutchouc</div></td>
                     
                     <!-- Section VIII -->
-                    <td class="chapter-row"><div class="chapter-number">41</div><div class="chapter-note">Peaux et cuirs</div></td>
-                    <td class="chapter-row"><div class="chapter-number">42</div><div class="chapter-note">Ouvrages en cuir</div></td>
-                    <td class="chapter-row"><div class="chapter-number">43</div><div class="chapter-note">Pelleteries</div></td>
+                    <td class="chapter-row" data-chapter="41"><div class="chapter-number">41</div><div class="chapter-note">Peaux et cuirs</div></td>
+                    <td class="chapter-row" data-chapter="42"><div class="chapter-number">42</div><div class="chapter-note">Ouvrages en cuir</div></td>
+                    <td class="chapter-row" data-chapter="43"><div class="chapter-number">43</div><div class="chapter-note">Pelleteries</div></td>
                     
                     <!-- Section IX -->
-                    <td class="chapter-row"><div class="chapter-number">44</div><div class="chapter-note">Bois</div></td>
-                    <td class="chapter-row"><div class="chapter-number">45</div><div class="chapter-note">Liège</div></td>
-                    <td class="chapter-row"><div class="chapter-number">46</div><div class="chapter-note">Sparterie</div></td>
+                    <td class="chapter-row" data-chapter="44"><div class="chapter-number">44</div><div class="chapter-note">Bois</div></td>
+                    <td class="chapter-row" data-chapter="45"><div class="chapter-number">45</div><div class="chapter-note">Liège</div></td>
+                    <td class="chapter-row" data-chapter="46"><div class="chapter-number">46</div><div class="chapter-note">Sparterie</div></td>
                     
                     <!-- Section X -->
-                    <td class="chapter-row"><div class="chapter-number">47</div><div class="chapter-note">Pâtes de bois</div></td>
-                    <td class="chapter-row"><div class="chapter-number">48</div><div class="chapter-note">Papiers et cartons</div></td>
-                    <td class="chapter-row"><div class="chapter-number">49</div><div class="chapter-note">Produits édition</div></td>
+                    <td class="chapter-row" data-chapter="47"><div class="chapter-number">47</div><div class="chapter-note">Pâtes de bois</div></td>
+                    <td class="chapter-row" data-chapter="48"><div class="chapter-number">48</div><div class="chapter-note">Papiers et cartons</div></td>
+                    <td class="chapter-row" data-chapter="49"><div class="chapter-number">49</div><div class="chapter-note">Produits édition</div></td>
                     
                     <!-- Section XI -->
-                    <td class="chapter-row"><div class="chapter-number">50</div><div class="chapter-note">Soie</div></td>
-                    <td class="chapter-row"><div class="chapter-number">51</div><div class="chapter-note">Laine</div></td>
-                    <td class="chapter-row"><div class="chapter-number">52</div><div class="chapter-note">Coton</div></td>
-                    <td class="chapter-row"><div class="chapter-number">53</div><div class="chapter-note">Fibres végétales</div></td>
-                    <td class="chapter-row"><div class="chapter-number">54</div><div class="chapter-note">Filaments synth.</div></td>
-                    <td class="chapter-row"><div class="chapter-number">55</div><div class="chapter-note">Fibres synth.</div></td>
-                    <td class="chapter-row"><div class="chapter-number">56</div><div class="chapter-note">Ouates, feutres</div></td>
-                    <td class="chapter-row"><div class="chapter-number">57</div><div class="chapter-note">Tapis</div></td>
-                    <td class="chapter-row"><div class="chapter-number">58</div><div class="chapter-note">Tissus spéciaux</div></td>
-                    <td class="chapter-row"><div class="chapter-number">59</div><div class="chapter-note">Tissus techniques</div></td>
-                    <td class="chapter-row"><div class="chapter-number">60</div><div class="chapter-note">Bonneterie</div></td>
-                    <td class="chapter-row"><div class="chapter-number">61</div><div class="chapter-note">Vêtements bonnet.</div></td>
-                    <td class="chapter-row"><div class="chapter-number">62</div><div class="chapter-note">Vêtements</div></td>
-                    <td class="chapter-row"><div class="chapter-number">63</div><div class="chapter-note">Articles textiles</div></td>
+                    <td class="chapter-row" data-chapter="50"><div class="chapter-number">50</div><div class="chapter-note">Soie</div></td>
+                    <td class="chapter-row" data-chapter="51"><div class="chapter-number">51</div><div class="chapter-note">Laine</div></td>
+                    <td class="chapter-row" data-chapter="52"><div class="chapter-number">52</div><div class="chapter-note">Coton</div></td>
+                    <td class="chapter-row" data-chapter="53"><div class="chapter-number">53</div><div class="chapter-note">Fibres végétales</div></td>
+                    <td class="chapter-row" data-chapter="54"><div class="chapter-number">54</div><div class="chapter-note">Filaments synth.</div></td>
+                    <td class="chapter-row" data-chapter="55"><div class="chapter-number">55</div><div class="chapter-note">Fibres synth.</div></td>
+                    <td class="chapter-row" data-chapter="56"><div class="chapter-number">56</div><div class="chapter-note">Ouates, feutres</div></td>
+                    <td class="chapter-row" data-chapter="57"><div class="chapter-number">57</div><div class="chapter-note">Tapis</div></td>
+                    <td class="chapter-row" data-chapter="58"><div class="chapter-number">58</div><div class="chapter-note">Tissus spéciaux</div></td>
+                    <td class="chapter-row" data-chapter="59"><div class="chapter-number">59</div><div class="chapter-note">Tissus techniques</div></td>
+                    <td class="chapter-row" data-chapter="60"><div class="chapter-number">60</div><div class="chapter-note">Bonneterie</div></td>
+                    <td class="chapter-row" data-chapter="61"><div class="chapter-number">61</div><div class="chapter-note">Vêtements bonnet.</div></td>
+                    <td class="chapter-row" data-chapter="62"><div class="chapter-number">62</div><div class="chapter-note">Vêtements</div></td>
+                    <td class="chapter-row" data-chapter="63"><div class="chapter-number">63</div><div class="chapter-note">Articles textiles</div></td>
                     
                     <!-- Section XII -->
-                    <td class="chapter-row"><div class="chapter-number">64</div><div class="chapter-note">Chaussures</div></td>
-                    <td class="chapter-row"><div class="chapter-number">65</div><div class="chapter-note">Coiffures</div></td>
-                    <td class="chapter-row"><div class="chapter-number">66</div><div class="chapter-note">Parapluies</div></td>
-                    <td class="chapter-row"><div class="chapter-number">67</div><div class="chapter-note">Plumes, fleurs artif.</div></td>
+                    <td class="chapter-row" data-chapter="64"><div class="chapter-number">64</div><div class="chapter-note">Chaussures</div></td>
+                    <td class="chapter-row" data-chapter="65"><div class="chapter-number">65</div><div class="chapter-note">Coiffures</div></td>
+                    <td class="chapter-row" data-chapter="66"><div class="chapter-number">66</div><div class="chapter-note">Parapluies</div></td>
+                    <td class="chapter-row" data-chapter="67"><div class="chapter-number">67</div><div class="chapter-note">Plumes, fleurs artif.</div></td>
                     
                     <!-- Section XIII -->
-                    <td class="chapter-row"><div class="chapter-number">68</div><div class="chapter-note">Ouvrages pierres</div></td>
-                    <td class="chapter-row"><div class="chapter-number">69</div><div class="chapter-note">Céramiques</div></td>
-                    <td class="chapter-row"><div class="chapter-number">70</div><div class="chapter-note">Verre</div></td>
+                    <td class="chapter-row" data-chapter="68"><div class="chapter-number">68</div><div class="chapter-note">Ouvrages pierres</div></td>
+                    <td class="chapter-row" data-chapter="69"><div class="chapter-number">69</div><div class="chapter-note">Céramiques</div></td>
+                    <td class="chapter-row" data-chapter="70"><div class="chapter-number">70</div><div class="chapter-note">Verre</div></td>
                     
                     <!-- Section XIV -->
-                    <td class="chapter-row"><div class="chapter-number">71</div><div class="chapter-note">Bijouterie</div></td>
+                    <td class="chapter-row" data-chapter="71"><div class="chapter-number">71</div><div class="chapter-note">Bijouterie</div></td>
                     
                     <!-- Section XV -->
-                    <td class="chapter-row"><div class="chapter-number">72</div><div class="chapter-note">Fonte, fer, acier</div></td>
-                    <td class="chapter-row"><div class="chapter-number">73</div><div class="chapter-note">Ouvrages fer/acier</div></td>
-                    <td class="chapter-row"><div class="chapter-number">74</div><div class="chapter-note">Cuivre</div></td>
-                    <td class="chapter-row"><div class="chapter-number">75</div><div class="chapter-note">Nickel</div></td>
-                    <td class="chapter-row"><div class="chapter-number">76</div><div class="chapter-note">Aluminium</div></td>
-                    <td class="chapter-row"><div class="chapter-number">78</div><div class="chapter-note">Plomb</div></td>
-                    <td class="chapter-row"><div class="chapter-number">79</div><div class="chapter-note">Zinc</div></td>
-                    <td class="chapter-row"><div class="chapter-number">80</div><div class="chapter-note">Étain</div></td>
-                    <td class="chapter-row"><div class="chapter-number">81</div><div class="chapter-note">Autres métaux</div></td>
-                    <td class="chapter-row"><div class="chapter-number">82</div><div class="chapter-note">Outils</div></td>
-                    <td class="chapter-row"><div class="chapter-number">83</div><div class="chapter-note">Ouvrages métaux</div></td>
+                    <td class="chapter-row" data-chapter="72"><div class="chapter-number">72</div><div class="chapter-note">Fonte, fer, acier</div></td>
+                    <td class="chapter-row" data-chapter="73"><div class="chapter-number">73</div><div class="chapter-note">Ouvrages fer/acier</div></td>
+                    <td class="chapter-row" data-chapter="74"><div class="chapter-number">74</div><div class="chapter-note">Cuivre</div></td>
+                    <td class="chapter-row" data-chapter="75"><div class="chapter-number">75</div><div class="chapter-note">Nickel</div></td>
+                    <td class="chapter-row" data-chapter="76"><div class="chapter-number">76</div><div class="chapter-note">Aluminium</div></td>
+                    <td class="chapter-row" data-chapter="78"><div class="chapter-number">78</div><div class="chapter-note">Plomb</div></td>
+                    <td class="chapter-row" data-chapter="79"><div class="chapter-number">79</div><div class="chapter-note">Zinc</div></td>
+                    <td class="chapter-row" data-chapter="80"><div class="chapter-number">80</div><div class="chapter-note">Étain</div></td>
+                    <td class="chapter-row" data-chapter="81"><div class="chapter-number">81</div><div class="chapter-note">Autres métaux</div></td>
+                    <td class="chapter-row" data-chapter="82"><div class="chapter-number">82</div><div class="chapter-note">Outils</div></td>
+                    <td class="chapter-row" data-chapter="83"><div class="chapter-number">83</div><div class="chapter-note">Ouvrages métaux</div></td>
                     
                     <!-- Section XVI -->
-                    <td class="chapter-row"><div class="chapter-number">84</div><div class="chapter-note">Machines mécaniques</div></td>
-                    <td class="chapter-row"><div class="chapter-number">85</div><div class="chapter-note">Machines électriques</div></td>
+                    <td class="chapter-row" data-chapter="84"><div class="chapter-number">84</div><div class="chapter-note">Machines mécaniques</div></td>
+                    <td class="chapter-row" data-chapter="85"><div class="chapter-number">85</div><div class="chapter-note">Machines électriques</div></td>
                     
                     <!-- Section XVII -->
-                    <td class="chapter-row"><div class="chapter-number">86</div><div class="chapter-note">Matériel ferroviaire</div></td>
-                    <td class="chapter-row"><div class="chapter-number">87</div><div class="chapter-note">Véhicules terrestres</div></td>
-                    <td class="chapter-row"><div class="chapter-number">88</div><div class="chapter-note">Navigation aérienne</div></td>
-                    <td class="chapter-row"><div class="chapter-number">89</div><div class="chapter-note">Navigation maritime</div></td>
+                    <td class="chapter-row" data-chapter="86"><div class="chapter-number">86</div><div class="chapter-note">Matériel ferroviaire</div></td>
+                    <td class="chapter-row" data-chapter="87"><div class="chapter-number">87</div><div class="chapter-note">Véhicules terrestres</div></td>
+                    <td class="chapter-row" data-chapter="88"><div class="chapter-number">88</div><div class="chapter-note">Navigation aérienne</div></td>
+                    <td class="chapter-row" data-chapter="89"><div class="chapter-number">89</div><div class="chapter-note">Navigation maritime</div></td>
                     
                     <!-- Section XVIII -->
-                    <td class="chapter-row"><div class="chapter-number">90</div><div class="chapter-note">Instruments précision</div></td>
-                    <td class="chapter-row"><div class="chapter-number">91</div><div class="chapter-note">Horlogerie</div></td>
-                    <td class="chapter-row"><div class="chapter-number">92</div><div class="chapter-note">Instruments musique</div></td>
+                    <td class="chapter-row" data-chapter="90"><div class="chapter-number">90</div><div class="chapter-note">Instruments précision</div></td>
+                    <td class="chapter-row" data-chapter="91"><div class="chapter-number">91</div><div class="chapter-note">Horlogerie</div></td>
+                    <td class="chapter-row" data-chapter="92"><div class="chapter-number">92</div><div class="chapter-note">Instruments musique</div></td>
                     
                     <!-- Section XIX -->
-                    <td class="chapter-row"><div class="chapter-number">93</div><div class="chapter-note">Armes, munitions</div></td>
+                    <td class="chapter-row" data-chapter="93"><div class="chapter-number">93</div><div class="chapter-note">Armes, munitions</div></td>
                     
                     <!-- Section XX -->
-                    <td class="chapter-row"><div class="chapter-number">94</div><div class="chapter-note">Meubles</div></td>
-                    <td class="chapter-row"><div class="chapter-number">95</div><div class="chapter-note">Jouets, sports</div></td>
-                    <td class="chapter-row"><div class="chapter-number">96</div><div class="chapter-note">Ouvrages divers</div></td>
+                    <td class="chapter-row" data-chapter="94"><div class="chapter-number">94</div><div class="chapter-note">Meubles</div></td>
+                    <td class="chapter-row" data-chapter="95"><div class="chapter-number">95</div><div class="chapter-note">Jouets, sports</div></td>
+                    <td class="chapter-row" data-chapter="96"><div class="chapter-number">96</div><div class="chapter-note">Ouvrages divers</div></td>
                     
                     <!-- Section XXI -->
-                    <td class="chapter-row"><div class="chapter-number">97</div><div class="chapter-note">Objets d'art</div></td>
+                    <td class="chapter-row" data-chapter="97"><div class="chapter-number">97</div><div class="chapter-note">Objets d'art</div></td>
                 </tr>
                 
                 <!-- Ligne des taux -->
@@ -355,264 +551,286 @@
                     <td class="rate-row">0.00%</td>
                 </tr>
                 
-                <!-- Ligne de saisie -->
-                <tr class="input-row">
-                    <!-- Section I -->
-                    <td class="input-cell"><input type="text" placeholder="Animaux vivants"></td>
-                    <td class="input-cell"><input type="text" placeholder="Viandes/abats"></td>
-                    <td class="input-cell"><input type="text" placeholder="Poissons"></td>
-                    <td class="input-cell"><input type="text" placeholder="Produits laitiers"></td>
-                    <td class="input-cell"><input type="text" placeholder="Autres animaux"></td>
-                    <!-- Section II -->
-                    <td class="input-cell"><input type="text" placeholder="Plantes"></td>
-                    <td class="input-cell"><input type="text" placeholder="Légumes"></td>
-                    <td class="input-cell"><input type="text" placeholder="Fruits"></td>
-                    <td class="input-cell"><input type="text" placeholder="Café/thé"></td>
-                    <td class="input-cell"><input type="text" placeholder="Céréales"></td>
-                    <td class="input-cell"><input type="text" placeholder="Minoterie"></td>
-                    <td class="input-cell"><input type="text" placeholder="Graines"></td>
-                    <td class="input-cell"><input type="text" placeholder="Gommes"></td>
-                    <td class="input-cell"><input type="text" placeholder="Tressage"></td>
-                    <!-- Section III -->
-                    <td class="input-cell"><input type="text" placeholder="Graisses"></td>
-                    <!-- Section IV -->
-                    <td class="input-cell"><input type="text" placeholder="Prép. viande"></td>
-                    <td class="input-cell"><input type="text" placeholder="Sucres"></td>
-                    <td class="input-cell"><input type="text" placeholder="Cacao"></td>
-                    <td class="input-cell"><input type="text" placeholder="Prép. céréales"></td>
-                    <td class="input-cell"><input type="text" placeholder="Prép. légumes"></td>
-                    <td class="input-cell"><input type="text" placeholder="Alimentaires"></td>
-                    <td class="input-cell"><input type="text" placeholder="Boissons"></td>
-                    <td class="input-cell"><input type="text" placeholder="Alim. animaux"></td>
-                    <td class="input-cell"><input type="text" placeholder="Tabacs"></td>
-                    <!-- Section V -->
-                    <td class="input-cell"><input type="text" placeholder="Sel/pierres"></td>
-                    <td class="input-cell"><input type="text" placeholder="Minerais"></td>
-                    <td class="input-cell"><input type="text" placeholder="Combustibles"></td>
-                    <!-- Section VI -->
-                    <td class="input-cell"><input type="text" placeholder="Chim. inorg."></td>
-                    <td class="input-cell"><input type="text" placeholder="Chim. org."></td>
-                    <td class="input-cell"><input type="text" placeholder="Pharma"></td>
-                    <td class="input-cell"><input type="text" placeholder="Engrais"></td>
-                    <td class="input-cell"><input type="text" placeholder="Colorants"></td>
-                    <td class="input-cell"><input type="text" placeholder="Parfumerie"></td>
-                    <td class="input-cell"><input type="text" placeholder="Savons"></td>
-                    <td class="input-cell"><input type="text" placeholder="Albumine"></td>
-                    <td class="input-cell"><input type="text" placeholder="Explosifs"></td>
-                    <td class="input-cell"><input type="text" placeholder="Photo"></td>
-                    <td class="input-cell"><input type="text" placeholder="Chim. divers"></td>
-                    <!-- Section VII -->
-                    <td class="input-cell"><input type="text" placeholder="Plastiques"></td>
-                    <td class="input-cell"><input type="text" placeholder="Caoutchouc"></td>
-                    <!-- Section VIII -->
-                    <td class="input-cell"><input type="text" placeholder="Peaux"></td>
-                    <td class="input-cell"><input type="text" placeholder="Cuirs"></td>
-                    <td class="input-cell"><input type="text" placeholder="Fourrures"></td>
-                    <!-- Section IX -->
-                    <td class="input-cell"><input type="text" placeholder="Bois"></td>
-                    <td class="input-cell"><input type="text" placeholder="Liège"></td>
-                    <td class="input-cell"><input type="text" placeholder="Vannerie"></td>
-                    <!-- Section X -->
-                    <td class="input-cell"><input type="text" placeholder="Pâtes"></td>
-                    <td class="input-cell"><input type="text" placeholder="Papiers"></td>
-                    <td class="input-cell"><input type="text" placeholder="Edition"></td>
-                    <!-- Section XI -->
-                    <td class="input-cell"><input type="text" placeholder="Soie"></td>
-                    <td class="input-cell"><input type="text" placeholder="Laine"></td>
-                    <td class="input-cell"><input type="text" placeholder="Coton"></td>
-                    <td class="input-cell"><input type="text" placeholder="Fibres vég."></td>
-                    <td class="input-cell"><input type="text" placeholder="Filam. synth."></td>
-                    <td class="input-cell"><input type="text" placeholder="Fibres synth."></td>
-                    <td class="input-cell"><input type="text" placeholder="Ouates"></td>
-                    <td class="input-cell"><input type="text" placeholder="Tapis"></td>
-                    <td class="input-cell"><input type="text" placeholder="Tissus spéc."></td>
-                    <td class="input-cell"><input type="text" placeholder="Tissus tech."></td>
-                    <td class="input-cell"><input type="text" placeholder="Bonneterie"></td>
-                    <td class="input-cell"><input type="text" placeholder="Vêt. bonnet."></td>
-                    <td class="input-cell"><input type="text" placeholder="Vêtements"></td>
-                    <td class="input-cell"><input type="text" placeholder="Art. textiles"></td>
-                    <!-- Section XII -->
-                    <td class="input-cell"><input type="text" placeholder="Chaussures"></td>
-                    <td class="input-cell"><input type="text" placeholder="Coiffures"></td>
-                    <td class="input-cell"><input type="text" placeholder="Parapluies"></td>
-                    <td class="input-cell"><input type="text" placeholder="Plumes"></td>
-                    <!-- Section XIII -->
-                    <td class="input-cell"><input type="text" placeholder="Pierres"></td>
-                    <td class="input-cell"><input type="text" placeholder="Céramiques"></td>
-                    <td class="input-cell"><input type="text" placeholder="Verre"></td>
-                    <!-- Section XIV -->
-                    <td class="input-cell"><input type="text" placeholder="Bijoux"></td>
-                    <!-- Section XV -->
-                    <td class="input-cell"><input type="text" placeholder="Fer/acier"></td>
-                    <td class="input-cell"><input type="text" placeholder="Ouv. fer"></td>
-                    <td class="input-cell"><input type="text" placeholder="Cuivre"></td>
-                    <td class="input-cell"><input type="text" placeholder="Nickel"></td>
-                    <td class="input-cell"><input type="text" placeholder="Aluminium"></td>
-                    <td class="input-cell"><input type="text" placeholder="Plomb"></td>
-                    <td class="input-cell"><input type="text" placeholder="Zinc"></td>
-                    <td class="input-cell"><input type="text" placeholder="Étain"></td>
-                    <td class="input-cell"><input type="text" placeholder="Autres mét."></td>
-                    <td class="input-cell"><input type="text" placeholder="Outils"></td>
-                    <td class="input-cell"><input type="text" placeholder="Ouv. métaux"></td>
-                    <!-- Section XVI -->
-                    <td class="input-cell"><input type="text" placeholder="Mach. méca."></td>
-                    <td class="input-cell"><input type="text" placeholder="Mach. élec."></td>
-                    <!-- Section XVII -->
-                    <td class="input-cell"><input type="text" placeholder="Ferroviaire"></td>
-                    <td class="input-cell"><input type="text" placeholder="Automobiles"></td>
-                    <td class="input-cell"><input type="text" placeholder="Aéronautique"></td>
-                    <td class="input-cell"><input type="text" placeholder="Maritime"></td>
-                    <!-- Section XVIII -->
-                    <td class="input-cell"><input type="text" placeholder="Instruments"></td>
-                    <td class="input-cell"><input type="text" placeholder="Horlogerie"></td>
-                    <td class="input-cell"><input type="text" placeholder="Musique"></td>
-                    <!-- Section XIX -->
-                    <td class="input-cell"><input type="text" placeholder="Armes"></td>
-                    <!-- Section XX -->
-                    <td class="input-cell"><input type="text" placeholder="Meubles"></td>
-                    <td class="input-cell"><input type="text" placeholder="Jouets"></td>
-                    <td class="input-cell"><input type="text" placeholder="Divers"></td>
-                    <!-- Section XXI -->
-                    <td class="input-cell"><input type="text" placeholder="Art"></td>
-                </tr>
+                <!-- Lignes de données dynamiques - seront remplies automatiquement -->
+                <tbody id="productRows">
+                    <!-- Les lignes de produits seront ajoutées ici dynamiquement -->
+                </tbody>
                 
-                <!-- Lignes de données -->
-                <tr>
-                    <!-- Section I (5) -->
-                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
-                    <!-- Section II (9) -->
-                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
-                    <!-- Section III (1) -->
-                    <td class="data-cell"></td>
-                    <!-- Section IV (9) -->
-                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
-                    <!-- Section V (3) -->
-                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
-                    <!-- Section VI (11) -->
-                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
-                    <!-- Section VII (2) -->
-                    <td class="data-cell"></td><td class="data-cell"></td>
-                    <!-- Section VIII (3) -->
-                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
-                    <!-- Section IX (3) -->
-                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
-                    <!-- Section X (3) -->
-                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
-                    <!-- Section XI (14) -->
-                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
-                    <!-- Section XII (4) -->
-                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
-                    <!-- Section XIII (3) -->
-                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
-                    <!-- Section XIV (1) -->
-                    <td class="data-cell"></td>
-                    <!-- Section XV (11) -->
-                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
-                    <!-- Section XVI (2) -->
-                    <td class="data-cell"></td><td class="data-cell"></td>
-                    <!-- Section XVII (4) -->
-                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
-                    <!-- Section XVIII (3) -->
-                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
-                    <!-- Section XIX (1) -->
-                    <td class="data-cell"></td>
-                    <!-- Section XX (3) -->
-                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
-                    <!-- Section XXI (1) -->
-                    <td class="data-cell"></td>
-                </tr>
-                
-                <tr>
-                    <!-- Section I (5) -->
-                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
-                    <!-- Section II (9) -->
-                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
-                    <!-- Section III (1) -->
-                    <td class="data-cell"></td>
-                    <!-- Section IV (9) -->
-                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
-                    <!-- Section V (3) -->
-                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
-                    <!-- Section VI (11) -->
-                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
-                    <!-- Section VII (2) -->
-                    <td class="data-cell"></td><td class="data-cell"></td>
-                    <!-- Section VIII (3) -->
-                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
-                    <!-- Section IX (3) -->
-                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
-                    <!-- Section X (3) -->
-                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
-                    <!-- Section XI (14) -->
-                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
-                    <!-- Section XII (4) -->
-                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
-                    <!-- Section XIII (3) -->
-                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
-                    <!-- Section XIV (1) -->
-                    <td class="data-cell"></td>
-                    <!-- Section XV (11) -->
-                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
-                    <!-- Section XVI (2) -->
-                    <td class="data-cell"></td><td class="data-cell"></td>
-                    <!-- Section XVII (4) -->
-                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
-                    <!-- Section XVIII (3) -->
-                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
-                    <!-- Section XIX (1) -->
-                    <td class="data-cell"></td>
-                    <!-- Section XX (3) -->
-                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
-                    <!-- Section XXI (1) -->
-                    <td class="data-cell"></td>
-                </tr>
-                
-                <tr>
-                    <!-- Section I (5) -->
-                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
-                    <!-- Section II (9) -->
-                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
-                    <!-- Section III (1) -->
-                    <td class="data-cell"></td>
-                    <!-- Section IV (9) -->
-                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
-                    <!-- Section V (3) -->
-                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
-                    <!-- Section VI (11) -->
-                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
-                    <!-- Section VII (2) -->
-                    <td class="data-cell"></td><td class="data-cell"></td>
-                    <!-- Section VIII (3) -->
-                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
-                    <!-- Section IX (3) -->
-                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
-                    <!-- Section X (3) -->
-                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
-                    <!-- Section XI (14) -->
-                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
-                    <!-- Section XII (4) -->
-                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
-                    <!-- Section XIII (3) -->
-                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
-                    <!-- Section XIV (1) -->
-                    <td class="data-cell"></td>
-                    <!-- Section XV (11) -->
-                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
-                    <!-- Section XVI (2) -->
-                    <td class="data-cell"></td><td class="data-cell"></td>
-                    <!-- Section XVII (4) -->
-                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
-                    <!-- Section XVIII (3) -->
-                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
-                    <!-- Section XIX (1) -->
-                    <td class="data-cell"></td>
-                    <!-- Section XX (3) -->
-                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
-                    <!-- Section XXI (1) -->
-                    <td class="data-cell"></td>
-                </tr>
             </table>
         </div>
     </div>
+
+    <script>
+        // Configuration des sections et leurs colonnes
+        const sectionConfig = {
+            'I': { start: 0, count: 5 },
+            'II': { start: 5, count: 9 },
+            'III': { start: 14, count: 1 },
+            'IV': { start: 15, count: 9 },
+            'V': { start: 24, count: 3 },
+            'VI': { start: 27, count: 11 },
+            'VII': { start: 38, count: 2 },
+            'VIII': { start: 40, count: 3 },
+            'IX': { start: 43, count: 3 },
+            'X': { start: 46, count: 3 },
+            'XI': { start: 49, count: 14 },
+            'XII': { start: 63, count: 4 },
+            'XIII': { start: 67, count: 3 },
+            'XIV': { start: 70, count: 1 },
+            'XV': { start: 71, count: 11 },
+            'XVI': { start: 82, count: 2 },
+            'XVII': { start: 84, count: 4 },
+            'XVIII': { start: 88, count: 3 },
+            'XIX': { start: 91, count: 1 },
+            'XX': { start: 92, count: 3 },
+            'XXI': { start: 95, count: 1 }
+        };
+
+        let productData = [];
+        let rowCounter = 0;
+
+        // Fonction appelée depuis l'interface de classification principale
+        window.addProductToTable = function(productInfo, classificationResult) {
+            console.log('Ajout du produit au tableau:', productInfo, classificationResult);
+            
+            const section = classificationResult.section.number;
+            const productId = Date.now();
+            
+            const product = {
+                id: productId,
+                description: productInfo.description,
+                section: section,
+                code: classificationResult.code || 'N/A',
+                confidence: classificationResult.confidence || 0,
+                value: productInfo.value || 0,
+                origin: productInfo.origin || 'Non spécifié',
+                timestamp: new Date().toISOString()
+            };
+
+            // Ajouter le produit aux données
+            productData.push(product);
+            
+            // Ajouter une ligne au tableau si nécessaire
+            addProductRow();
+            
+            // Placer le produit dans la bonne section
+            placeProductInSection(product, rowCounter);
+            
+            // Mettre à jour les statistiques
+            updateSectionStats(section);
+            
+            // Sauvegarder en base de données
+            saveProductToDatabase(product);
+            
+            // Afficher notification de succès
+            showNotification(`Produit ajouté avec succès à la Section ${section}`, 'success');
+            
+            rowCounter++;
+        };
+
+        function addProductRow() {
+            const tbody = document.getElementById('productRows');
+            const row = document.createElement('tr');
+            row.id = `productRow${rowCounter}`;
+            
+            // Créer 96 cellules pour toutes les colonnes
+            for (let i = 0; i < 96; i++) {
+                const cell = document.createElement('td');
+                cell.className = 'data-cell';
+                cell.id = `cell-${rowCounter}-${i}`;
+                row.appendChild(cell);
+            }
+            
+            tbody.appendChild(row);
+        }
+
+        function placeProductInSection(product, rowIndex) {
+            const sectionInfo = sectionConfig[product.section];
+            if (!sectionInfo) {
+                console.error('Section non trouvée:', product.section);
+                return;
+            }
+            
+            // Trouver la première cellule vide dans cette section
+            for (let i = 0; i < sectionInfo.count; i++) {
+                const cellIndex = sectionInfo.start + i;
+                const cell = document.getElementById(`cell-${rowIndex}-${cellIndex}`);
+                
+                if (cell && !cell.classList.contains('has-product')) {
+                    // Remplir la cellule avec les informations du produit
+                    cell.classList.add('has-product');
+                    cell.innerHTML = `
+                        <div class="product-info">
+                            <div class="product-code">${product.code}</div>
+                            <div class="product-description" title="${product.description}">
+                                ${product.description.substring(0, 20)}${product.description.length > 20 ? '...' : ''}
+                            </div>
+                            <div class="product-value">${product.value} FCFA</div>
+                        </div>
+                    `;
+                    
+                    // Ajouter un tooltip
+                    cell.title = `Section: ${product.section}\nDescription: ${product.description}\nCode: ${product.code}\nConfiance: ${product.confidence}%\nOrigine: ${product.origin}`;
+                    
+                    break;
+                }
+            }
+        }
+
+        function updateSectionStats(section) {
+            const statsElement = document.getElementById(`stats-${section}`);
+            if (statsElement) {
+                const currentCount = parseInt(statsElement.textContent) || 0;
+                statsElement.textContent = currentCount + 1;
+            }
+        }
+
+        async function saveProductToDatabase(product) {
+            try {
+                const response = await fetch('../database/api.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: 'save_product',
+                        product: product
+                    })
+                });
+
+                const result = await response.json();
+                
+                if (!result.success) {
+                    console.error('Erreur sauvegarde:', result.message);
+                    showNotification('Erreur lors de la sauvegarde en base de données', 'error');
+                } else {
+                    console.log('Produit sauvegardé avec succès, ID:', result.product_id);
+                }
+            } catch (error) {
+                console.error('Erreur réseau:', error);
+                showNotification('Erreur de connexion à la base de données', 'error');
+            }
+        }
+
+        function showNotification(message, type) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.style.display = 'block';
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 5000);
+        }
+
+        function clearAllData() {
+            if (confirm('Êtes-vous sûr de vouloir vider tout le tableau ?')) {
+                const tbody = document.getElementById('productRows');
+                tbody.innerHTML = '';
+                productData = [];
+                rowCounter = 0;
+                
+                // Réinitialiser les statistiques
+                Object.keys(sectionConfig).forEach(section => {
+                    const statsElement = document.getElementById(`stats-${section}`);
+                    if (statsElement) {
+                        statsElement.textContent = '0';
+                    }
+                });
+                
+                showNotification('Tableau vidé avec succès', 'success');
+            }
+        }
+
+        function exportTableData() {
+            if (productData.length === 0) {
+                showNotification('Aucune donnée à exporter', 'error');
+                return;
+            }
+            
+            const csv = generateCSV(productData);
+            downloadCSV(csv, 'tableau_classification_cedeao.csv');
+            showNotification(`Export réussi: ${productData.length} produits`, 'success');
+        }
+
+        function generateCSV(data) {
+            const headers = ['ID', 'Description', 'Section', 'Code', 'Confiance%', 'Valeur', 'Origine', 'Date'];
+            const rows = data.map(product => [
+                product.id,
+                `"${product.description.replace(/"/g, '""')}"`,
+                product.section,
+                product.code,
+                product.confidence,
+                product.value,
+                product.origin,
+                new Date(product.timestamp).toLocaleDateString()
+            ]);
+            
+            return [headers, ...rows].map(row => row.join(';')).join('\n');
+        }
+
+        function downloadCSV(csv, filename) {
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            
+            if (link.download !== undefined) {
+                const url = URL.createObjectURL(blob);
+                link.setAttribute('href', url);
+                link.setAttribute('download', filename);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        }
+
+        function viewStatistics() {
+            const stats = {};
+            Object.keys(sectionConfig).forEach(section => {
+                const count = parseInt(document.getElementById(`stats-${section}`).textContent) || 0;
+                stats[section] = count;
+            });
+            
+            const total = Object.values(stats).reduce((sum, count) => sum + count, 0);
+            const topSections = Object.entries(stats)
+                .filter(([section, count]) => count > 0)
+                .sort(([,a], [,b]) => b - a)
+                .slice(0, 5);
+            
+            let message = `📊 STATISTIQUES DU TABLEAU\n\n`;
+            message += `Total des produits: ${total}\n\n`;
+            message += `Top 5 des sections:\n`;
+            topSections.forEach(([section, count], index) => {
+                message += `${index + 1}. Section ${section}: ${count} produits\n`;
+            });
+            
+            alert(message);
+        }
+
+        // Test de la fonction (à supprimer en production)
+        function testAddProduct() {
+            const testProduct = {
+                description: "Riz blanc long grain",
+                value: 50000,
+                origin: "Côte d'Ivoire"
+            };
+            
+            const testClassification = {
+                section: { number: "II" },
+                code: "1006.30.00.00",
+                confidence: 85
+            };
+            
+            window.addProductToTable(testProduct, testClassification);
+        }
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Tableau initialisé et prêt à recevoir des produits');
+            
+            // Ajouter une ligne vide par défaut
+            addProductRow();
+        });
+    </script>
 </body>
 </html>

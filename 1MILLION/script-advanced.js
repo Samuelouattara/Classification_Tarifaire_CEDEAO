@@ -1,10 +1,14 @@
 // Système de Classification Tarifaire CEDEAO - Version Avancée avec IA
 // Intégration du moteur d'IA pour une classification de précision maximale
+// AVEC INTEGRATION TABLEAU ET BASE DE DONNÉES
 
 // Initialisation du classificateur IA
 let aiClassifier;
 let isAIReady = false;
 let classificationHistory = [];
+
+// Référence au tableau intégré
+let tableauFrame;
 
 // Initialisation principale
 document.addEventListener('DOMContentLoaded', function() {
@@ -14,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     if (testDescription) {
         setTimeout(() => {
-            document.getElementById('productDescription').value = testDescription;
+            document.getElementById('product-description').value = testDescription;
             setTimeout(() => {
                 classifyProduct();
             }, 1500);
@@ -33,10 +37,35 @@ async function initializeSystem() {
         setupEventListeners();
         loadStatistics();
         loadClassificationHistory();
+        initializeTableauIntegration();
         showWelcomeMessage();
     } catch (error) {
         console.error('Erreur lors de l\'initialisation:', error);
         showErrorMessage('Erreur système', 'Impossible d\'initialiser le système de classification');
+    }
+}
+
+// Initialisation de l'intégration avec le tableau
+function initializeTableauIntegration() {
+    // Récupérer la référence de l'iframe du tableau
+    tableauFrame = document.querySelector('iframe[src="tableau.html"]');
+    
+    if (tableauFrame) {
+        console.log('✅ Tableau intégré détecté');
+        
+        // Attendre que le tableau soit chargé
+        tableauFrame.addEventListener('load', function() {
+            console.log('✅ Tableau chargé et prêt');
+            
+            // Vérifier que la fonction d'ajout est disponible
+            if (tableauFrame.contentWindow && tableauFrame.contentWindow.addProductToTable) {
+                console.log('✅ Fonction d\'ajout au tableau disponible');
+            } else {
+                console.warn('⚠️ Fonction d\'ajout au tableau non trouvée');
+            }
+        });
+    } else {
+        console.warn('⚠️ Tableau non trouvé dans la page');
     }
 }
 
@@ -91,12 +120,12 @@ function showWelcomeMessage() {
     welcomeDiv.innerHTML = `
         <div class="space-y-4">
             <h3 class="text-xl font-bold text-white">🎯 Système de Classification Tarifaire CEDEAO</h3>
-            <p class="text-white/90 text-sm">Système intelligent basé sur le TEC CEDEAO SH 2022</p>
+            <p class="text-white/90 text-sm">Système intelligent avec intégration tableau automatique</p>
             <div class="grid grid-cols-2 gap-2 text-xs">
                 <span class="bg-white/20 px-2 py-1 rounded-full text-center">✅ Analyse sémantique avancée</span>
-                <span class="bg-white/20 px-2 py-1 rounded-full text-center">✅ Reconnaissance des codes tarifaires</span>
-                <span class="bg-white/20 px-2 py-1 rounded-full text-center">✅ Validation multi-niveaux</span>
-                <span class="bg-white/20 px-2 py-1 rounded-full text-center">✅ Apprentissage automatique</span>
+                <span class="bg-white/20 px-2 py-1 rounded-full text-center">✅ Stockage automatique</span>
+                <span class="bg-white/20 px-2 py-1 rounded-full text-center">✅ Base de données intégrée</span>
+                <span class="bg-white/20 px-2 py-1 rounded-full text-center">✅ Tableau interactif</span>
             </div>
         </div>
         <button onclick="this.parentElement.remove()" class="absolute top-2 right-2 w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center text-white font-bold transition-colors duration-300">×</button>
@@ -309,12 +338,11 @@ function showLoadingWithProgress() {
     setTimeout(() => clearInterval(progressInterval), 2000);
 }
 
-// Affichage des résultats avancés
+// Affichage des résultats avancés avec intégration tableau
 function displayAdvancedResults(report) {
     const resultsContainer = document.getElementById('classification-result');
     
     if (!report.results || report.results.length === 0) {
-        // Transformé : no-results -> Tailwind
         resultsContainer.innerHTML = `
             <div class="bg-red-50 border border-red-200 rounded-xl p-8 text-center space-y-4">
                 <h4 class="text-2xl font-bold text-red-600">❌ Aucune classification trouvée</h4>
@@ -346,7 +374,6 @@ function displayAdvancedResults(report) {
     report.results.forEach((result, index) => {
         const isMainResult = index === 0;
         
-        // Transformé : classification-item, main-result, alternative-result -> Tailwind
         const itemClass = isMainResult 
             ? 'bg-gradient-to-r from-douane-vert/5 to-douane-or/5 border-2 border-douane-or rounded-2xl p-6 mb-6 shadow-lg relative'
             : 'bg-white/95 border border-gray-200 rounded-xl p-6 mb-4 shadow-md hover:shadow-lg transition-shadow duration-300';
@@ -413,9 +440,9 @@ function displayAdvancedResults(report) {
                 <div class="flex flex-wrap gap-3 mt-6 pt-4 border-t border-gray-200">
                     <button 
                         class="px-6 py-3 bg-douane-vert text-white rounded-xl hover:bg-douane-vert/90 cursor-pointer transition-all duration-300 text-sm font-medium shadow-md hover:shadow-lg transform hover:-translate-y-0.5 flex items-center gap-2"
-                        onclick="selectClassification('${result.section.number}', '${result.section.title}')"
+                        onclick="selectAndStoreClassification('${result.section.number}', '${result.section.title}', ${result.confidence})"
                     >
-                        ✅ Sélectionner cette classification
+                        ✅ Sélectionner et Stocker
                     </button>
                     
                     <button 
@@ -458,6 +485,148 @@ function displayAdvancedResults(report) {
     resultsContainer.innerHTML = html;
 }
 
+// NOUVELLE FONCTION : Sélection et stockage automatique
+async function selectAndStoreClassification(sectionNumber, sectionTitle, confidence) {
+    const description = document.getElementById('product-description').value;
+    
+    if (!description) {
+        showErrorMessage('Erreur', 'Description du produit manquante');
+        return;
+    }
+    
+    // Préparer les informations du produit
+    const productInfo = {
+        description: description,
+        origin: 'Non spécifié', // Peut être étendu avec un champ dédié
+        value: 0, // Peut être étendu avec un champ dédié
+        timestamp: new Date().toISOString()
+    };
+    
+    // Préparer le résultat de classification
+    const classificationResult = {
+        section: {
+            number: sectionNumber,
+            title: sectionTitle
+        },
+        confidence: confidence,
+        code: generateTariffCode(sectionNumber),
+        timestamp: new Date().toISOString()
+    };
+    
+    // Afficher le loading
+    showSuccessMessage('Stockage en cours', 'Ajout du produit au tableau et à la base de données...');
+    
+    try {
+        // 1. Ajouter au tableau intégré
+        if (tableauFrame && tableauFrame.contentWindow && tableauFrame.contentWindow.addProductToTable) {
+            tableauFrame.contentWindow.addProductToTable(productInfo, classificationResult);
+            console.log('✅ Produit ajouté au tableau');
+        } else {
+            console.warn('⚠️ Impossible d\'ajouter au tableau - iframe non accessible');
+        }
+        
+        // 2. Sauvegarder en base de données
+        await saveProductToDatabase(productInfo, classificationResult);
+        
+        // 3. Sauvegarde locale
+        saveToHistory(description, {
+            section: { number: sectionNumber, title: sectionTitle },
+            confidence: confidence
+        });
+        
+        // 4. Notification de succès
+        showSuccessMessage(
+            'Classification stockée avec succès', 
+            `Produit classifié en Section ${sectionNumber} et ajouté au tableau`
+        );
+        
+        // 5. Mise à jour des statistiques
+        updateStatistics();
+        
+        // 6. Optionnel : Réinitialiser le formulaire
+        if (confirm('Voulez-vous réinitialiser le formulaire pour une nouvelle classification ?')) {
+            document.getElementById('product-description').value = '';
+            document.getElementById('results').classList.add('hidden');
+        }
+        
+    } catch (error) {
+        console.error('❌ Erreur lors du stockage:', error);
+        showErrorMessage('Erreur de stockage', 'Impossible de stocker la classification: ' + error.message);
+    }
+}
+
+// Fonction de sauvegarde en base de données
+async function saveProductToDatabase(productInfo, classificationResult) {
+    try {
+        const productData = {
+            origine_produit: productInfo.origin || 'Non spécifié',
+            description_produit: productInfo.description,
+            section_produit: classificationResult.section.number,
+            code_tarifaire: classificationResult.code,
+            taux_imposition: getTaxRate(classificationResult.section.number),
+            valeur_declaree: productInfo.value || 0,
+            poids_kg: 0, // Peut être étendu
+            unite_mesure: 'unité',
+            statut_validation: classificationResult.confidence > 80 ? 'valide' : 'en_attente',
+            commentaires: `Classification automatique - Confiance: ${classificationResult.confidence}%`
+        };
+        
+        const response = await fetch('../database/api.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                action: 'save_classified_product',
+                product: productData
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error(`Erreur HTTP: ${response.status}`);
+        }
+
+        const result = await response.json();
+        
+        if (result.success) {
+            console.log('✅ Produit sauvegardé en base avec ID:', result.product_id);
+            return result.product_id;
+        } else {
+            throw new Error(result.message || 'Erreur lors de la sauvegarde');
+        }
+        
+    } catch (error) {
+        console.error('❌ Erreur sauvegarde base de données:', error);
+        throw error;
+    }
+}
+
+// Fonction pour générer un code tarifaire basique
+function generateTariffCode(sectionNumber) {
+    const sectionCodes = {
+        'I': '0101', 'II': '0601', 'III': '1501', 'IV': '1601', 'V': '2501',
+        'VI': '2801', 'VII': '3901', 'VIII': '4101', 'IX': '4401', 'X': '4701',
+        'XI': '5001', 'XII': '6401', 'XIII': '6801', 'XIV': '7101', 'XV': '7201',
+        'XVI': '8401', 'XVII': '8601', 'XVIII': '9001', 'XIX': '9301', 'XX': '9401',
+        'XXI': '9701'
+    };
+    
+    return (sectionCodes[sectionNumber] || '9999') + ".00.00.00";
+}
+
+// Fonction pour obtenir le taux d'imposition
+function getTaxRate(sectionNumber) {
+    const taxRates = {
+        'I': 10.50, 'II': 8.75, 'III': 12.00, 'IV': 15.25, 'V': 5.50,
+        'VI': 18.75, 'VII': 14.50, 'VIII': 16.25, 'IX': 11.75, 'X': 13.50,
+        'XI': 17.25, 'XII': 19.50, 'XIII': 9.25, 'XIV': 25.00, 'XV': 12.75,
+        'XVI': 22.50, 'XVII': 20.75, 'XVIII': 16.50, 'XIX': 35.00, 'XX': 15.75,
+        'XXI': 30.00
+    };
+    
+    return taxRates[sectionNumber] || 0;
+}
+
 // Utilitaires pour l'affichage
 function getCertaintyTailwindClass(certaintyLevel) {
     switch(certaintyLevel) {
@@ -478,22 +647,10 @@ function getTermBadgeClass(termType) {
     }
 }
 
-// Sélection d'une classification
+// Sélection d'une classification (fonction originale maintenue pour compatibilité)
 function selectClassification(sectionNumber, sectionTitle) {
-    showSuccessMessage(
-        'Classification sélectionnée', 
-        `Section ${sectionNumber}: ${sectionTitle}`
-    );
-    
-    // Sauvegarde de la sélection
-    const selection = {
-        timestamp: new Date().toISOString(),
-        section: sectionNumber,
-        title: sectionTitle,
-        description: document.getElementById('product-description').value
-    };
-    
-    saveSelection(selection);
+    // Rediriger vers la nouvelle fonction avec stockage
+    selectAndStoreClassification(sectionNumber, sectionTitle, 75);
 }
 
 // Affichage des détails d'une section
@@ -515,62 +672,6 @@ function provideFeedback(sectionNumber, isCorrect) {
     );
 }
 
-// Suggestions en temps réel
-function showRealTimeSuggestions(input) {
-    if (input.length < 3) return;
-    
-    const suggestionsContainer = document.getElementById('real-time-suggestions');
-    if (!suggestionsContainer) return;
-    
-    // Suggestions basiques
-    const suggestions = generateQuickSuggestions(input);
-    
-    if (suggestions.length > 0) {
-        suggestionsContainer.innerHTML = `
-            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-4">
-                <h6 class="font-semibold text-douane-vert mb-3">💡 Suggestions rapides :</h6>
-                <div class="flex flex-wrap gap-2">
-                    ${suggestions.map(suggestion => 
-                        `<span class="px-3 py-2 bg-douane-or hover:bg-douane-or/90 text-douane-vert rounded-full cursor-pointer transition-all duration-300 text-sm font-medium shadow-sm hover:shadow-md transform hover:-translate-y-0.5" onclick="applySuggestion('${suggestion}')">${suggestion}</span>`
-                    ).join('')}
-                </div>
-            </div>
-        `;
-        suggestionsContainer.classList.remove('hidden');
-    } else {
-        suggestionsContainer.classList.add('hidden');
-    }
-}
-
-// Génération de suggestions rapides
-function generateQuickSuggestions(input) {
-    const suggestions = [];
-    const inputLower = input.toLowerCase();
-    
-    // Suggestions basées sur des mots-clés communs
-    const keywordSuggestions = {
-        "animal": ["animal vivant", "viande fraîche", "produit laitier"],
-        "plante": ["plante vivante", "légume frais", "fruit tropical"],
-        "machine": ["machine industrielle", "appareil électrique", "équipement technique"],
-        "voiture": ["véhicule automobile", "transport terrestre", "pièce automobile"]
-    };
-    
-    Object.keys(keywordSuggestions).forEach(keyword => {
-        if (inputLower.includes(keyword)) {
-            suggestions.push(...keywordSuggestions[keyword]);
-        }
-    });
-    
-    return suggestions.slice(0, 5);
-}
-
-// Application d'une suggestion
-function applySuggestion(suggestion) {
-    const productDescription = document.getElementById('product-description');
-    productDescription.value = suggestion;
-    document.getElementById('real-time-suggestions').classList.add('hidden');
-}
-
 // Messages d'état
 function showSuccessMessage(title, message) {
     showMessage(title, message, 'success');
@@ -582,7 +683,6 @@ function showErrorMessage(title, message) {
 
 function showMessage(title, message, type) {
     const messageDiv = document.createElement('div');
-    // Transformé : message-toast -> Tailwind
     const typeClasses = type === 'success' 
         ? 'bg-green-100 border-green-300 text-green-800'
         : 'bg-red-100 border-red-300 text-red-800';
@@ -636,15 +736,6 @@ function loadClassificationHistory() {
     if (stored) {
         classificationHistory = JSON.parse(stored);
     }
-}
-
-function saveSelection(selection) {
-    let selections = JSON.parse(localStorage.getItem('user_selections') || '[]');
-    selections.unshift(selection);
-    if (selections.length > 100) {
-        selections = selections.slice(0, 100);
-    }
-    localStorage.setItem('user_selections', JSON.stringify(selections));
 }
 
 // Statistiques
@@ -755,6 +846,62 @@ function generateRecommendations(results) {
     return recommendations;
 }
 
+// Suggestions en temps réel
+function showRealTimeSuggestions(input) {
+    if (input.length < 3) return;
+    
+    const suggestionsContainer = document.getElementById('real-time-suggestions');
+    if (!suggestionsContainer) return;
+    
+    // Suggestions basiques
+    const suggestions = generateQuickSuggestions(input);
+    
+    if (suggestions.length > 0) {
+        suggestionsContainer.innerHTML = `
+            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-4">
+                <h6 class="font-semibold text-douane-vert mb-3">💡 Suggestions rapides :</h6>
+                <div class="flex flex-wrap gap-2">
+                    ${suggestions.map(suggestion => 
+                        `<span class="px-3 py-2 bg-douane-or hover:bg-douane-or/90 text-douane-vert rounded-full cursor-pointer transition-all duration-300 text-sm font-medium shadow-sm hover:shadow-md transform hover:-translate-y-0.5" onclick="applySuggestion('${suggestion}')">${suggestion}</span>`
+                    ).join('')}
+                </div>
+            </div>
+        `;
+        suggestionsContainer.classList.remove('hidden');
+    } else {
+        suggestionsContainer.classList.add('hidden');
+    }
+}
+
+// Génération de suggestions rapides
+function generateQuickSuggestions(input) {
+    const suggestions = [];
+    const inputLower = input.toLowerCase();
+    
+    // Suggestions basées sur des mots-clés communs
+    const keywordSuggestions = {
+        "animal": ["animal vivant", "viande fraîche", "produit laitier"],
+        "plante": ["plante vivante", "légume frais", "fruit tropical"],
+        "machine": ["machine industrielle", "appareil électrique", "équipement technique"],
+        "voiture": ["véhicule automobile", "transport terrestre", "pièce automobile"]
+    };
+    
+    Object.keys(keywordSuggestions).forEach(keyword => {
+        if (inputLower.includes(keyword)) {
+            suggestions.push(...keywordSuggestions[keyword]);
+        }
+    });
+    
+    return suggestions.slice(0, 5);
+}
+
+// Application d'une suggestion
+function applySuggestion(suggestion) {
+    const productDescription = document.getElementById('product-description');
+    productDescription.value = suggestion;
+    document.getElementById('real-time-suggestions').classList.add('hidden');
+}
+
 // Chargement des sections dans le dropdown
 function loadSections() {
     const sectionsContainer = document.getElementById('sections-list');
@@ -770,7 +917,6 @@ function loadSections() {
     
     Object.values(sections).forEach(section => {
         const sectionItem = document.createElement('div');
-        // Transformé : section-dropdown-item -> Tailwind
         sectionItem.className = 'flex items-start gap-3 p-3 hover:bg-gray-50 rounded-lg cursor-pointer border-b border-gray-100 last:border-b-0 transition-colors duration-200';
         sectionItem.setAttribute('data-section', section.number);
         sectionItem.innerHTML = `
@@ -935,6 +1081,7 @@ function getBasicSectionsData() {
 
 // Export des fonctions globales pour compatibilité
 window.selectClassification = selectClassification;
+window.selectAndStoreClassification = selectAndStoreClassification;
 window.showSectionDetails = showSectionDetails;
 window.provideFeedback = provideFeedback;
 window.applySuggestion = applySuggestion;
