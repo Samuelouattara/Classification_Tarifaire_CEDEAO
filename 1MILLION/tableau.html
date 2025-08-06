@@ -1,0 +1,618 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interface de Saisie Tarifs Douaniers - Système Harmonisé Complet</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 10px;
+            font-size: 10px;
+            min-height: 100vh;
+        }
+        .container {
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+        }
+        h1 {
+            text-align: center;
+            color: #1B5E20;
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+        .table-container {
+            overflow-x: auto;
+            border: 2px solid #4CAF50;
+            border-radius: 8px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 4500px;
+        }
+        .section-header {
+            background: #1B5E20;
+            color: white;
+            font-weight: bold;
+            text-align: center;
+            padding: 8px 4px;
+            font-size: 9px;
+            border-right: 2px solid #2E7D32;
+            position: relative;
+            min-height: 60px;
+            vertical-align: middle;
+        }
+        .section-number {
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: block;
+            color: #81C784;
+        }
+        .section-code {
+            font-size: 10px;
+            font-weight: bold;
+            color: #FFC107;
+            margin-bottom: 8px;
+            display: block;
+        }
+        .section-notes {
+            font-size: 7px;
+            color: #C8E6C9;
+            margin-top: 5px;
+            line-height: 1.1;
+        }
+        .chapter-row {
+            background-color: #2E7D32;
+            color: white;
+            text-align: center;
+            padding: 5px 2px;
+            font-weight: bold;
+            font-size: 8px;
+            min-height: 40px;
+            vertical-align: middle;
+            border-right: 1px solid #1B5E20;
+        }
+        .chapter-number {
+            font-size: 10px;
+            font-weight: bold;
+            color: #FFC107;
+            margin-bottom: 3px;
+        }
+        .chapter-note {
+            font-size: 7px;
+            line-height: 1.1;
+            color: #E8F5E8;
+        }
+        .rate-row {
+            background-color: #4CAF50;
+            color: white;
+            text-align: center;
+            padding: 6px 2px;
+            font-weight: bold;
+            font-size: 10px;
+            min-height: 25px;
+            border-right: 1px solid #2E7D32;
+        }
+        .data-cell {
+            padding: 4px 2px;
+            text-align: center;
+            border: 1px solid #E8F5E8;
+            min-height: 35px;
+            vertical-align: middle;
+            font-size: 9px;
+            background: white;
+        }
+        .data-cell:hover {
+            background-color: #F1F8E9;
+            border-color: #4CAF50;
+        }
+        .input-row {
+            background-color: #FFF9C4;
+        }
+        .input-cell {
+            background-color: #FFF9C4;
+            border: 2px solid #FBC02D;
+            padding: 2px;
+        }
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 2px;
+            border: 1px solid #C8E6C9;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 8px;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+        input[type="text"]:focus, input[type="number"]:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Interface de Saisie - Système Harmonisé Complet (21 Sections - 97 Chapitres)</h1>
+        
+        <div class="table-container">
+            <table>
+                <!-- En-têtes des sections -->
+                <tr>
+                    <td class="section-header" colspan="5"><span class="section-number">I</span><span class="section-code">0101</span>ANIMAUX VIVANTS ET PRODUITS DU REGNE ANIMAL<div class="section-notes">Notes de Section</div></td>
+                    <td class="section-header" colspan="9"><span class="section-number">II</span><span class="section-code">0601</span>PRODUITS DU REGNE VEGETAL<div class="section-notes">Note de Section</div></td>
+                    <td class="section-header" colspan="1"><span class="section-number">III</span><span class="section-code">1501</span>GRAISSES ET HUILES</td>
+                    <td class="section-header" colspan="9"><span class="section-number">IV</span><span class="section-code">1601</span>PRODUITS INDUSTRIES ALIMENTAIRES<div class="section-notes">Note de Section</div></td>
+                    <td class="section-header" colspan="3"><span class="section-number">V</span><span class="section-code">2501</span>PRODUITS MINERAUX</td>
+                    <td class="section-header" colspan="11"><span class="section-number">VI</span><span class="section-code">2801</span>PRODUITS INDUSTRIES CHIMIQUES<div class="section-notes">Notes de Section</div></td>
+                    <td class="section-header" colspan="2"><span class="section-number">VII</span><span class="section-code">3901</span>PLASTIQUES ET CAOUTCHOUC<div class="section-notes">Notes de Section</div></td>
+                    <td class="section-header" colspan="3"><span class="section-number">VIII</span><span class="section-code">4101</span>PEAUX, CUIRS, PELLETERIES</td>
+                    <td class="section-header" colspan="3"><span class="section-number">IX</span><span class="section-code">4401</span>BOIS, LIEGE, SPARTERIE</td>
+                    <td class="section-header" colspan="3"><span class="section-number">X</span><span class="section-code">4701</span>PATES BOIS, PAPIER, CARTON</td>
+                    <td class="section-header" colspan="14"><span class="section-number">XI</span><span class="section-code">5001</span>MATIERES TEXTILES ET OUVRAGES<div class="section-notes">Notes de Section</div></td>
+                    <td class="section-header" colspan="4"><span class="section-number">XII</span><span class="section-code">6401</span>CHAUSSURES, COIFFURES</td>
+                    <td class="section-header" colspan="3"><span class="section-number">XIII</span><span class="section-code">6801</span>PIERRES, CERAMIQUE, VERRE</td>
+                    <td class="section-header" colspan="1"><span class="section-number">XIV</span><span class="section-code">7101</span>METAUX PRECIEUX, BIJOUX</td>
+                    <td class="section-header" colspan="11"><span class="section-number">XV</span><span class="section-code">7201</span>METAUX COMMUNS ET OUVRAGES<div class="section-notes">Notes de Section</div></td>
+                    <td class="section-header" colspan="2"><span class="section-number">XVI</span><span class="section-code">8401</span>MACHINES ET APPAREILS<div class="section-notes">Notes de Section</div></td>
+                    <td class="section-header" colspan="4"><span class="section-number">XVII</span><span class="section-code">8601</span>MATERIEL DE TRANSPORT<div class="section-notes">Notes de Section</div></td>
+                    <td class="section-header" colspan="3"><span class="section-number">XVIII</span><span class="section-code">9001</span>INSTRUMENTS PRECISION, MUSIQUE</td>
+                    <td class="section-header" colspan="1"><span class="section-number">XIX</span><span class="section-code">9301</span>ARMES, MUNITIONS</td>
+                    <td class="section-header" colspan="3"><span class="section-number">XX</span><span class="section-code">9401</span>MARCHANDISES DIVERSES</td>
+                    <td class="section-header" colspan="1"><span class="section-number">XXI</span><span class="section-code">9701</span>OBJETS D'ART, ANTIQUITES</td>
+                </tr>
+                
+                <!-- Ligne des chapitres -->
+                <tr>
+                    <!-- Section I -->
+                    <td class="chapter-row"><div class="chapter-number">01</div><div class="chapter-note">Animaux vivants</div></td>
+                    <td class="chapter-row"><div class="chapter-number">02</div><div class="chapter-note">Viandes et abats</div></td>
+                    <td class="chapter-row"><div class="chapter-number">03</div><div class="chapter-note">Poissons, crustacés</div></td>
+                    <td class="chapter-row"><div class="chapter-number">04</div><div class="chapter-note">Laits, œufs, miel</div></td>
+                    <td class="chapter-row"><div class="chapter-number">05</div><div class="chapter-note">Autres produits animaux</div></td>
+                    
+                    <!-- Section II -->
+                    <td class="chapter-row"><div class="chapter-number">06</div><div class="chapter-note">Plantes vivantes</div></td>
+                    <td class="chapter-row"><div class="chapter-number">07</div><div class="chapter-note">Légumes</div></td>
+                    <td class="chapter-row"><div class="chapter-number">08</div><div class="chapter-note">Fruits</div></td>
+                    <td class="chapter-row"><div class="chapter-number">09</div><div class="chapter-note">Café, thé, épices</div></td>
+                    <td class="chapter-row"><div class="chapter-number">10</div><div class="chapter-note">Céréales</div></td>
+                    <td class="chapter-row"><div class="chapter-number">11</div><div class="chapter-note">Minoterie</div></td>
+                    <td class="chapter-row"><div class="chapter-number">12</div><div class="chapter-note">Graines oléagineuses</div></td>
+                    <td class="chapter-row"><div class="chapter-number">13</div><div class="chapter-note">Gommes, résines</div></td>
+                    <td class="chapter-row"><div class="chapter-number">14</div><div class="chapter-note">Matières à tresser</div></td>
+                    
+                    <!-- Section III -->
+                    <td class="chapter-row"><div class="chapter-number">15</div><div class="chapter-note">Graisses et huiles</div></td>
+                    
+                    <!-- Section IV -->
+                    <td class="chapter-row"><div class="chapter-number">16</div><div class="chapter-note">Prép. viande/poisson</div></td>
+                    <td class="chapter-row"><div class="chapter-number">17</div><div class="chapter-note">Sucres</div></td>
+                    <td class="chapter-row"><div class="chapter-number">18</div><div class="chapter-note">Cacao</div></td>
+                    <td class="chapter-row"><div class="chapter-number">19</div><div class="chapter-note">Prép. céréales</div></td>
+                    <td class="chapter-row"><div class="chapter-number">20</div><div class="chapter-note">Prép. légumes/fruits</div></td>
+                    <td class="chapter-row"><div class="chapter-number">21</div><div class="chapter-note">Prép. alimentaires</div></td>
+                    <td class="chapter-row"><div class="chapter-number">22</div><div class="chapter-note">Boissons</div></td>
+                    <td class="chapter-row"><div class="chapter-number">23</div><div class="chapter-note">Aliments animaux</div></td>
+                    <td class="chapter-row"><div class="chapter-number">24</div><div class="chapter-note">Tabacs</div></td>
+                    
+                    <!-- Section V -->
+                    <td class="chapter-row"><div class="chapter-number">25</div><div class="chapter-note">Sel, soufre, pierres</div></td>
+                    <td class="chapter-row"><div class="chapter-number">26</div><div class="chapter-note">Minerais</div></td>
+                    <td class="chapter-row"><div class="chapter-number">27</div><div class="chapter-note">Combustibles</div></td>
+                    
+                    <!-- Section VI -->
+                    <td class="chapter-row"><div class="chapter-number">28</div><div class="chapter-note">Prod. chim. inorg.</div></td>
+                    <td class="chapter-row"><div class="chapter-number">29</div><div class="chapter-note">Prod. chim. org.</div></td>
+                    <td class="chapter-row"><div class="chapter-number">30</div><div class="chapter-note">Pharmaceutiques</div></td>
+                    <td class="chapter-row"><div class="chapter-number">31</div><div class="chapter-note">Engrais</div></td>
+                    <td class="chapter-row"><div class="chapter-number">32</div><div class="chapter-note">Colorants</div></td>
+                    <td class="chapter-row"><div class="chapter-number">33</div><div class="chapter-note">Parfumerie</div></td>
+                    <td class="chapter-row"><div class="chapter-number">34</div><div class="chapter-note">Savons</div></td>
+                    <td class="chapter-row"><div class="chapter-number">35</div><div class="chapter-note">Albuminoïdes</div></td>
+                    <td class="chapter-row"><div class="chapter-number">36</div><div class="chapter-note">Explosifs</div></td>
+                    <td class="chapter-row"><div class="chapter-number">37</div><div class="chapter-note">Photo/cinéma</div></td>
+                    <td class="chapter-row"><div class="chapter-number">38</div><div class="chapter-note">Prod. chim. divers</div></td>
+                    
+                    <!-- Section VII -->
+                    <td class="chapter-row"><div class="chapter-number">39</div><div class="chapter-note">Matières plastiques</div></td>
+                    <td class="chapter-row"><div class="chapter-number">40</div><div class="chapter-note">Caoutchouc</div></td>
+                    
+                    <!-- Section VIII -->
+                    <td class="chapter-row"><div class="chapter-number">41</div><div class="chapter-note">Peaux et cuirs</div></td>
+                    <td class="chapter-row"><div class="chapter-number">42</div><div class="chapter-note">Ouvrages en cuir</div></td>
+                    <td class="chapter-row"><div class="chapter-number">43</div><div class="chapter-note">Pelleteries</div></td>
+                    
+                    <!-- Section IX -->
+                    <td class="chapter-row"><div class="chapter-number">44</div><div class="chapter-note">Bois</div></td>
+                    <td class="chapter-row"><div class="chapter-number">45</div><div class="chapter-note">Liège</div></td>
+                    <td class="chapter-row"><div class="chapter-number">46</div><div class="chapter-note">Sparterie</div></td>
+                    
+                    <!-- Section X -->
+                    <td class="chapter-row"><div class="chapter-number">47</div><div class="chapter-note">Pâtes de bois</div></td>
+                    <td class="chapter-row"><div class="chapter-number">48</div><div class="chapter-note">Papiers et cartons</div></td>
+                    <td class="chapter-row"><div class="chapter-number">49</div><div class="chapter-note">Produits édition</div></td>
+                    
+                    <!-- Section XI -->
+                    <td class="chapter-row"><div class="chapter-number">50</div><div class="chapter-note">Soie</div></td>
+                    <td class="chapter-row"><div class="chapter-number">51</div><div class="chapter-note">Laine</div></td>
+                    <td class="chapter-row"><div class="chapter-number">52</div><div class="chapter-note">Coton</div></td>
+                    <td class="chapter-row"><div class="chapter-number">53</div><div class="chapter-note">Fibres végétales</div></td>
+                    <td class="chapter-row"><div class="chapter-number">54</div><div class="chapter-note">Filaments synth.</div></td>
+                    <td class="chapter-row"><div class="chapter-number">55</div><div class="chapter-note">Fibres synth.</div></td>
+                    <td class="chapter-row"><div class="chapter-number">56</div><div class="chapter-note">Ouates, feutres</div></td>
+                    <td class="chapter-row"><div class="chapter-number">57</div><div class="chapter-note">Tapis</div></td>
+                    <td class="chapter-row"><div class="chapter-number">58</div><div class="chapter-note">Tissus spéciaux</div></td>
+                    <td class="chapter-row"><div class="chapter-number">59</div><div class="chapter-note">Tissus techniques</div></td>
+                    <td class="chapter-row"><div class="chapter-number">60</div><div class="chapter-note">Bonneterie</div></td>
+                    <td class="chapter-row"><div class="chapter-number">61</div><div class="chapter-note">Vêtements bonnet.</div></td>
+                    <td class="chapter-row"><div class="chapter-number">62</div><div class="chapter-note">Vêtements</div></td>
+                    <td class="chapter-row"><div class="chapter-number">63</div><div class="chapter-note">Articles textiles</div></td>
+                    
+                    <!-- Section XII -->
+                    <td class="chapter-row"><div class="chapter-number">64</div><div class="chapter-note">Chaussures</div></td>
+                    <td class="chapter-row"><div class="chapter-number">65</div><div class="chapter-note">Coiffures</div></td>
+                    <td class="chapter-row"><div class="chapter-number">66</div><div class="chapter-note">Parapluies</div></td>
+                    <td class="chapter-row"><div class="chapter-number">67</div><div class="chapter-note">Plumes, fleurs artif.</div></td>
+                    
+                    <!-- Section XIII -->
+                    <td class="chapter-row"><div class="chapter-number">68</div><div class="chapter-note">Ouvrages pierres</div></td>
+                    <td class="chapter-row"><div class="chapter-number">69</div><div class="chapter-note">Céramiques</div></td>
+                    <td class="chapter-row"><div class="chapter-number">70</div><div class="chapter-note">Verre</div></td>
+                    
+                    <!-- Section XIV -->
+                    <td class="chapter-row"><div class="chapter-number">71</div><div class="chapter-note">Bijouterie</div></td>
+                    
+                    <!-- Section XV -->
+                    <td class="chapter-row"><div class="chapter-number">72</div><div class="chapter-note">Fonte, fer, acier</div></td>
+                    <td class="chapter-row"><div class="chapter-number">73</div><div class="chapter-note">Ouvrages fer/acier</div></td>
+                    <td class="chapter-row"><div class="chapter-number">74</div><div class="chapter-note">Cuivre</div></td>
+                    <td class="chapter-row"><div class="chapter-number">75</div><div class="chapter-note">Nickel</div></td>
+                    <td class="chapter-row"><div class="chapter-number">76</div><div class="chapter-note">Aluminium</div></td>
+                    <td class="chapter-row"><div class="chapter-number">78</div><div class="chapter-note">Plomb</div></td>
+                    <td class="chapter-row"><div class="chapter-number">79</div><div class="chapter-note">Zinc</div></td>
+                    <td class="chapter-row"><div class="chapter-number">80</div><div class="chapter-note">Étain</div></td>
+                    <td class="chapter-row"><div class="chapter-number">81</div><div class="chapter-note">Autres métaux</div></td>
+                    <td class="chapter-row"><div class="chapter-number">82</div><div class="chapter-note">Outils</div></td>
+                    <td class="chapter-row"><div class="chapter-number">83</div><div class="chapter-note">Ouvrages métaux</div></td>
+                    
+                    <!-- Section XVI -->
+                    <td class="chapter-row"><div class="chapter-number">84</div><div class="chapter-note">Machines mécaniques</div></td>
+                    <td class="chapter-row"><div class="chapter-number">85</div><div class="chapter-note">Machines électriques</div></td>
+                    
+                    <!-- Section XVII -->
+                    <td class="chapter-row"><div class="chapter-number">86</div><div class="chapter-note">Matériel ferroviaire</div></td>
+                    <td class="chapter-row"><div class="chapter-number">87</div><div class="chapter-note">Véhicules terrestres</div></td>
+                    <td class="chapter-row"><div class="chapter-number">88</div><div class="chapter-note">Navigation aérienne</div></td>
+                    <td class="chapter-row"><div class="chapter-number">89</div><div class="chapter-note">Navigation maritime</div></td>
+                    
+                    <!-- Section XVIII -->
+                    <td class="chapter-row"><div class="chapter-number">90</div><div class="chapter-note">Instruments précision</div></td>
+                    <td class="chapter-row"><div class="chapter-number">91</div><div class="chapter-note">Horlogerie</div></td>
+                    <td class="chapter-row"><div class="chapter-number">92</div><div class="chapter-note">Instruments musique</div></td>
+                    
+                    <!-- Section XIX -->
+                    <td class="chapter-row"><div class="chapter-number">93</div><div class="chapter-note">Armes, munitions</div></td>
+                    
+                    <!-- Section XX -->
+                    <td class="chapter-row"><div class="chapter-number">94</div><div class="chapter-note">Meubles</div></td>
+                    <td class="chapter-row"><div class="chapter-number">95</div><div class="chapter-note">Jouets, sports</div></td>
+                    <td class="chapter-row"><div class="chapter-number">96</div><div class="chapter-note">Ouvrages divers</div></td>
+                    
+                    <!-- Section XXI -->
+                    <td class="chapter-row"><div class="chapter-number">97</div><div class="chapter-note">Objets d'art</div></td>
+                </tr>
+                
+                <!-- Ligne des taux -->
+                <tr>
+                    <!-- Section I -->
+                    <td class="rate-row">10.50%</td><td class="rate-row">8.25%</td><td class="rate-row">12.75%</td><td class="rate-row">11.00%</td><td class="rate-row">9.50%</td>
+                    <!-- Section II -->
+                    <td class="rate-row">7.75%</td><td class="rate-row">6.50%</td><td class="rate-row">8.00%</td><td class="rate-row">15.25%</td><td class="rate-row">5.00%</td><td class="rate-row">4.75%</td><td class="rate-row">3.50%</td><td class="rate-row">12.50%</td><td class="rate-row">18.75%</td>
+                    <!-- Section III -->
+                    <td class="rate-row">12.00%</td>
+                    <!-- Section IV -->
+                    <td class="rate-row">16.25%</td><td class="rate-row">22.50%</td><td class="rate-row">19.75%</td><td class="rate-row">14.50%</td><td class="rate-row">13.25%</td><td class="rate-row">17.00%</td><td class="rate-row">25.00%</td><td class="rate-row">8.75%</td><td class="rate-row">35.00%</td>
+                    <!-- Section V -->
+                    <td class="rate-row">5.50%</td><td class="rate-row">2.25%</td><td class="rate-row">7.75%</td>
+                    <!-- Section VI -->
+                    <td class="rate-row">6.25%</td><td class="rate-row">8.50%</td><td class="rate-row">0.00%</td><td class="rate-row">3.75%</td><td class="rate-row">12.25%</td><td class="rate-row">15.50%</td><td class="rate-row">18.75%</td><td class="rate-row">11.25%</td><td class="rate-row">28.50%</td><td class="rate-row">14.75%</td><td class="rate-row">9.25%</td>
+                    <!-- Section VII -->
+                    <td class="rate-row">14.50%</td><td class="rate-row">16.75%</td>
+                    <!-- Section VIII -->
+                    <td class="rate-row">8.25%</td><td class="rate-row">16.25%</td><td class="rate-row">12.50%</td>
+                    <!-- Section IX -->
+                    <td class="rate-row">11.75%</td><td class="rate-row">4.50%</td><td class="rate-row">13.25%</td>
+                    <!-- Section X -->
+                    <td class="rate-row">2.75%</td><td class="rate-row">13.50%</td><td class="rate-row">8.00%</td>
+                    <!-- Section XI -->
+                    <td class="rate-row">4.25%</td><td class="rate-row">6.75%</td><td class="rate-row">5.50%</td><td class="rate-row">7.25%</td><td class="rate-row">8.75%</td><td class="rate-row">9.50%</td><td class="rate-row">12.25%</td><td class="rate-row">15.75%</td><td class="rate-row">18.50%</td><td class="rate-row">14.25%</td><td class="rate-row">16.75%</td><td class="rate-row">19.25%</td><td class="rate-row">17.50%</td><td class="rate-row">13.75%</td>
+                    <!-- Section XII -->
+                    <td class="rate-row">19.50%</td><td class="rate-row">15.25%</td><td class="rate-row">12.75%</td><td class="rate-row">8.50%</td>
+                    <!-- Section XIII -->
+                    <td class="rate-row">9.25%</td><td class="rate-row">11.50%</td><td class="rate-row">14.75%</td>
+                    <!-- Section XIV -->
+                    <td class="rate-row">25.00%</td>
+                    <!-- Section XV -->
+                    <td class="rate-row">5.75%</td><td class="rate-row">8.25%</td><td class="rate-row">6.50%</td><td class="rate-row">4.25%</td><td class="rate-row">3.75%</td><td class="rate-row">7.50%</td><td class="rate-row">9.25%</td><td class="rate-row">5.25%</td><td class="rate-row">12.75%</td><td class="rate-row">15.50%</td><td class="rate-row">18.25%</td>
+                    <!-- Section XVI -->
+                    <td class="rate-row">1.50%</td><td class="rate-row">3.25%</td>
+                    <!-- Section XVII -->
+                    <td class="rate-row">8.75%</td><td class="rate-row">20.75%</td><td class="rate-row">12.50%</td><td class="rate-row">15.25%</td>
+                    <!-- Section XVIII -->
+                    <td class="rate-row">2.25%</td><td class="rate-row">4.50%</td><td class="rate-row">6.75%</td>
+                    <!-- Section XIX -->
+                    <td class="rate-row">35.00%</td>
+                    <!-- Section XX -->
+                    <td class="rate-row">15.75%</td><td class="rate-row">12.25%</td><td class="rate-row">18.50%</td>
+                    <!-- Section XXI -->
+                    <td class="rate-row">0.00%</td>
+                </tr>
+                
+                <!-- Ligne de saisie -->
+                <tr class="input-row">
+                    <!-- Section I -->
+                    <td class="input-cell"><input type="text" placeholder="Animaux vivants"></td>
+                    <td class="input-cell"><input type="text" placeholder="Viandes/abats"></td>
+                    <td class="input-cell"><input type="text" placeholder="Poissons"></td>
+                    <td class="input-cell"><input type="text" placeholder="Produits laitiers"></td>
+                    <td class="input-cell"><input type="text" placeholder="Autres animaux"></td>
+                    <!-- Section II -->
+                    <td class="input-cell"><input type="text" placeholder="Plantes"></td>
+                    <td class="input-cell"><input type="text" placeholder="Légumes"></td>
+                    <td class="input-cell"><input type="text" placeholder="Fruits"></td>
+                    <td class="input-cell"><input type="text" placeholder="Café/thé"></td>
+                    <td class="input-cell"><input type="text" placeholder="Céréales"></td>
+                    <td class="input-cell"><input type="text" placeholder="Minoterie"></td>
+                    <td class="input-cell"><input type="text" placeholder="Graines"></td>
+                    <td class="input-cell"><input type="text" placeholder="Gommes"></td>
+                    <td class="input-cell"><input type="text" placeholder="Tressage"></td>
+                    <!-- Section III -->
+                    <td class="input-cell"><input type="text" placeholder="Graisses"></td>
+                    <!-- Section IV -->
+                    <td class="input-cell"><input type="text" placeholder="Prép. viande"></td>
+                    <td class="input-cell"><input type="text" placeholder="Sucres"></td>
+                    <td class="input-cell"><input type="text" placeholder="Cacao"></td>
+                    <td class="input-cell"><input type="text" placeholder="Prép. céréales"></td>
+                    <td class="input-cell"><input type="text" placeholder="Prép. légumes"></td>
+                    <td class="input-cell"><input type="text" placeholder="Alimentaires"></td>
+                    <td class="input-cell"><input type="text" placeholder="Boissons"></td>
+                    <td class="input-cell"><input type="text" placeholder="Alim. animaux"></td>
+                    <td class="input-cell"><input type="text" placeholder="Tabacs"></td>
+                    <!-- Section V -->
+                    <td class="input-cell"><input type="text" placeholder="Sel/pierres"></td>
+                    <td class="input-cell"><input type="text" placeholder="Minerais"></td>
+                    <td class="input-cell"><input type="text" placeholder="Combustibles"></td>
+                    <!-- Section VI -->
+                    <td class="input-cell"><input type="text" placeholder="Chim. inorg."></td>
+                    <td class="input-cell"><input type="text" placeholder="Chim. org."></td>
+                    <td class="input-cell"><input type="text" placeholder="Pharma"></td>
+                    <td class="input-cell"><input type="text" placeholder="Engrais"></td>
+                    <td class="input-cell"><input type="text" placeholder="Colorants"></td>
+                    <td class="input-cell"><input type="text" placeholder="Parfumerie"></td>
+                    <td class="input-cell"><input type="text" placeholder="Savons"></td>
+                    <td class="input-cell"><input type="text" placeholder="Albumine"></td>
+                    <td class="input-cell"><input type="text" placeholder="Explosifs"></td>
+                    <td class="input-cell"><input type="text" placeholder="Photo"></td>
+                    <td class="input-cell"><input type="text" placeholder="Chim. divers"></td>
+                    <!-- Section VII -->
+                    <td class="input-cell"><input type="text" placeholder="Plastiques"></td>
+                    <td class="input-cell"><input type="text" placeholder="Caoutchouc"></td>
+                    <!-- Section VIII -->
+                    <td class="input-cell"><input type="text" placeholder="Peaux"></td>
+                    <td class="input-cell"><input type="text" placeholder="Cuirs"></td>
+                    <td class="input-cell"><input type="text" placeholder="Fourrures"></td>
+                    <!-- Section IX -->
+                    <td class="input-cell"><input type="text" placeholder="Bois"></td>
+                    <td class="input-cell"><input type="text" placeholder="Liège"></td>
+                    <td class="input-cell"><input type="text" placeholder="Vannerie"></td>
+                    <!-- Section X -->
+                    <td class="input-cell"><input type="text" placeholder="Pâtes"></td>
+                    <td class="input-cell"><input type="text" placeholder="Papiers"></td>
+                    <td class="input-cell"><input type="text" placeholder="Edition"></td>
+                    <!-- Section XI -->
+                    <td class="input-cell"><input type="text" placeholder="Soie"></td>
+                    <td class="input-cell"><input type="text" placeholder="Laine"></td>
+                    <td class="input-cell"><input type="text" placeholder="Coton"></td>
+                    <td class="input-cell"><input type="text" placeholder="Fibres vég."></td>
+                    <td class="input-cell"><input type="text" placeholder="Filam. synth."></td>
+                    <td class="input-cell"><input type="text" placeholder="Fibres synth."></td>
+                    <td class="input-cell"><input type="text" placeholder="Ouates"></td>
+                    <td class="input-cell"><input type="text" placeholder="Tapis"></td>
+                    <td class="input-cell"><input type="text" placeholder="Tissus spéc."></td>
+                    <td class="input-cell"><input type="text" placeholder="Tissus tech."></td>
+                    <td class="input-cell"><input type="text" placeholder="Bonneterie"></td>
+                    <td class="input-cell"><input type="text" placeholder="Vêt. bonnet."></td>
+                    <td class="input-cell"><input type="text" placeholder="Vêtements"></td>
+                    <td class="input-cell"><input type="text" placeholder="Art. textiles"></td>
+                    <!-- Section XII -->
+                    <td class="input-cell"><input type="text" placeholder="Chaussures"></td>
+                    <td class="input-cell"><input type="text" placeholder="Coiffures"></td>
+                    <td class="input-cell"><input type="text" placeholder="Parapluies"></td>
+                    <td class="input-cell"><input type="text" placeholder="Plumes"></td>
+                    <!-- Section XIII -->
+                    <td class="input-cell"><input type="text" placeholder="Pierres"></td>
+                    <td class="input-cell"><input type="text" placeholder="Céramiques"></td>
+                    <td class="input-cell"><input type="text" placeholder="Verre"></td>
+                    <!-- Section XIV -->
+                    <td class="input-cell"><input type="text" placeholder="Bijoux"></td>
+                    <!-- Section XV -->
+                    <td class="input-cell"><input type="text" placeholder="Fer/acier"></td>
+                    <td class="input-cell"><input type="text" placeholder="Ouv. fer"></td>
+                    <td class="input-cell"><input type="text" placeholder="Cuivre"></td>
+                    <td class="input-cell"><input type="text" placeholder="Nickel"></td>
+                    <td class="input-cell"><input type="text" placeholder="Aluminium"></td>
+                    <td class="input-cell"><input type="text" placeholder="Plomb"></td>
+                    <td class="input-cell"><input type="text" placeholder="Zinc"></td>
+                    <td class="input-cell"><input type="text" placeholder="Étain"></td>
+                    <td class="input-cell"><input type="text" placeholder="Autres mét."></td>
+                    <td class="input-cell"><input type="text" placeholder="Outils"></td>
+                    <td class="input-cell"><input type="text" placeholder="Ouv. métaux"></td>
+                    <!-- Section XVI -->
+                    <td class="input-cell"><input type="text" placeholder="Mach. méca."></td>
+                    <td class="input-cell"><input type="text" placeholder="Mach. élec."></td>
+                    <!-- Section XVII -->
+                    <td class="input-cell"><input type="text" placeholder="Ferroviaire"></td>
+                    <td class="input-cell"><input type="text" placeholder="Automobiles"></td>
+                    <td class="input-cell"><input type="text" placeholder="Aéronautique"></td>
+                    <td class="input-cell"><input type="text" placeholder="Maritime"></td>
+                    <!-- Section XVIII -->
+                    <td class="input-cell"><input type="text" placeholder="Instruments"></td>
+                    <td class="input-cell"><input type="text" placeholder="Horlogerie"></td>
+                    <td class="input-cell"><input type="text" placeholder="Musique"></td>
+                    <!-- Section XIX -->
+                    <td class="input-cell"><input type="text" placeholder="Armes"></td>
+                    <!-- Section XX -->
+                    <td class="input-cell"><input type="text" placeholder="Meubles"></td>
+                    <td class="input-cell"><input type="text" placeholder="Jouets"></td>
+                    <td class="input-cell"><input type="text" placeholder="Divers"></td>
+                    <!-- Section XXI -->
+                    <td class="input-cell"><input type="text" placeholder="Art"></td>
+                </tr>
+                
+                <!-- Lignes de données -->
+                <tr>
+                    <!-- Section I (5) -->
+                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
+                    <!-- Section II (9) -->
+                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
+                    <!-- Section III (1) -->
+                    <td class="data-cell"></td>
+                    <!-- Section IV (9) -->
+                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
+                    <!-- Section V (3) -->
+                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
+                    <!-- Section VI (11) -->
+                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
+                    <!-- Section VII (2) -->
+                    <td class="data-cell"></td><td class="data-cell"></td>
+                    <!-- Section VIII (3) -->
+                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
+                    <!-- Section IX (3) -->
+                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
+                    <!-- Section X (3) -->
+                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
+                    <!-- Section XI (14) -->
+                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
+                    <!-- Section XII (4) -->
+                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
+                    <!-- Section XIII (3) -->
+                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
+                    <!-- Section XIV (1) -->
+                    <td class="data-cell"></td>
+                    <!-- Section XV (11) -->
+                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
+                    <!-- Section XVI (2) -->
+                    <td class="data-cell"></td><td class="data-cell"></td>
+                    <!-- Section XVII (4) -->
+                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
+                    <!-- Section XVIII (3) -->
+                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
+                    <!-- Section XIX (1) -->
+                    <td class="data-cell"></td>
+                    <!-- Section XX (3) -->
+                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
+                    <!-- Section XXI (1) -->
+                    <td class="data-cell"></td>
+                </tr>
+                
+                <tr>
+                    <!-- Section I (5) -->
+                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
+                    <!-- Section II (9) -->
+                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
+                    <!-- Section III (1) -->
+                    <td class="data-cell"></td>
+                    <!-- Section IV (9) -->
+                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
+                    <!-- Section V (3) -->
+                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
+                    <!-- Section VI (11) -->
+                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
+                    <!-- Section VII (2) -->
+                    <td class="data-cell"></td><td class="data-cell"></td>
+                    <!-- Section VIII (3) -->
+                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
+                    <!-- Section IX (3) -->
+                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
+                    <!-- Section X (3) -->
+                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
+                    <!-- Section XI (14) -->
+                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
+                    <!-- Section XII (4) -->
+                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
+                    <!-- Section XIII (3) -->
+                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
+                    <!-- Section XIV (1) -->
+                    <td class="data-cell"></td>
+                    <!-- Section XV (11) -->
+                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
+                    <!-- Section XVI (2) -->
+                    <td class="data-cell"></td><td class="data-cell"></td>
+                    <!-- Section XVII (4) -->
+                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
+                    <!-- Section XVIII (3) -->
+                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
+                    <!-- Section XIX (1) -->
+                    <td class="data-cell"></td>
+                    <!-- Section XX (3) -->
+                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
+                    <!-- Section XXI (1) -->
+                    <td class="data-cell"></td>
+                </tr>
+                
+                <tr>
+                    <!-- Section I (5) -->
+                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
+                    <!-- Section II (9) -->
+                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
+                    <!-- Section III (1) -->
+                    <td class="data-cell"></td>
+                    <!-- Section IV (9) -->
+                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
+                    <!-- Section V (3) -->
+                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
+                    <!-- Section VI (11) -->
+                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
+                    <!-- Section VII (2) -->
+                    <td class="data-cell"></td><td class="data-cell"></td>
+                    <!-- Section VIII (3) -->
+                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
+                    <!-- Section IX (3) -->
+                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
+                    <!-- Section X (3) -->
+                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
+                    <!-- Section XI (14) -->
+                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
+                    <!-- Section XII (4) -->
+                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
+                    <!-- Section XIII (3) -->
+                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
+                    <!-- Section XIV (1) -->
+                    <td class="data-cell"></td>
+                    <!-- Section XV (11) -->
+                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
+                    <!-- Section XVI (2) -->
+                    <td class="data-cell"></td><td class="data-cell"></td>
+                    <!-- Section XVII (4) -->
+                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
+                    <!-- Section XVIII (3) -->
+                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
+                    <!-- Section XIX (1) -->
+                    <td class="data-cell"></td>
+                    <!-- Section XX (3) -->
+                    <td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td>
+                    <!-- Section XXI (1) -->
+                    <td class="data-cell"></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
