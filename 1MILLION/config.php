@@ -1,6 +1,6 @@
 <?php
 // Configuration de la base de données MySQL
-// Fichier: config/database.php
+// database.php
 
 class DatabaseConfig {
     // Configuration de la base de données

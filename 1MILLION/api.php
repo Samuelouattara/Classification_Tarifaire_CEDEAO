@@ -1,6 +1,6 @@
 <?php
 // API PHP pour les opérations de base de données
-// Fichier: database/api.php
+// api.php
 
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');

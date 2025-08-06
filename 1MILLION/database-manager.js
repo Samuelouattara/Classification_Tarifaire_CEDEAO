@@ -1,5 +1,5 @@
 // Gestionnaire de base de données pour le système de classification
-// Fichier: database/database-manager.js
+// database-manager.js
 
 class DatabaseManager {
     constructor() {
