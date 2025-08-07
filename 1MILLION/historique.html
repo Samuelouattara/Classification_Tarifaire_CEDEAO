@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -13,22 +14,25 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1B5E20 0%, #2c3e50 100%);
             min-height: 100vh;
             padding: 20px;
+            color: white;
         }
 
         .container {
             max-width: 1400px;
             margin: 0 auto;
-            background: white;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
             border-radius: 15px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
             overflow: hidden;
+            border: 1px solid rgba(255, 215, 0, 0.3);
         }
 
         .header {
-            background: linear-gradient(90deg, #2c3e50, #34495e);
+            background: linear-gradient(90deg, #1B5E20, #FFD700);
             color: white;
             padding: 30px;
             text-align: center;
@@ -42,11 +46,10 @@
         }
 
         .header-actions {
-            position: absolute;
-            top: 20px;
-            right: 20px;
             display: flex;
-            gap: 10px;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
         }
 
         .btn {
@@ -64,29 +67,33 @@
         }
 
         .btn-primary {
-            background: linear-gradient(45deg, #3498db, #2980b9);
+            background: linear-gradient(45deg, #1B5E20, #00B04F);
             color: white;
+            border: 2px solid #FFD700;
         }
 
         .btn-success {
-            background: linear-gradient(45deg, #27ae60, #229954);
-            color: white;
+            background: linear-gradient(45deg, #FFD700, #B8860B);
+            color: #1B5E20;
+            border: 2px solid #1B5E20;
         }
 
         .btn-secondary {
-            background: linear-gradient(45deg, #95a5a6, #7f8c8d);
+            background: linear-gradient(45deg, #2c3e50, #34495e);
             color: white;
+            border: 2px solid #FFD700;
         }
 
         .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            box-shadow: 0 8px 20px rgba(255, 215, 0, 0.4);
         }
 
         .stats-dashboard {
-            background: #f8f9fa;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
             padding: 30px;
-            border-bottom: 1px solid #dee2e6;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.3);
         }
 
         .stats-grid {
@@ -97,23 +104,27 @@
         }
 
         .stat-card {
-            background: linear-gradient(45deg, #3498db, #2980b9);
+            background: linear-gradient(45deg, #1B5E20, #00B04F);
             color: white;
             padding: 25px;
             border-radius: 12px;
             text-align: center;
-            box-shadow: 0 8px 25px rgba(52, 152, 219, 0.3);
+            box-shadow: 0 8px 25px rgba(27, 94, 32, 0.3);
             transition: transform 0.3s ease;
+            border: 2px solid rgba(255, 215, 0, 0.3);
         }
 
         .stat-card:hover {
             transform: translateY(-5px);
+            border-color: #FFD700;
+            box-shadow: 0 12px 30px rgba(255, 215, 0, 0.4);
         }
 
         .stat-card h3 {
             font-size: 2.5em;
             margin-bottom: 8px;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            color: #FFD700;
         }
 
         .stat-card p {
@@ -122,9 +133,10 @@
         }
 
         .filters-section {
-            background: white;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(5px);
             padding: 25px;
-            border-bottom: 1px solid #dee2e6;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.3);
         }
 
         .filters-grid {
@@ -142,25 +154,39 @@
         .filter-group label {
             margin-bottom: 5px;
             font-weight: 600;
-            color: #2c3e50;
+            color: #FFD700;
         }
 
         .filter-group input,
         .filter-group select {
             padding: 10px;
-            border: 2px solid #ddd;
+            border: 2px solid rgba(255, 215, 0, 0.3);
             border-radius: 6px;
             transition: border-color 0.3s ease;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            backdrop-filter: blur(5px);
         }
 
         .filter-group input:focus,
         .filter-group select:focus {
             outline: none;
-            border-color: #3498db;
+            border-color: #FFD700;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .filter-group input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .filter-group select option {
+            background: #1B5E20;
+            color: white;
         }
 
         .table-container {
-            background: white;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(5px);
             padding: 25px;
             overflow-x: auto;
         }
@@ -170,26 +196,34 @@
             border-collapse: collapse;
             margin-bottom: 20px;
             font-size: 14px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
         }
 
         .data-table th,
         .data-table td {
             padding: 15px 12px;
             text-align: left;
-            border-bottom: 1px solid #dee2e6;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.3);
         }
 
         .data-table th {
-            background: linear-gradient(45deg, #34495e, #2c3e50);
+            background: linear-gradient(45deg, #1B5E20, #FFD700);
             color: white;
             font-weight: 600;
             position: sticky;
             top: 0;
             z-index: 10;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
         }
 
         .data-table tr:hover {
-            background: #f8f9fa;
+            background: rgba(255, 215, 0, 0.1);
+        }
+
+        .data-table td {
+            color: white;
         }
 
         .status-badge {
@@ -201,18 +235,18 @@
         }
 
         .status-valide {
-            background: #d4edda;
-            color: #155724;
+            background: #00B04F;
+            color: white;
         }
 
         .status-en-attente {
-            background: #fff3cd;
-            color: #856404;
+            background: #FFD700;
+            color: #1B5E20;
         }
 
         .status-rejete {
-            background: #f8d7da;
-            color: #721c24;
+            background: #e74c3c;
+            color: white;
         }
 
         .pagination {
@@ -225,16 +259,19 @@
 
         .pagination button {
             padding: 8px 16px;
-            border: 1px solid #dee2e6;
-            background: white;
+            border: 2px solid rgba(255, 215, 0, 0.5);
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
             border-radius: 6px;
             cursor: pointer;
             transition: all 0.3s ease;
+            color: white;
         }
 
         .pagination button:hover:not(:disabled) {
-            background: #3498db;
-            color: white;
+            background: #FFD700;
+            color: #1B5E20;
+            border-color: #FFD700;
         }
 
         .pagination button:disabled {
@@ -243,15 +280,15 @@
         }
 
         .pagination .current {
-            background: #3498db;
-            color: white;
-            border-color: #3498db;
+            background: #FFD700;
+            color: #1B5E20;
+            border-color: #FFD700;
         }
 
         .loading {
             text-align: center;
             padding: 50px;
-            color: #3498db;
+            color: #FFD700;
             font-size: 1.1em;
         }
 
@@ -276,13 +313,15 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: white;
+            background: linear-gradient(135deg, #1B5E20, #2c3e50);
             border-radius: 12px;
             padding: 30px;
             max-width: 600px;
             width: 90%;
             max-height: 80vh;
             overflow-y: auto;
+            border: 2px solid #FFD700;
+            color: white;
         }
 
         .modal-header {
@@ -291,7 +330,7 @@
             align-items: center;
             margin-bottom: 20px;
             padding-bottom: 15px;
-            border-bottom: 2px solid #dee2e6;
+            border-bottom: 2px solid rgba(255, 215, 0, 0.5);
         }
 
         .close-modal {
@@ -299,7 +338,7 @@
             border: none;
             font-size: 24px;
             cursor: pointer;
-            color: #7f8c8d;
+            color: #FFD700;
         }
 
         .detail-grid {
@@ -311,19 +350,20 @@
 
         .detail-item {
             padding: 12px;
-            background: #f8f9fa;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
             border-radius: 6px;
-            border-left: 4px solid #3498db;
+            border-left: 4px solid #FFD700;
         }
 
         .detail-label {
             font-weight: 600;
-            color: #2c3e50;
+            color: #FFD700;
             margin-bottom: 5px;
         }
 
         .detail-value {
-            color: #7f8c8d;
+            color: white;
         }
 
         .notification {
@@ -336,18 +376,23 @@
             font-weight: 600;
             z-index: 1001;
             animation: slideIn 0.3s ease;
+            border: 2px solid;
         }
 
         .notification.success {
-            background: #27ae60;
+            background: #00B04F;
+            border-color: #FFD700;
         }
 
         .notification.error {
             background: #e74c3c;
+            border-color: #FFD700;
         }
 
         .notification.warning {
-            background: #f39c12;
+            background: #FFD700;
+            color: #1B5E20;
+            border-color: #1B5E20;
         }
 
         @keyframes fadeIn {
@@ -366,11 +411,9 @@
             }
 
             .header-actions {
-                position: relative;
-                top: auto;
-                right: auto;
-                margin-top: 15px;
-                justify-content: center;
+                flex-direction: column;
+                gap: 10px;
+                align-items: center;
             }
 
             .stats-grid {
@@ -404,38 +447,19 @@
     <div class="container">
         <div class="header">
             <h1>📊 Historique des Classifications</h1>
-            <p>Système de Suivi et Gestion des Produits Classifiés</p>
+            <p>Système de Suivi et Gestion des Produits Classifiés - CEDEAO TEC SH 2022</p>
             <div class="header-actions">
-                <a href="classification-interface.html" class="btn btn-primary">
+                <a href="system.html" class="btn btn-primary">
                     ➕ Nouvelle Classification
                 </a>
                 <button class="btn btn-success" onclick="exportToCSV()">
                     📊 Exporter CSV
                 </button>
-                <button class="btn btn-secondary" onclick="logout()">
-                    🚪 Déconnexion
-                </button>
             </div>
         </div>
 
-        <div id="loginSection" style="display: none; padding: 40px; text-align: center;">
-            <h2>🔐 Connexion Requise</h2>
-            <p>Veuillez vous connecter pour accéder à l'historique</p>
-            <div style="max-width: 400px; margin: 20px auto;">
-                <div style="margin-bottom: 15px;">
-                    <input type="email" id="loginEmail" placeholder="Email" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 6px;">
-                </div>
-                <div style="margin-bottom: 15px;">
-                    <input type="password" id="loginPassword" placeholder="Mot de passe" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 6px;">
-                </div>
-                <button class="btn btn-primary" onclick="login()">Se Connecter</button>
-            </div>
-            <div id="loginAlert"></div>
-        </div>
-
-        <div id="mainContent" style="display: none;">
+        <div id="mainContent">
             <div class="stats-dashboard">
-                <div id="userInfo" style="text-align: center; margin-bottom: 20px;"></div>
                 <div class="stats-grid" id="statsGrid">
                     <div class="stat-card">
                         <h3 id="totalProducts">0</h3>
@@ -524,7 +548,7 @@
                             <th>Description</th>
                             <th>Section</th>
                             <th>Code Tarifaire</th>
-                            <th>Origine</th>
+                            <th>Confiance IA</th>
                             <th>Statut</th>
                             <th>Date</th>
                             <th>Actions</th>
@@ -556,10 +580,7 @@
     </div>
 
     <!-- Scripts -->
-    <script src="../database/database-manager.js"></script>
     <script>
-        let dbManager = null;
-        let currentUser = null;
         let allClassifications = [];
         let filteredClassifications = [];
         let currentPage = 1;
@@ -567,9 +588,8 @@
 
         // Initialisation
         document.addEventListener('DOMContentLoaded', function() {
-            dbManager = new DatabaseManager();
             setupEventListeners();
-            checkUserLogin();
+            loadClassificationHistory();
         });
 
         function setupEventListeners() {
@@ -586,66 +606,6 @@
             });
         }
 
-        async function checkUserLogin() {
-            try {
-                currentUser = await dbManager.getCurrentUser();
-                if (currentUser) {
-                    showMainContent();
-                    await loadClassificationHistory();
-                } else {
-                    showLoginSection();
-                }
-            } catch (error) {
-                console.error('Erreur lors de la vérification de l\'utilisateur:', error);
-                showLoginSection();
-            }
-        }
-
-        async function login() {
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-            const alertDiv = document.getElementById('loginAlert');
-
-            if (!email || !password) {
-                showAlert(alertDiv, 'Veuillez remplir tous les champs', 'error');
-                return;
-            }
-
-            try {
-                const result = await dbManager.authenticateUser(email, password);
-                
-                if (result.success) {
-                    currentUser = result.user;
-                    showAlert(alertDiv, 'Connexion réussie!', 'success');
-                    setTimeout(() => {
-                        showMainContent();
-                        loadClassificationHistory();
-                    }, 1000);
-                } else {
-                    showAlert(alertDiv, result.message, 'error');
-                }
-            } catch (error) {
-                showAlert(alertDiv, 'Erreur de connexion', 'error');
-            }
-        }
-
-        function showLoginSection() {
-            document.getElementById('loginSection').style.display = 'block';
-            document.getElementById('mainContent').style.display = 'none';
-        }
-
-        function showMainContent() {
-            document.getElementById('loginSection').style.display = 'none';
-            document.getElementById('mainContent').style.display = 'block';
-            
-            // Afficher les informations utilisateur
-            const userInfoDiv = document.getElementById('userInfo');
-            userInfoDiv.innerHTML = `
-                <h3>👋 ${currentUser.nom_complet}</h3>
-                <p>📧 ${currentUser.email} | 🏢 ${currentUser.organisation} | 👤 ${currentUser.role}</p>
-            `;
-        }
-
         async function loadClassificationHistory() {
             try {
                 setLoading(true);
@@ -656,10 +616,10 @@
                 if (historique.length === 0) {
                     document.getElementById('historyTableBody').innerHTML = `
                         <tr>
-                            <td colspan="8" style="text-align: center; color: #7f8c8d; padding: 40px;">
+                            <td colspan="8" style="text-align: center; color: #FFD700; padding: 40px;">
                                 📭 Aucun produit classifié trouvé
                                 <br><br>
-                                <small>Les produits apparaîtront ici après validation dans l'interface de classification</small>
+                                <small style="color: rgba(255, 215, 0, 0.7);">Les produits apparaîtront ici après classification dans l'interface principale</small>
                             </td>
                         </tr>
                     `;
@@ -667,15 +627,26 @@
                     return;
                 }
 
-                // Filtrer par utilisateur si nécessaire
-                let filteredHistory = historique;
-                if (currentUser && currentUser.role !== 'administrateur') {
-                    filteredHistory = historique.filter(item => item.user_id === currentUser.user_id);
-                }
+                // Transformer les données pour correspondre au format attendu
+                allClassifications = historique.map((item, index) => ({
+                    id_produit: index + 1,
+                    description_produit: item.description,
+                    section_produit: `Section ${item.section}`,
+                    code_tarifaire: item.code || 'N/A',
+                    origine_produit: 'Non spécifié',
+                    statut_validation: 'valide',
+                    date_classification: item.timestamp,
+                    taux_imposition: '0',
+                    valeur_declaree: null,
+                    poids_kg: null,
+                    unite_mesure: null,
+                    numero_serie: null,
+                    commentaires: item.title,
+                    classification_confidence: Math.round(item.confidence * 100)
+                }));
 
-                allClassifications = filteredHistory;
                 applyFilters();
-                updateStats(filteredHistory);
+                updateStats(allClassifications);
 
             } catch (error) {
                 console.error('Erreur lors du chargement de l\'historique:', error);
@@ -713,7 +684,7 @@
                     (item.code_tarifaire && item.code_tarifaire.toLowerCase().includes(searchTerm));
 
                 // Filtre section
-                const matchesSection = !sectionFilter || item.section_produit === sectionFilter;
+                const matchesSection = !sectionFilter || item.section_produit.includes(sectionFilter);
 
                 // Filtre statut
                 const matchesStatus = !statusFilter || item.statut_validation === statusFilter;
@@ -740,7 +711,7 @@
             if (pageItems.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="8" style="text-align: center; color: #7f8c8d; padding: 40px;">
+                        <td colspan="8" style="text-align: center; color: #FFD700; padding: 40px;">
                             🔍 Aucun résultat trouvé pour les filtres appliqués
                         </td>
                     </tr>
@@ -757,7 +728,7 @@
                     </td>
                     <td>${item.section_produit}</td>
                     <td>${item.code_tarifaire || 'N/A'}</td>
-                    <td>${item.origine_produit}</td>
+                    <td style="color: #FFD700; font-weight: bold;">${item.classification_confidence}%</td>
                     <td>
                         <span class="status-badge status-${item.statut_validation}">
                             ${getStatusText(item.statut_validation)}
@@ -806,7 +777,7 @@
                 } else if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
                     paginationHTML += `<button onclick="changePage(${i})">${i}</button>`;
                 } else if (i === currentPage - 3 || i === currentPage + 3) {
-                    paginationHTML += `<span>...</span>`;
+                    paginationHTML += `<span style="color: #FFD700;">...</span>`;
                 }
             }
 
@@ -869,10 +840,6 @@
                         <div class="detail-value">${product.description_produit}</div>
                     </div>
                     <div class="detail-item">
-                        <div class="detail-label">Pays d'origine</div>
-                        <div class="detail-value">${product.origine_produit}</div>
-                    </div>
-                    <div class="detail-item">
                         <div class="detail-label">Section CEDEAO</div>
                         <div class="detail-value">${product.section_produit}</div>
                     </div>
@@ -881,28 +848,12 @@
                         <div class="detail-value">${product.code_tarifaire || 'N/A'}</div>
                     </div>
                     <div class="detail-item">
-                        <div class="detail-label">Taux d'imposition</div>
-                        <div class="detail-value">${product.taux_imposition}%</div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="detail-label">Valeur déclarée</div>
-                        <div class="detail-value">${product.valeur_declaree?.toLocaleString() || 'N/A'} FCFA</div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="detail-label">Poids</div>
-                        <div class="detail-value">${product.poids_kg || 'N/A'} kg</div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="detail-label">Unité de mesure</div>
-                        <div class="detail-value">${product.unite_mesure || 'N/A'}</div>
+                        <div class="detail-label">Confiance IA</div>
+                        <div class="detail-value" style="color: #FFD700; font-weight: bold;">${product.classification_confidence}%</div>
                     </div>
                     <div class="detail-item">
                         <div class="detail-label">Date de classification</div>
                         <div class="detail-value">${new Date(product.date_classification).toLocaleString()}</div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="detail-label">Numéro de série</div>
-                        <div class="detail-value">${product.numero_serie || 'N/A'}</div>
                     </div>
                 </div>
                 
@@ -910,13 +861,6 @@
                     <div class="detail-item" style="margin-top: 15px;">
                         <div class="detail-label">Commentaires</div>
                         <div class="detail-value">${product.commentaires}</div>
-                    </div>
-                ` : ''}
-                
-                ${product.classification_confidence ? `
-                    <div class="detail-item" style="margin-top: 15px;">
-                        <div class="detail-label">Confiance IA</div>
-                        <div class="detail-value">${Math.round(product.classification_confidence)}%</div>
                     </div>
                 ` : ''}
             `;
@@ -950,7 +894,7 @@
             if (link.download !== undefined) {
                 const url = URL.createObjectURL(blob);
                 link.setAttribute('href', url);
-                link.setAttribute('download', `historique_classifications_${new Date().toISOString().split('T')[0]}.csv`);
+                link.setAttribute('download', `historique_classifications_cedeao_${new Date().toISOString().split('T')[0]}.csv`);
                 link.style.visibility = 'hidden';
                 document.body.appendChild(link);
                 link.click();
@@ -961,8 +905,8 @@
 
         function generateCSV(data) {
             const headers = [
-                'ID', 'Description', 'Section', 'Code Tarifaire', 'Origine', 
-                'Statut', 'Date Classification', 'Taux Imposition', 'Valeur Déclarée', 'Poids'
+                'ID', 'Description', 'Section', 'Code Tarifaire', 'Confiance IA (%)', 
+                'Statut', 'Date Classification'
             ];
             
             const csvRows = [headers.join(';')];
@@ -973,26 +917,14 @@
                     `"${item.description_produit.replace(/"/g, '""')}"`,
                     item.section_produit,
                     item.code_tarifaire || '',
-                    item.origine_produit,
+                    item.classification_confidence + '%',
                     item.statut_validation,
-                    new Date(item.date_classification).toLocaleDateString(),
-                    item.taux_imposition + '%',
-                    item.valeur_declaree || '',
-                    item.poids_kg || ''
+                    new Date(item.date_classification).toLocaleDateString()
                 ];
                 csvRows.push(row.join(';'));
             });
             
             return csvRows.join('\n');
-        }
-
-        async function logout() {
-            await dbManager.logout();
-            currentUser = null;
-            allClassifications = [];
-            filteredClassifications = [];
-            showLoginSection();
-            showNotification('Déconnexion réussie', 'success');
         }
 
         function showNotification(message, type) {
@@ -1002,22 +934,10 @@
             document.body.appendChild(notification);
             
             setTimeout(() => {
-                document.body.removeChild(notification);
+                if (document.body.contains(notification)) {
+                    document.body.removeChild(notification);
+                }
             }, 3000);
-        }
-
-        function showAlert(container, message, type) {
-            container.innerHTML = `
-                <div style="margin-top: 15px; padding: 10px; border-radius: 6px; 
-                           background: ${type === 'success' ? '#d4edda' : '#f8d7da'}; 
-                           color: ${type === 'success' ? '#155724' : '#721c24'};">
-                    ${message}
-                </div>
-            `;
-            
-            setTimeout(() => {
-                container.innerHTML = '';
-            }, 5000);
         }
 
         // Raccourcis clavier
@@ -1031,6 +951,59 @@
                 document.getElementById('searchFilter').focus();
             }
         });
+
+        // Fonction pour ajouter des données de démonstration si aucun historique n'existe
+        function addDemoData() {
+            if (localStorage.getItem('classification_history')) return;
+            
+            const demoData = [
+                {
+                    timestamp: new Date().toISOString(),
+                    description: "Riz blanchi, grains longs",
+                    section: "II",
+                    title: "Section II - Produits du règne végétal",
+                    confidence: 0.95,
+                    code: "1006.30"
+                },
+                {
+                    timestamp: new Date(Date.now() - 86400000).toISOString(),
+                    description: "Véhicule automobile de tourisme",
+                    section: "XVII",
+                    title: "Section XVII - Matériel de transport",
+                    confidence: 0.92,
+                    code: "8703.23"
+                },
+                {
+                    timestamp: new Date(Date.now() - 172800000).toISOString(),
+                    description: "Tissu de coton, armure toile",
+                    section: "XI",
+                    title: "Section XI - Matières textiles et ouvrages",
+                    confidence: 0.88,
+                    code: "5208.11"
+                },
+                {
+                    timestamp: new Date(Date.now() - 259200000).toISOString(),
+                    description: "Téléphone portable smartphone",
+                    section: "XVI",
+                    title: "Section XVI - Machines et appareils",
+                    confidence: 0.91,
+                    code: "8517.12"
+                },
+                {
+                    timestamp: new Date(Date.now() - 345600000).toISOString(),
+                    description: "Huile de palme brute",
+                    section: "III",
+                    title: "Section III - Graisses et huiles",
+                    confidence: 0.97,
+                    code: "1511.10"
+                }
+            ];
+            
+            localStorage.setItem('classification_history', JSON.stringify(demoData));
+        }
+
+        // Ajouter des données de démonstration au premier chargement
+        addDemoData();
     </script>
 </body>
 </html>

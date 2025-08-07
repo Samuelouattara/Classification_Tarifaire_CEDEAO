@@ -119,31 +119,55 @@ function handleDelete($pdo, $action, $data) {
 // Fonction de connexion utilisateur
 function login($pdo, $data) {
     try {
-        $email = $data['email'] ?? '';
+        // Récupérer l'identifiant (peut être email ou identifiant_user)
+        $identifiant = $data['identifiant'] ?? $data['email'] ?? '';
         $password = $data['password'] ?? '';
         
-        if (empty($email) || empty($password)) {
-            throw new Exception('Email et mot de passe requis');
+        if (empty($identifiant) || empty($password)) {
+            throw new Exception('Identifiant et mot de passe requis');
         }
         
-        $stmt = $pdo->prepare("SELECT * FROM User WHERE email = ? AND statut_compte = 'actif'");
-        $stmt->execute([$email]);
+        // Chercher l'utilisateur par email OU par identifiant_user
+        $stmt = $pdo->prepare("
+            SELECT * FROM User 
+            WHERE (email = ? OR identifiant_user = ?) 
+            AND statut_compte = 'actif'
+        ");
+        $stmt->execute([$identifiant, $identifiant]);
         $user = $stmt->fetch();
         
-        if (!$user || !password_verify($password, $user['mot_de_passe'])) {
-            throw new Exception('Email ou mot de passe incorrect');
+        if (!$user) {
+            // Log pour debug
+            error_log("Utilisateur non trouvé: " . $identifiant);
+            throw new Exception('Identifiant ou mot de passe incorrect');
+        }
+        
+        if (!password_verify($password, $user['mot_de_passe'])) {
+            // Log pour debug
+            error_log("Mot de passe incorrect pour: " . $identifiant);
+            throw new Exception('Identifiant ou mot de passe incorrect');
         }
         
         // Mettre à jour la dernière connexion
         $updateStmt = $pdo->prepare("UPDATE User SET derniere_connexion = NOW() WHERE user_id = ?");
         $updateStmt->execute([$user['user_id']]);
         
+        // Générer un token de session
+        $sessionToken = bin2hex(random_bytes(32));
+        
         // Nettoyer les données sensibles
         unset($user['mot_de_passe']);
+        
+        // Log de succès
+        error_log("Connexion réussie pour: " . $user['nom_user'] . " (ID: " . $user['user_id'] . ")");
         
         echo json_encode([
             'success' => true,
             'user' => $user,
+            'session' => [
+                'token' => $sessionToken,
+                'expires_in' => 3600
+            ],
             'message' => 'Connexion réussie'
         ]);
         
