@@ -1,4 +1,4 @@
-<!--system.html-->
+<!--system.html - VERSION CORRIGÉE POUR LA PERSISTENCE-->
 <!DOCTYPE html>
 <html lang="fr" class="scroll-smooth">
 <head>
@@ -24,25 +24,55 @@
     }
     </script>
     
-    <!-- Vérification de l'authentification au chargement -->
+    <!-- ✅ VÉRIFICATION D'AUTHENTIFICATION CORRIGÉE -->
     <script>
         (function() {
-            const currentUser = localStorage.getItem('current_user');
-            const sessionToken = localStorage.getItem('session_token');
-            
-            if (!currentUser || !sessionToken) {
-                console.log('❌ Accès non autorisé - Redirection vers l\'authentification');
-                window.location.replace('index.html');
-                return;
-            }
+            console.log('🔐 Vérification de l\'authentification...');
             
             try {
+                const currentUser = localStorage.getItem('current_user');
+                const sessionToken = localStorage.getItem('session_token');
+                
+                console.log('currentUser dans localStorage:', !!currentUser);
+                console.log('sessionToken dans localStorage:', !!sessionToken);
+                
+                if (!currentUser || !sessionToken) {
+                    console.log('❌ Données de session manquantes');
+                    console.log('currentUser:', currentUser);
+                    console.log('sessionToken:', sessionToken);
+                    
+                    // Nettoyer les données corrompues
+                    localStorage.removeItem('current_user');
+                    localStorage.removeItem('session_token');
+                    
+                    alert('⚠️ Session expirée. Vous allez être redirigé vers la page de connexion.');
+                    window.location.replace('index.html');
+                    return;
+                }
+                
+                // Tester si les données sont valides
                 const user = JSON.parse(currentUser);
-                console.log('✅ Utilisateur connecté:', user.nom_user);
-            } catch (e) {
+                
+                if (!user || !user.nom_user || !user.user_id) {
+                    throw new Error('Données utilisateur invalides');
+                }
+                
+                console.log('✅ Utilisateur connecté:', user.nom_user, '(Admin:', user.is_admin, ')');
+                
+                // Marquer la session comme valide
+                window.sessionValid = true;
+                window.currentUserData = user;
+                
+            } catch (error) {
+                console.error('❌ Erreur lors de la vérification des données utilisateur:', error);
+                
+                // Nettoyer les données corrompues
                 localStorage.removeItem('current_user');
                 localStorage.removeItem('session_token');
+                
+                alert('⚠️ Données de session corrompues. Reconnexion nécessaire.');
                 window.location.replace('index.html');
+                return;
             }
         })();
     </script>
@@ -102,11 +132,6 @@
                             <a href="historique.html" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors">
                                 <span class="mr-3">📋</span>
                                 Historique
-                            </a>
-                            
-                            <a href="parametres.html" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors">
-                                <span class="mr-3">⚙️</span>
-                                Paramètres
                             </a>
                             
                             <hr class="my-2">
@@ -208,33 +233,33 @@
             <!--Le tableau de classification sera ici-->
             <iframe src="tableau.html" width="100%" height="500px"></iframe>
 
-            <div class="bg-gradient-to-br from-douane-vert/10 to-douane-or/10 p-8 rounded-2xl border border-douane-or/20 mb-8">
-                <h3 class="text-2xl font-bold text-douane-vert mb-6">❓ Comment utiliser ce système</h3>
-                
-                <ol class="list-decimal list-inside space-y-2 mb-8 text-gray-700">
-                    <li>Saisissez une description détaillée de votre produit</li>
-                    <li>Cliquez sur "Classifier le produit"</li>
-                    <li>Le système analysera la description et proposera la section appropriée</li>
-                    <li>Consultez les détails de la section et les codes tarifaires correspondants</li>
-                </ol>
-                
-                <h4 class="text-xl font-bold text-douane-vert mb-4">💡 Exemples de descriptions efficaces</h4>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="bg-white p-4 rounded-lg border-l-4 border-douane-vert shadow-sm">
-                        <strong class="text-douane-vert font-bold">Animaux :</strong> "Cheval reproducteur de race pure", "Poules pondeuses vivantes"
-                    </div>
-                    <div class="bg-white p-4 rounded-lg border-l-4 border-douane-vert shadow-sm">
-                        <strong class="text-douane-vert font-bold">Produits alimentaires :</strong> "Riz blanchi long grain", "Tomates fraîches", "Huile d'olive vierge"
-                    </div>
-                    <div class="bg-white p-4 rounded-lg border-l-4 border-douane-vert shadow-sm">
-                        <strong class="text-douane-vert font-bold">Textiles :</strong> "Tissu 100% coton", "Chemise en soie", "Jean en denim"
-                    </div>
-                    <div class="bg-white p-4 rounded-lg border-l-4 border-douane-vert shadow-sm">
-                        <strong class="text-douane-vert font-bold">Véhicules :</strong> "Voiture d'occasion diesel", "Camion de transport", "Moto 250cc"
-                    </div>
-                </div>
-            </div>
+                 <div class="bg-gradient-to-br from-douane-vert/10 to-douane-or/10 p-8 rounded-2xl border border-douane-or/20 mb-8">
+    <h3 class="text-2xl font-bold text-douane-vert mb-6">❓ Comment utiliser ce système</h3>
+    
+    <ol class="list-decimal list-inside space-y-2 mb-8 text-white-700">
+        <li>Saisissez une description détaillée de votre produit</li>
+        <li>Cliquez sur "Classifier le produit"</li>
+        <li>Le système analysera la description et proposera la section appropriée</li>
+        <li>Consultez les détails de la section et les codes tarifaires correspondants</li>
+    </ol>
+    
+    <h4 class="text-xl font-bold text-douane-vert mb-4">💡 Exemples de descriptions efficaces</h4>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-vert p-4 rounded-lg border-l-4 border-douane-vert shadow-sm">
+            <strong class="text-douane-blanc-bold">Animaux :</strong> "Cheval reproducteur de race pure", "Poules pondeuses vivantes"
+        </div>
+        <div class="bg-vert p-4 rounded-lg border-l-4 border-douane-vert shadow-sm">
+            <strong class="text-douane-blanc-bold">Produits alimentaires :</strong> "Riz blanchi long grain", "Tomates fraîches", "Huile d'olive vierge"
+        </div>
+        <div class="bg-vert p-4 rounded-lg border-l-4 border-douane-vert shadow-sm">
+            <strong class="text-douane-blanc-bold">Textiles :</strong> "Tissu 100% coton", "Chemise en soie", "Jean en denim"
+        </div>
+        <div class="bg-vert p-4 rounded-lg border-l-4 border-douane-vert shadow-sm">
+            <strong class="text-douane-blanc-bold">Véhicules :</strong> "Voiture d'occasion diesel", "Camion de transport", "Moto 250cc"
+        </div>
+    </div>
+</div>
         </main>
 
         <footer class="text-center text-white/80 py-8 mt-12 border-t border-white/20">
@@ -267,50 +292,90 @@
         </div>
     </div>
 
-    <!-- Scripts de gestion de l'authentification et déconnexion -->
+    <!-- ✅ SCRIPTS DE GESTION DE L'AUTHENTIFICATION CORRIGÉS -->
     <script>
-        // Gestionnaire d'authentification et de déconnexion
+        // ✅ GESTIONNAIRE D'AUTHENTIFICATION ROBUSTE
         class AuthManager {
             constructor() {
                 this.currentUser = null;
                 this.sessionToken = null;
+                this.isInitialized = false;
+                
+                // Vérifier immédiatement si la session est valide
+                if (!window.sessionValid) {
+                    this.redirectToLogin('Session invalide');
+                    return;
+                }
+                
                 this.loadUserInfo();
                 this.initializeUI();
                 this.setupEventListeners();
+                this.setupSessionMonitoring();
+                this.isInitialized = true;
+                
+                console.log('✅ AuthManager initialisé avec succès');
             }
 
             loadUserInfo() {
                 try {
-                    const userData = localStorage.getItem('current_user');
-                    const token = localStorage.getItem('session_token');
+                    // Utiliser les données déjà validées
+                    this.currentUser = window.currentUserData;
+                    this.sessionToken = localStorage.getItem('session_token');
                     
-                    if (userData && token) {
-                        this.currentUser = JSON.parse(userData);
-                        this.sessionToken = token;
-                        console.log('✅ Session utilisateur chargée:', this.currentUser.nom_user);
-                    } else {
-                        this.redirectToLogin();
+                    if (!this.currentUser || !this.sessionToken) {
+                        throw new Error('Données de session manquantes');
                     }
+                    
+                    // ✅ VALIDATION STRICTE DES DONNÉES ADMIN
+                    if (typeof this.currentUser.is_admin !== 'boolean') {
+                        // Convertir les valeurs numériques en boolean
+                        this.currentUser.is_admin = Boolean(this.currentUser.is_admin);
+                    }
+                    
+                    console.log('✅ Session utilisateur validée:', {
+                        nom: this.currentUser.nom_user,
+                        id: this.currentUser.user_id,
+                        admin: this.currentUser.is_admin,
+                        email: this.currentUser.email
+                    });
+                    
                 } catch (error) {
                     console.error('❌ Erreur lors du chargement des données utilisateur:', error);
-                    this.clearSession();
-                    this.redirectToLogin();
+                    this.redirectToLogin('Erreur de session');
                 }
             }
 
             initializeUI() {
-                if (this.currentUser) {
+                if (!this.currentUser) return;
+                
+                try {
                     // Mettre à jour les informations utilisateur dans l'interface
-                    document.getElementById('user-name').textContent = this.currentUser.nom_user;
-                    document.getElementById('user-role').textContent = this.currentUser.is_admin ? 'Administrateur' : 'Utilisateur';
+                    const userNameEl = document.getElementById('user-name');
+                    const userRoleEl = document.getElementById('user-role');
+                    const dropdownNameEl = document.getElementById('dropdown-user-name');
+                    const dropdownEmailEl = document.getElementById('dropdown-user-email');
+                    const adminLinkEl = document.getElementById('admin-panel-link');
                     
-                    document.getElementById('dropdown-user-name').textContent = this.currentUser.nom_user;
-                    document.getElementById('dropdown-user-email').textContent = this.currentUser.email || this.currentUser.identifiant_user;
+                    if (userNameEl) userNameEl.textContent = this.currentUser.nom_user;
+                    if (userRoleEl) userRoleEl.textContent = this.currentUser.is_admin ? 'Administrateur' : 'Utilisateur';
+                    if (dropdownNameEl) dropdownNameEl.textContent = this.currentUser.nom_user;
+                    if (dropdownEmailEl) dropdownEmailEl.textContent = this.currentUser.email || this.currentUser.identifiant_user;
 
-                    // Afficher le lien du panneau admin si l'utilisateur est admin
-                    if (this.currentUser.is_admin) {
-                        document.getElementById('admin-panel-link').classList.remove('hidden');
+                    // ✅ AFFICHAGE CORRECT DU LIEN ADMIN
+                    if (adminLinkEl) {
+                        if (this.currentUser.is_admin === true) {
+                            adminLinkEl.classList.remove('hidden');
+                            console.log('✅ Lien administrateur activé pour:', this.currentUser.nom_user);
+                        } else {
+                            adminLinkEl.classList.add('hidden');
+                            console.log('ℹ️ Lien administrateur masqué (utilisateur standard)');
+                        }
                     }
+                    
+                    console.log('✅ Interface utilisateur mise à jour');
+                    
+                } catch (error) {
+                    console.error('❌ Erreur lors de la mise à jour de l\'interface:', error);
                 }
             }
 
@@ -320,38 +385,50 @@
                 const userDropdown = document.getElementById('user-dropdown');
                 const menuArrow = document.getElementById('menu-arrow');
 
-                userMenuBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    const isVisible = !userDropdown.classList.contains('opacity-0');
-                    
-                    if (isVisible) {
-                        this.hideDropdown(userDropdown, menuArrow);
-                    } else {
-                        this.showDropdown(userDropdown, menuArrow);
-                    }
-                });
+                if (userMenuBtn && userDropdown && menuArrow) {
+                    userMenuBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const isVisible = !userDropdown.classList.contains('opacity-0');
+                        
+                        if (isVisible) {
+                            this.hideDropdown(userDropdown, menuArrow);
+                        } else {
+                            this.showDropdown(userDropdown, menuArrow);
+                        }
+                    });
+                }
 
                 // Fermer les dropdowns en cliquant ailleurs
                 document.addEventListener('click', (e) => {
-                    if (!e.target.closest('#user-menu')) {
+                    if (!e.target.closest('#user-menu') && userDropdown) {
                         this.hideDropdown(userDropdown, menuArrow);
                     }
                 });
 
                 // Bouton de déconnexion
-                document.getElementById('logout-btn').addEventListener('click', (e) => {
-                    e.preventDefault();
-                    this.showLogoutModal();
-                });
+                const logoutBtn = document.getElementById('logout-btn');
+                if (logoutBtn) {
+                    logoutBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        this.showLogoutModal();
+                    });
+                }
 
                 // Modal de déconnexion
-                document.getElementById('cancel-logout').addEventListener('click', () => {
-                    this.hideLogoutModal();
-                });
-
-                document.getElementById('confirm-logout').addEventListener('click', () => {
-                    this.performLogout();
-                });
+                const cancelLogout = document.getElementById('cancel-logout');
+                const confirmLogout = document.getElementById('confirm-logout');
+                
+                if (cancelLogout) {
+                    cancelLogout.addEventListener('click', () => {
+                        this.hideLogoutModal();
+                    });
+                }
+                
+                if (confirmLogout) {
+                    confirmLogout.addEventListener('click', () => {
+                        this.performLogout();
+                    });
+                }
 
                 // Raccourci clavier Ctrl+Alt+L
                 document.addEventListener('keydown', (e) => {
@@ -360,33 +437,82 @@
                         this.showLogoutModal();
                     }
                 });
-
-                // Déconnexion automatique à la fermeture
-                window.addEventListener('beforeunload', () => {
-                    this.quickLogout();
+            }
+            
+            // ✅ NOUVEAU: Surveillance de la session
+            setupSessionMonitoring() {
+                // Vérifier la validité de la session toutes les 30 secondes
+                setInterval(() => {
+                    this.validateSession();
+                }, 30000);
+                
+                // Surveillance des changements dans localStorage
+                window.addEventListener('storage', (e) => {
+                    if (e.key === 'current_user' || e.key === 'session_token') {
+                        if (!e.newValue) {
+                            console.log('⚠️ Session supprimée dans un autre onglet');
+                            this.redirectToLogin('Session expirée');
+                        }
+                    }
                 });
+            }
+            
+            // ✅ NOUVEAU: Validation de la session
+            validateSession() {
+                try {
+                    const currentUser = localStorage.getItem('current_user');
+                    const sessionToken = localStorage.getItem('session_token');
+                    
+                    if (!currentUser || !sessionToken) {
+                        console.log('⚠️ Session perdue, redirection...');
+                        this.redirectToLogin('Session expirée');
+                        return false;
+                    }
+                    
+                    const user = JSON.parse(currentUser);
+                    if (!user || !user.nom_user || !user.user_id) {
+                        throw new Error('Données utilisateur corrompues');
+                    }
+                    
+                    return true;
+                    
+                } catch (error) {
+                    console.error('❌ Erreur validation session:', error);
+                    this.redirectToLogin('Session corrompue');
+                    return false;
+                }
             }
 
             showDropdown(dropdown, arrow) {
-                dropdown.classList.remove('opacity-0', 'invisible', 'translate-y-2');
-                dropdown.classList.add('opacity-100', 'visible', 'translate-y-0');
-                arrow.style.transform = 'rotate(180deg)';
+                if (dropdown && arrow) {
+                    dropdown.classList.remove('opacity-0', 'invisible', 'translate-y-2');
+                    dropdown.classList.add('opacity-100', 'visible', 'translate-y-0');
+                    arrow.style.transform = 'rotate(180deg)';
+                }
             }
 
             hideDropdown(dropdown, arrow) {
-                dropdown.classList.add('opacity-0', 'invisible', 'translate-y-2');
-                dropdown.classList.remove('opacity-100', 'visible', 'translate-y-0');
-                arrow.style.transform = 'rotate(0deg)';
+                if (dropdown && arrow) {
+                    dropdown.classList.add('opacity-0', 'invisible', 'translate-y-2');
+                    dropdown.classList.remove('opacity-100', 'visible', 'translate-y-0');
+                    arrow.style.transform = 'rotate(0deg)';
+                }
             }
 
             showLogoutModal() {
-                document.getElementById('logout-modal').classList.remove('hidden');
-                document.getElementById('logout-modal').classList.add('flex');
+                const modal = document.getElementById('logout-modal');
+                if (modal) {
+                    modal.classList.remove('hidden');
+                    modal.classList.add('flex');
+                }
             }
 
             hideLogoutModal() {
-                document.getElementById('logout-modal').classList.add('hidden');
-                document.getElementById('logout-modal').classList.remove('flex');
+                const modal = document.getElementById('logout-modal');
+                if (modal) {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                }
             }
 
             async performLogout() {
@@ -395,9 +521,9 @@
                 const confirmBtn = document.getElementById('confirm-logout');
                 
                 // Interface de chargement
-                logoutText.classList.add('hidden');
-                logoutSpinner.classList.remove('hidden');
-                confirmBtn.disabled = true;
+                if (logoutText) logoutText.classList.add('hidden');
+                if (logoutSpinner) logoutSpinner.classList.remove('hidden');
+                if (confirmBtn) confirmBtn.disabled = true;
 
                 try {
                     // Appel à logout.php
@@ -411,12 +537,13 @@
                     });
 
                     const result = await response.json();
+                    console.log('Résultat déconnexion:', result);
 
                     // Nettoyer la session locale dans tous les cas
                     this.clearSession();
 
                     if (result.success || result.session_destroyed) {
-                        console.log('✅ Déconnexion réussie:', result.message);
+                        console.log('✅ Déconnexion réussie');
                         this.showLogoutSuccess();
                         
                         // Redirection après 1.5 secondes
@@ -436,20 +563,6 @@
                 }
             }
 
-            quickLogout() {
-                // Déconnexion silencieuse (sans attendre la réponse)
-                try {
-                    navigator.sendBeacon('logout.php', JSON.stringify({
-                        user_id: this.currentUser.user_id,
-                        session_token: this.sessionToken
-                    }));
-                } catch (error) {
-                    console.log('Déconnexion beacon échouée:', error);
-                }
-                
-                this.clearSession();
-            }
-
             clearSession() {
                 const keysToRemove = [
                     'current_user',
@@ -464,7 +577,12 @@
                 });
 
                 sessionStorage.clear();
-                console.log('🧹 Session nettoyée');
+                
+                // Nettoyer les variables globales
+                window.sessionValid = false;
+                window.currentUserData = null;
+                
+                console.log('🧹 Session nettoyée complètement');
             }
 
             showLogoutSuccess() {
@@ -484,50 +602,130 @@
                 }, 3000);
             }
 
-            redirectToLogin() {
-                console.log('🔄 Redirection vers la page d\'authentification');
+            redirectToLogin(reason = 'Session expirée') {
+                console.log(`🔄 Redirection vers la page d'authentification: ${reason}`);
+                
+                // Nettoyer complètement
+                this.clearSession();
+                
+                // Afficher un message à l'utilisateur
+                if (reason !== 'Session invalide') {
+                    alert(`⚠️ ${reason}. Vous allez être redirigé vers la page de connexion.`);
+                }
+                
                 window.location.replace('index.html');
+            }
+
+            // ✅ MÉTHODE PUBLIQUE POUR VÉRIFIER SI L'UTILISATEUR EST ADMIN
+            isAdmin() {
+                return this.currentUser && this.currentUser.is_admin === true;
+            }
+            
+            // ✅ MÉTHODE PUBLIQUE POUR OBTENIR LES INFOS UTILISATEUR
+            getUserInfo() {
+                return this.currentUser;
             }
         }
 
-        // Initialiser le gestionnaire d'authentification
+        // ✅ INITIALISATION SÉCURISÉE
         let authManager;
         document.addEventListener('DOMContentLoaded', function() {
-            authManager = new AuthManager();
-            console.log('🔐 Gestionnaire d\'authentification initialisé');
+            // Attendre un peu que le DOM soit complètement chargé
+            setTimeout(() => {
+                try {
+                    authManager = new AuthManager();
+                    window.authManager = authManager; // Pour debug
+                    console.log('🔐 Gestionnaire d\'authentification initialisé avec succès');
+                    
+                    // Vérifier si l'utilisateur peut accéder à admin.html
+                    if (window.location.pathname.includes('admin.html') && !authManager.isAdmin()) {
+                        console.log('❌ Accès admin refusé');
+                        alert('❌ Accès réservé aux administrateurs uniquement.');
+                        window.location.replace('system.html');
+                    }
+                    
+                } catch (error) {
+                    console.error('❌ Erreur lors de l\'initialisation de AuthManager:', error);
+                    
+                    // En cas d'erreur, nettoyer et rediriger
+                    localStorage.removeItem('current_user');
+                    localStorage.removeItem('session_token');
+                    window.location.replace('index.html');
+                }
+            }, 100);
         });
 
-        // Fonction globale pour déconnexion d'urgence
+        // ✅ FONCTION GLOBALE POUR DÉCONNEXION D'URGENCE
         window.emergencyLogout = function() {
             console.log('🚨 Déconnexion d\'urgence activée');
             localStorage.clear();
             sessionStorage.clear();
             window.location.replace('index.html');
         };
+        
+        // ✅ PROTECTION CONTRE LA MANIPULATION DU localStorage
+        const originalSetItem = localStorage.setItem;
+        const originalRemoveItem = localStorage.removeItem;
+        const originalClear = localStorage.clear;
+        
+        // Surveiller les modifications critiques
+        localStorage.setItem = function(key, value) {
+            if (key === 'current_user' || key === 'session_token') {
+                console.log(`🔍 Modification localStorage détectée: ${key}`);
+                
+                // Valider les nouvelles données
+                if (key === 'current_user' && value) {
+                    try {
+                        const userData = JSON.parse(value);
+                        if (!userData.nom_user || !userData.user_id) {
+                            console.error('❌ Tentative de stockage de données utilisateur invalides');
+                            return;
+                        }
+                    } catch (e) {
+                        console.error('❌ Données utilisateur JSON invalides');
+                        return;
+                    }
+                }
+            }
+            return originalSetItem.call(this, key, value);
+        };
+        
+        // ✅ SAUVEGARDE DES DONNÉES IMPORTANTES PÉRIODIQUEMENT
+        setInterval(() => {
+            if (window.authManager && window.authManager.isInitialized) {
+                const currentUser = localStorage.getItem('current_user');
+                const sessionToken = localStorage.getItem('session_token');
+                
+                if (currentUser && sessionToken) {
+                    // Sauvegarder dans sessionStorage comme backup
+                    sessionStorage.setItem('backup_current_user', currentUser);
+                    sessionStorage.setItem('backup_session_token', sessionToken);
+                }
+            }
+        }, 60000); // Chaque minute
     </script>
 
     <!-- Chargement des scripts dans le bon ordre -->
     <script src="codes-tarifaires.js"></script>
     <script>
-        // Vérification du chemin de database-manager.js
+        // ✅ CHARGEMENT ROBUSTE DU DATABASE MANAGER
         const script = document.createElement('script');
-        script.src = './database-manager.js'; // Essayer d'abord dans le même dossier
+        script.src = './database-manager.js';
         script.onerror = function() {
-            // Si échec, essayer le dossier database
             console.warn('database-manager.js non trouvé dans le dossier actuel, essai dossier database...');
             const script2 = document.createElement('script');
             script2.src = '../database/database-manager.js';
             script2.onerror = function() {
                 console.error('database-manager.js introuvable, utilisation du fallback');
-                // Créer un DatabaseManager de base inline
                 window.createFallbackDatabaseManager();
             };
             document.head.appendChild(script2);
         };
         document.head.appendChild(script);
         
+        // ✅ DATABASE MANAGER DE SECOURS AMÉLIORÉ
         window.createFallbackDatabaseManager = function() {
-            console.log('🔧 Création du DatabaseManager fallback');
+            console.log('🔧 Création du DatabaseManager fallback amélioré');
             window.DatabaseManager = class {
                 constructor() {
                     this.possibleUrls = [
@@ -536,51 +734,30 @@
                         'http://localhost/Classification_Tarifaire_CEDEAO/1MILLION/api.php'
                     ];
                     this.apiUrl = null;
-                    console.log('DatabaseManager fallback initialisé');
+                    console.log('✅ DatabaseManager fallback initialisé');
                 }
                 
                 async findWorkingUrl() {
                     for (const url of this.possibleUrls) {
                         try {
-                            const response = await fetch(url + '?action=test_connection');
+                            const response = await fetch(url + '?action=test_connection', {
+                                method: 'GET',
+                                timeout: 5000
+                            });
                             if (response.ok) {
                                 const result = await response.json();
                                 if (result.success) {
                                     this.apiUrl = url;
+                                    console.log(`✅ URL API fonctionnelle trouvée: ${url}`);
                                     return true;
                                 }
                             }
                         } catch (error) {
-                            continue;
+                            console.log(`❌ ${url}: ${error.message}`);
                         }
                     }
+                    console.warn('⚠️ Aucune URL API accessible');
                     return false;
-                }
-                
-                async saveClassifiedProduct(productData) {
-                    if (!this.apiUrl) {
-                        await this.findWorkingUrl();
-                    }
-                    
-                    if (!this.apiUrl) {
-                        return { success: false, message: 'API non accessible' };
-                    }
-                    
-                    try {
-                        const response = await fetch(this.apiUrl, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                action: 'save_classified_product',
-                                product: productData
-                            })
-                        });
-                        const result = await response.json();
-                        return result;
-                    } catch (error) {
-                        console.error('Erreur sauvegarde:', error);
-                        return { success: false, message: error.message };
-                    }
                 }
                 
                 async testConnection() {
@@ -594,12 +771,68 @@
                     
                     try {
                         const response = await fetch(this.apiUrl + '?action=test_connection');
-                        return await response.json();
+                        const result = await response.json();
+                        console.log('✅ Test de connexion DB réussi');
+                        return result;
                     } catch (error) {
+                        console.error('❌ Test de connexion DB échoué:', error);
                         return { success: false, message: error.message };
                     }
                 }
+                
+                async saveClassifiedProduct(productData) {
+                    if (!this.apiUrl) {
+                        const found = await this.findWorkingUrl();
+                        if (!found) {
+                            // Fallback local
+                            this.saveToLocalHistory(productData.description_produit, {
+                                section: { number: productData.section_produit },
+                                confidence: 75,
+                                code: productData.code_tarifaire
+                            });
+                            
+                            return { 
+                                success: false, 
+                                message: 'API non accessible. Sauvé localement.',
+                                fallback: true
+                            };
+                        }
+                    }
 
+                    try {
+                        const response = await fetch(this.apiUrl, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                action: 'save_classified_product',
+                                product: productData
+                            })
+                        });
+                        
+                        if (response.ok) {
+                            const result = await response.json();
+                            console.log('✅ Produit sauvegardé en base:', result);
+                            return result;
+                        }
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    } catch (error) {
+                        console.error('❌ Erreur sauvegarde DB:', error);
+                        
+                        // Fallback local en cas d'erreur
+                        this.saveToLocalHistory(productData.description_produit, {
+                            section: { number: productData.section_produit },
+                            confidence: 75,
+                            code: productData.code_tarifaire
+                        });
+                        
+                        return { 
+                            success: false, 
+                            message: `Erreur DB: ${error.message}. Sauvé localement.`,
+                            fallback: true
+                        };
+                    }
+                }
+                
                 saveToLocalHistory(description, result) {
                     try {
                         let history = JSON.parse(localStorage.getItem('classification_history') || '[]');
@@ -611,12 +844,15 @@
                             confidence: result.confidence || 0,
                             code: result.code || 'N/A'
                         };
+                        
                         history.unshift(entry);
                         if (history.length > 100) history = history.slice(0, 100);
                         localStorage.setItem('classification_history', JSON.stringify(history));
+                        
+                        console.log('✅ Entrée sauvegardée dans l\'historique local');
                         return entry;
                     } catch (error) {
-                        console.error('Erreur sauvegarde locale:', error);
+                        console.error('❌ Erreur sauvegarde locale:', error);
                         return null;
                     }
                 }
@@ -625,33 +861,88 @@
     </script>
     <script src="ai-classifier.js"></script>
     <script>
-        // Script de diagnostic intégré
+        // ✅ SCRIPT DE DIAGNOSTIC INTÉGRÉ ET AMÉLIORÉ
         (function() {
-            console.log('🔧 DIAGNOSTIC DU SYSTÈME');
+            console.log('🔧 DIAGNOSTIC DU SYSTÈME COMPLET');
             
             const checks = [
-                { name: 'DatabaseManager', obj: window.DatabaseManager },
-                { name: 'TariffAIClassifier', obj: window.TariffAIClassifier },
-                { name: 'codesSpecifiques', obj: window.codesSpecifiques }
+                { name: 'SessionValid', obj: window.sessionValid, expected: true },
+                { name: 'CurrentUserData', obj: window.currentUserData, type: 'object' },
+                { name: 'DatabaseManager', obj: window.DatabaseManager, type: 'function' },
+                { name: 'TariffAIClassifier', obj: window.TariffAIClassifier, type: 'function' },
+                { name: 'codesSpecifiques', obj: window.codesSpecifiques, type: 'object' }
             ];
             
+            let allGood = true;
+            
             checks.forEach(check => {
-                if (check.obj) {
-                    console.log(`✅ ${check.name} : Disponible`);
+                if (check.expected !== undefined) {
+                    if (check.obj === check.expected) {
+                        console.log(`✅ ${check.name}: ${check.obj} (attendu)`);
+                    } else {
+                        console.error(`❌ ${check.name}: ${check.obj} (attendu: ${check.expected})`);
+                        allGood = false;
+                    }
+                } else if (check.obj) {
+                    console.log(`✅ ${check.name}: Disponible (${typeof check.obj})`);
                 } else {
-                    console.error(`❌ ${check.name} : MANQUANT`);
+                    console.error(`❌ ${check.name}: MANQUANT`);
+                    allGood = false;
                 }
             });
             
+            // Vérification des données utilisateur
+            if (window.currentUserData) {
+                const user = window.currentUserData;
+                console.log('👤 Utilisateur actuel:', {
+                    nom: user.nom_user,
+                    id: user.user_id,
+                    email: user.email,
+                    admin: user.is_admin,
+                    type_admin: typeof user.is_admin
+                });
+                
+                if (typeof user.is_admin !== 'boolean') {
+                    console.warn('⚠️ is_admin n\'est pas un boolean:', typeof user.is_admin);
+                }
+            }
+            
+            console.log(allGood ? '✅ DIAGNOSTIC: SYSTÈME OK' : '❌ DIAGNOSTIC: PROBLÈMES DÉTECTÉS');
+            
             // Fonction pour débugger manuellement
             window.debugSystem = function() {
-                console.log('🐛 DEBUG MANUEL');
-                console.log('DatabaseManager:', typeof window.DatabaseManager);
+                console.log('🐛 DEBUG MANUEL DÉTAILLÉ');
+                console.log('authManager:', window.authManager);
                 console.log('dbManager:', window.dbManager);
-                if (window.dbManager) {
-                    console.log('dbManager methods:', Object.keys(window.dbManager));
+                console.log('currentUserData:', window.currentUserData);
+                console.log('localStorage current_user:', localStorage.getItem('current_user'));
+                console.log('localStorage session_token:', !!localStorage.getItem('session_token'));
+                
+                if (window.authManager) {
+                    console.log('authManager.isAdmin():', window.authManager.isAdmin());
+                    console.log('authManager.getUserInfo():', window.authManager.getUserInfo());
                 }
+                
+                // Test de persistance
+                console.log('🧪 TEST DE PERSISTANCE');
+                localStorage.setItem('test_persistence', 'OK');
+                console.log('Test localStorage:', localStorage.getItem('test_persistence'));
+                localStorage.removeItem('test_persistence');
             };
+            
+            // Auto-test de persistance
+            setTimeout(() => {
+                const testKey = 'system_test_' + Date.now();
+                localStorage.setItem(testKey, 'test_value');
+                const retrieved = localStorage.getItem(testKey);
+                localStorage.removeItem(testKey);
+                
+                if (retrieved === 'test_value') {
+                    console.log('✅ Test de persistance localStorage: OK');
+                } else {
+                    console.error('❌ Test de persistance localStorage: ÉCHEC');
+                }
+            }, 1000);
         })();
     </script>
     <script src="script-advanced.js"></script>

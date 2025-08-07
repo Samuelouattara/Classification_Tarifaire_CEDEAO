@@ -55,31 +55,71 @@
         }
     </style>
     
-    <!-- Vérification de l'authentification admin -->
+    <!-- ✅ VÉRIFICATION D'AUTHENTIFICATION ROBUSTE - IDENTIQUE À SYSTEM.HTML -->
     <script>
         (function() {
-            const currentUser = localStorage.getItem('current_user');
-            const sessionToken = localStorage.getItem('session_token');
-            
-            if (!currentUser || !sessionToken) {
-                console.log('❌ Accès non autorisé - Redirection vers l\'authentification');
-                window.location.replace('index.html');
-                return;
-            }
+            console.log('🔐 Vérification de l\'authentification administrateur...');
             
             try {
+                const currentUser = localStorage.getItem('current_user');
+                const sessionToken = localStorage.getItem('session_token');
+                
+                console.log('currentUser dans localStorage:', !!currentUser);
+                console.log('sessionToken dans localStorage:', !!sessionToken);
+                
+                if (!currentUser || !sessionToken) {
+                    console.log('❌ Données de session manquantes pour admin');
+                    console.log('currentUser:', currentUser);
+                    console.log('sessionToken:', sessionToken);
+                    
+                    // Nettoyer les données corrompues
+                    localStorage.removeItem('current_user');
+                    localStorage.removeItem('session_token');
+                    
+                    alert('⚠️ Session expirée. Vous allez être redirigé vers la page de connexion.');
+                    window.location.replace('index.html');
+                    return;
+                }
+                
+                // Tester si les données sont valides
                 const user = JSON.parse(currentUser);
+                
+                if (!user || !user.nom_user || !user.user_id) {
+                    throw new Error('Données utilisateur invalides');
+                }
+                
+                // ✅ VÉRIFICATION SPÉCIFIQUE ADMIN AVEC VALIDATION STRICTE
+                console.log('Type is_admin:', typeof user.is_admin, 'Valeur:', user.is_admin);
+                
+                // Convertir les valeurs numériques en boolean si nécessaire
+                if (typeof user.is_admin !== 'boolean') {
+                    user.is_admin = Boolean(user.is_admin);
+                }
+                
                 if (!user.is_admin) {
-                    console.log('❌ Accès administrateur requis');
-                    alert('Accès restreint aux administrateurs uniquement.');
+                    console.log('❌ Accès administrateur requis - utilisateur standard détecté');
+                    alert('❌ Accès restreint aux administrateurs uniquement.');
                     window.location.replace('system.html');
                     return;
                 }
-                console.log('✅ Utilisateur admin connecté:', user.nom_user);
-            } catch (e) {
+                
+                console.log('✅ Administrateur connecté:', user.nom_user, '(Admin:', user.is_admin, ')');
+                
+                // Marquer la session comme valide
+                window.sessionValid = true;
+                window.currentUserData = user;
+                window.isAdminAccess = true; // Flag spécial pour admin
+                
+            } catch (error) {
+                console.error('❌ Erreur lors de la vérification des données administrateur:', error);
+                
+                // Nettoyer les données corrompues
                 localStorage.removeItem('current_user');
                 localStorage.removeItem('session_token');
+                
+                alert('⚠️ Données de session corrompues. Reconnexion nécessaire.');
                 window.location.replace('index.html');
+                return;
             }
         })();
     </script>
@@ -91,26 +131,76 @@
             <div class="header-main">
                 <h1 class="text-4xl font-bold text-white mb-3">👑 Panneau Administrateur</h1>
                 <p class="text-xl text-douane-or font-medium">Direction Générale des Douanes de Côte d'Ivoire</p>
+                <div id="admin-status" class="mt-4 px-4 py-2 bg-douane-vert/20 rounded-lg border border-douane-or/30">
+                    <span class="text-douane-or font-semibold">🔄 Initialisation administrative...</span>
+                </div>
             </div>
             
             <div class="flex flex-wrap items-center gap-5">
+                <!-- ✅ BOUTON RETOUR BIEN VISIBLE -->
+                <a href="system.html" 
+                    class="bg-douane-or text-douane-vert border-2 border-douane-or px-6 py-3 rounded-xl font-bold text-lg cursor-pointer flex items-center gap-3 transition-all duration-300 shadow-lg hover:bg-douane-or hover:text-douane-vert hover:-translate-y-1 hover:shadow-2xl hover:border-douane-or hover:scale-105">
+                    <span class="text-2xl">🏠</span>
+                    <span>Retour au Système</span>
+                </a>
+            </div>
+            
+            <div class="flex flex-wrap items-center gap-5">
+                
                 <!-- Informations utilisateur -->
                 <div class="bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg border border-douane-or/30">
                     <div class="flex items-center space-x-2">
                         <span class="text-douane-or">👤</span>
                         <div class="text-sm">
                             <div id="user-name" class="font-semibold">Chargement...</div>
-                            <div class="text-xs text-white/70">Administrateur</div>
+                            <div id="user-role" class="text-xs text-white/70">Administrateur</div>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Bouton retour au système -->
-                <a href="system.html" 
-                    class="bg-douane-vert/90 backdrop-blur-sm text-white border border-douane-or/50 px-4 py-2 rounded-lg font-medium cursor-pointer flex items-center gap-2 transition-all duration-300 shadow-lg hover:bg-douane-or/90 hover:-translate-y-0.5 hover:shadow-xl hover:border-douane-or">
-                    <span>🏠</span>
-                    <span>Retour au Système</span>
-                </a>
+                <!-- Menu utilisateur avec déconnexion -->
+                <div class="relative" id="user-menu">
+                    <button id="user-menu-btn" 
+                        class="bg-douane-vert/90 backdrop-blur-sm text-white border border-douane-or/50 px-4 py-2 rounded-lg font-medium cursor-pointer flex items-center gap-2 transition-all duration-300 shadow-lg hover:bg-douane-or/90 hover:-translate-y-0.5 hover:shadow-xl hover:border-douane-or">
+                        <span>⚙️</span>
+                        <span>Menu Admin</span>
+                        <span class="transition-transform duration-300" id="menu-arrow">▼</span>
+                    </button>
+                    
+                    <!-- Dropdown menu -->
+                    <div id="user-dropdown" class="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-2xl border opacity-0 invisible transform translate-y-2 transition-all duration-300 z-50">
+                        <div class="py-2">
+                            <div class="px-4 py-3 border-b border-gray-200">
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-2xl">👑</span>
+                                    <div>
+                                        <div id="dropdown-user-name" class="font-semibold text-gray-800">-</div>
+                                        <div class="text-sm text-gray-500" id="dropdown-user-email">-</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <a href="system.html" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors">
+                                <span class="mr-3">🏠</span>
+                                Retour au Système
+                            </a>
+                            
+                            <a href="historique.html" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors">
+                                <span class="mr-3">📋</span>
+                                Historique
+                            </a>
+                            
+                            <hr class="my-2">
+                            
+                            <!-- Bouton de déconnexion -->
+                            <button id="logout-btn" 
+                                class="w-full flex items-center px-4 py-3 text-red-600 hover:bg-red-50 transition-colors font-medium">
+                                <span class="mr-3">🚪</span>
+                                Déconnexion
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </header>
 
@@ -338,6 +428,31 @@
         </footer>
     </div>
 
+    <!-- Modal de confirmation de déconnexion -->
+    <div id="logout-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-[9999]">
+        <div class="bg-white rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl">
+            <div class="text-center">
+                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span class="text-3xl">🚪</span>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Confirmer la déconnexion</h3>
+                <p class="text-gray-600 mb-6">
+                    Êtes-vous sûr de vouloir vous déconnecter du panneau administrateur ?<br>
+                    <small class="text-gray-500">Toutes les données non sauvegardées seront perdues.</small>
+                </p>
+                <div class="flex space-x-4">
+                    <button id="cancel-logout" class="flex-1 px-4 py-3 bg-gray-200 text-gray-800 rounded-xl font-medium hover:bg-gray-300 transition-colors">
+                        ❌ Annuler
+                    </button>
+                    <button id="confirm-logout" class="flex-1 px-4 py-3 bg-red-500 text-white rounded-xl font-medium hover:bg-red-600 transition-colors">
+                        <span id="logout-text">🚪 Déconnexion</span>
+                        <span id="logout-spinner" class="hidden">🔄 Déconnexion...</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal pour les logs système -->
     <div id="logs-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
         <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full mx-4 max-h-[80vh] overflow-hidden">
@@ -382,6 +497,410 @@
         </div>
     </div>
 
+    <!-- ✅ SCRIPTS DE GESTION DE L'AUTHENTIFICATION ADMIN ROBUSTE -->
+    <script>
+        // ✅ GESTIONNAIRE D'AUTHENTIFICATION ADMINISTRATEUR ROBUSTE
+        class AdminAuthManager {
+            constructor() {
+                this.currentUser = null;
+                this.sessionToken = null;
+                this.isInitialized = false;
+                
+                // Vérifier immédiatement si la session est valide
+                if (!window.sessionValid || !window.isAdminAccess) {
+                    this.redirectToLogin('Session administrateur invalide');
+                    return;
+                }
+                
+                this.loadUserInfo();
+                this.initializeUI();
+                this.setupEventListeners();
+                this.setupSessionMonitoring();
+                this.isInitialized = true;
+                
+                console.log('✅ AdminAuthManager initialisé avec succès');
+            }
+
+            loadUserInfo() {
+                try {
+                    // Utiliser les données déjà validées
+                    this.currentUser = window.currentUserData;
+                    this.sessionToken = localStorage.getItem('session_token');
+                    
+                    if (!this.currentUser || !this.sessionToken) {
+                        throw new Error('Données de session admin manquantes');
+                    }
+                    
+                    // ✅ DOUBLE VALIDATION ADMIN
+                    if (!this.currentUser.is_admin) {
+                        throw new Error('Privilèges administrateur requis');
+                    }
+                    
+                    console.log('✅ Session administrateur validée:', {
+                        nom: this.currentUser.nom_user,
+                        id: this.currentUser.user_id,
+                        admin: this.currentUser.is_admin,
+                        email: this.currentUser.email
+                    });
+                    
+                } catch (error) {
+                    console.error('❌ Erreur lors du chargement des données administrateur:', error);
+                    this.redirectToSystem('Erreur de session admin');
+                }
+            }
+
+            initializeUI() {
+                if (!this.currentUser) return;
+                
+                try {
+                    // Mettre à jour les informations utilisateur dans l'interface
+                    const userNameEl = document.getElementById('user-name');
+                    const userRoleEl = document.getElementById('user-role');
+                    const dropdownNameEl = document.getElementById('dropdown-user-name');
+                    const dropdownEmailEl = document.getElementById('dropdown-user-email');
+                    const adminStatusEl = document.getElementById('admin-status');
+                    
+                    if (userNameEl) userNameEl.textContent = this.currentUser.nom_user;
+                    if (userRoleEl) userRoleEl.textContent = 'Administrateur';
+                    if (dropdownNameEl) dropdownNameEl.textContent = this.currentUser.nom_user;
+                    if (dropdownEmailEl) dropdownEmailEl.textContent = this.currentUser.email || this.currentUser.identifiant_user;
+                    
+                    // Status spécial admin
+                    if (adminStatusEl) {
+                        adminStatusEl.innerHTML = '<span class="text-douane-or font-semibold">👑 Panneau administrateur actif</span>';
+                    }
+                    
+                    console.log('✅ Interface administrateur mise à jour');
+                    
+                } catch (error) {
+                    console.error('❌ Erreur lors de la mise à jour de l\'interface admin:', error);
+                }
+            }
+
+            setupEventListeners() {
+                // Menu utilisateur toggle
+                const userMenuBtn = document.getElementById('user-menu-btn');
+                const userDropdown = document.getElementById('user-dropdown');
+                const menuArrow = document.getElementById('menu-arrow');
+
+                if (userMenuBtn && userDropdown && menuArrow) {
+                    userMenuBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const isVisible = !userDropdown.classList.contains('opacity-0');
+                        
+                        if (isVisible) {
+                            this.hideDropdown(userDropdown, menuArrow);
+                        } else {
+                            this.showDropdown(userDropdown, menuArrow);
+                        }
+                    });
+                }
+
+                // Fermer les dropdowns en cliquant ailleurs
+                document.addEventListener('click', (e) => {
+                    if (!e.target.closest('#user-menu') && userDropdown) {
+                        this.hideDropdown(userDropdown, menuArrow);
+                    }
+                });
+
+                // Bouton de déconnexion
+                const logoutBtn = document.getElementById('logout-btn');
+                if (logoutBtn) {
+                    logoutBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        this.showLogoutModal();
+                    });
+                }
+
+                // Modal de déconnexion
+                const cancelLogout = document.getElementById('cancel-logout');
+                const confirmLogout = document.getElementById('confirm-logout');
+                
+                if (cancelLogout) {
+                    cancelLogout.addEventListener('click', () => {
+                        this.hideLogoutModal();
+                    });
+                }
+                
+                if (confirmLogout) {
+                    confirmLogout.addEventListener('click', () => {
+                        this.performLogout();
+                    });
+                }
+
+                // Raccourci clavier Ctrl+Alt+L
+                document.addEventListener('keydown', (e) => {
+                    if (e.ctrlKey && e.altKey && e.key === 'l') {
+                        e.preventDefault();
+                        this.showLogoutModal();
+                    }
+                });
+
+                // ✅ RACCOURCI D'URGENCE ADMIN - Ctrl+Alt+Shift+X
+                document.addEventListener('keydown', (e) => {
+                    if (e.ctrlKey && e.altKey && e.shiftKey && e.key === 'X') {
+                        e.preventDefault();
+                        if (confirm('⚠️ DÉCONNEXION D\'URGENCE ADMIN - Êtes-vous sûr ?')) {
+                            window.emergencyLogout();
+                        }
+                    }
+                });
+            }
+            
+            // ✅ SURVEILLANCE RENFORCÉE POUR ADMIN
+            setupSessionMonitoring() {
+                // Vérifier la validité de la session toutes les 15 secondes (plus fréquent pour admin)
+                setInterval(() => {
+                    this.validateAdminSession();
+                }, 15000);
+                
+                // Surveillance des changements dans localStorage
+                window.addEventListener('storage', (e) => {
+                    if (e.key === 'current_user' || e.key === 'session_token') {
+                        if (!e.newValue) {
+                            console.log('⚠️ Session admin supprimée dans un autre onglet');
+                            this.redirectToLogin('Session admin expirée');
+                        } else {
+                            // Vérifier que l'utilisateur est toujours admin
+                            try {
+                                const user = JSON.parse(e.newValue);
+                                if (!user.is_admin) {
+                                    console.log('⚠️ Privilèges admin révoqués');
+                                    this.redirectToSystem('Privilèges administrateur révoqués');
+                                }
+                            } catch (error) {
+                                console.error('❌ Données utilisateur corrompues:', error);
+                                this.redirectToLogin('Données corrompues');
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // ✅ VALIDATION STRICTE ADMIN
+            validateAdminSession() {
+                try {
+                    const currentUser = localStorage.getItem('current_user');
+                    const sessionToken = localStorage.getItem('session_token');
+                    
+                    if (!currentUser || !sessionToken) {
+                        console.log('⚠️ Session admin perdue, redirection...');
+                        this.redirectToLogin('Session admin expirée');
+                        return false;
+                    }
+                    
+                    const user = JSON.parse(currentUser);
+                    if (!user || !user.nom_user || !user.user_id || !user.is_admin) {
+                        throw new Error('Données utilisateur admin invalides');
+                    }
+                    
+                    return true;
+                    
+                } catch (error) {
+                    console.error('❌ Erreur validation session admin:', error);
+                    this.redirectToLogin('Session admin corrompue');
+                    return false;
+                }
+            }
+
+            showDropdown(dropdown, arrow) {
+                if (dropdown && arrow) {
+                    dropdown.classList.remove('opacity-0', 'invisible', 'translate-y-2');
+                    dropdown.classList.add('opacity-100', 'visible', 'translate-y-0');
+                    arrow.style.transform = 'rotate(180deg)';
+                }
+            }
+
+            hideDropdown(dropdown, arrow) {
+                if (dropdown && arrow) {
+                    dropdown.classList.add('opacity-0', 'invisible', 'translate-y-2');
+                    dropdown.classList.remove('opacity-100', 'visible', 'translate-y-0');
+                    arrow.style.transform = 'rotate(0deg)';
+                }
+            }
+
+            showLogoutModal() {
+                const modal = document.getElementById('logout-modal');
+                if (modal) {
+                    modal.classList.remove('hidden');
+                    modal.classList.add('flex');
+                }
+            }
+
+            hideLogoutModal() {
+                const modal = document.getElementById('logout-modal');
+                if (modal) {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                }
+            }
+
+            async performLogout() {
+                const logoutText = document.getElementById('logout-text');
+                const logoutSpinner = document.getElementById('logout-spinner');
+                const confirmBtn = document.getElementById('confirm-logout');
+                
+                // Interface de chargement
+                if (logoutText) logoutText.classList.add('hidden');
+                if (logoutSpinner) logoutSpinner.classList.remove('hidden');
+                if (confirmBtn) confirmBtn.disabled = true;
+
+                try {
+                    // Appel à logout.php
+                    const response = await fetch('logout.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            user_id: this.currentUser.user_id,
+                            session_token: this.sessionToken,
+                            admin_logout: true // Flag spécial admin
+                        })
+                    });
+
+                    const result = await response.json();
+                    console.log('Résultat déconnexion admin:', result);
+
+                    // Nettoyer la session locale dans tous les cas
+                    this.clearSession();
+
+                    if (result.success || result.session_destroyed) {
+                        console.log('✅ Déconnexion admin réussie');
+                        this.showLogoutSuccess();
+                        
+                        // Redirection après 1.5 secondes
+                        setTimeout(() => {
+                            window.location.replace('index.html');
+                        }, 1500);
+                    } else {
+                        throw new Error(result.message || 'Erreur de déconnexion admin');
+                    }
+
+                } catch (error) {
+                    console.error('❌ Erreur lors de la déconnexion admin:', error);
+                    
+                    // Nettoyer quand même et rediriger
+                    this.clearSession();
+                    window.location.replace('index.html');
+                }
+            }
+
+            clearSession() {
+                const keysToRemove = [
+                    'current_user',
+                    'session_token',
+                    'user_preferences',
+                    'admin_preferences',
+                    'classification_cache',
+                    'system_logs',
+                    'temp_data'
+                ];
+
+                keysToRemove.forEach(key => {
+                    localStorage.removeItem(key);
+                });
+
+                sessionStorage.clear();
+                
+                // Nettoyer les variables globales
+                window.sessionValid = false;
+                window.currentUserData = null;
+                window.isAdminAccess = false;
+                
+                console.log('🧹 Session admin nettoyée complètement');
+            }
+
+            showLogoutSuccess() {
+                const successDiv = document.createElement('div');
+                successDiv.className = 'fixed top-4 right-4 bg-green-500 text-white p-4 rounded-xl shadow-lg z-[10000] flex items-center space-x-2';
+                successDiv.innerHTML = `
+                    <span>✅</span>
+                    <span>Déconnexion admin réussie ! Redirection...</span>
+                `;
+
+                document.body.appendChild(successDiv);
+
+                setTimeout(() => {
+                    if (document.body.contains(successDiv)) {
+                        document.body.removeChild(successDiv);
+                    }
+                }, 3000);
+            }
+
+            redirectToLogin(reason = 'Session admin expirée') {
+                console.log(`🔄 Redirection admin vers l'authentification: ${reason}`);
+                
+                // Nettoyer complètement
+                this.clearSession();
+                
+                // Afficher un message à l'utilisateur
+                if (reason !== 'Session administrateur invalide') {
+                    alert(`⚠️ ${reason}. Vous allez être redirigé vers la page de connexion.`);
+                }
+                
+                window.location.replace('index.html');
+            }
+
+            redirectToSystem(reason = 'Accès admin requis') {
+                console.log(`🔄 Redirection vers system.html: ${reason}`);
+                alert(`⚠️ ${reason}. Retour au système principal.`);
+                window.location.replace('system.html');
+            }
+
+            // ✅ MÉTHODES PUBLIQUES ADMIN
+            isAdmin() {
+                return this.currentUser && this.currentUser.is_admin === true;
+            }
+            
+            getUserInfo() {
+                return this.currentUser;
+            }
+
+            logAdminAction(action, level = 'INFO') {
+                const logs = JSON.parse(localStorage.getItem('system_logs') || '[]');
+                const newLog = {
+                    time: new Date().toISOString().replace('T', ' ').substring(0, 19),
+                    level: level,
+                    message: `[ADMIN] ${action}`,
+                    user: this.currentUser.nom_user
+                };
+                
+                logs.unshift(newLog);
+                if (logs.length > 200) logs.splice(200); // Garder plus de logs pour admin
+                
+                localStorage.setItem('system_logs', JSON.stringify(logs));
+                console.log(`[${level}] [ADMIN] ${action}`);
+            }
+        }
+
+        // ✅ INITIALISATION SÉCURISÉE ADMIN
+        let adminAuthManager;
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                try {
+                    adminAuthManager = new AdminAuthManager();
+                    window.adminAuthManager = adminAuthManager;
+                    console.log('🔐 Gestionnaire d\'authentification admin initialisé avec succès');
+                    
+                } catch (error) {
+                    console.error('❌ Erreur lors de l\'initialisation de AdminAuthManager:', error);
+                    
+                    // En cas d'erreur, nettoyer et rediriger
+                    localStorage.removeItem('current_user');
+                    localStorage.removeItem('session_token');
+                    window.location.replace('index.html');
+                }
+            }, 100);
+        });
+
+        // ✅ FONCTION GLOBALE DE DÉCONNEXION D'URGENCE ADMIN
+        window.emergencyLogout = function() {
+            console.log('🚨 Déconnexion d\'urgence admin activée');
+            localStorage.clear();
+            sessionStorage.clear();
+            window.location.replace('index.html');
+        };
+    </script>
+
     <!-- Scripts complets -->
     <script>
         class AdminPanel {
@@ -406,9 +925,14 @@
                         
                         // Mettre à jour l'interface
                         document.getElementById('user-name').textContent = this.currentUser.nom_user;
+                        
+                        // Log de l'ouverture du panneau admin
+                        if (window.adminAuthManager) {
+                            window.adminAuthManager.logAdminAction('Panneau administrateur ouvert', 'INFO');
+                        }
                     }
                 } catch (error) {
-                    console.error('Erreur chargement utilisateur:', error);
+                    console.error('Erreur chargement utilisateur admin:', error);
                     window.location.replace('index.html');
                 }
             }
@@ -576,7 +1100,11 @@
                         document.getElementById('admin-register-form').reset();
                         this.loadAdminStats();
                         this.loadUsersList();
-                        this.logAction(`Utilisateur créé: ${result.user.nom_user} (${result.user.identifiant_user})`);
+                        
+                        // Log admin
+                        if (window.adminAuthManager) {
+                            window.adminAuthManager.logAdminAction(`Utilisateur créé: ${result.user.nom_user} (${result.user.identifiant_user})`, 'SUCCESS');
+                        }
                     } else {
                         throw new Error(result.message || 'Erreur lors de la création');
                     }
@@ -602,8 +1130,18 @@
                         document.getElementById('admin-register-form').reset();
                         this.loadAdminStats();
                         this.loadUsersList();
+                        
+                        // Log admin
+                        if (window.adminAuthManager) {
+                            window.adminAuthManager.logAdminAction(`Utilisateur créé (local): ${newUser.nom_user}`, 'INFO');
+                        }
                     } else {
                         this.showResult(`❌ ${error.message}`, 'error');
+                        
+                        // Log erreur
+                        if (window.adminAuthManager) {
+                            window.adminAuthManager.logAdminAction(`Erreur création utilisateur: ${error.message}`, 'ERROR');
+                        }
                     }
                 } finally {
                     registerBtn.disabled = false;
@@ -834,9 +1372,15 @@
             toggleUserStatus(userId) {
                 const user = this.allUsers.find(u => u.user_id === userId);
                 if (user) {
+                    const oldStatus = user.statut;
                     user.statut = user.statut === 'actif' ? 'inactif' : 'actif';
                     this.renderUsersList();
-                    this.logAction(`Statut modifié pour ${user.nom_user}: ${user.statut}`);
+                    
+                    // Log admin
+                    if (window.adminAuthManager) {
+                        window.adminAuthManager.logAdminAction(`Statut modifié pour ${user.nom_user}: ${oldStatus} → ${user.statut}`, 'WARNING');
+                    }
+                    
                     this.showNotification(`✅ Statut de ${user.nom_user} modifié: ${user.statut}`, 'success');
                 }
             }
@@ -852,7 +1396,12 @@
                             this.filteredUsers = this.filteredUsers.filter(u => u.user_id !== userId);
                             this.renderUsersList();
                             this.loadAdminStats();
-                            this.logAction(`Utilisateur supprimé: ${user.nom_user}`);
+                            
+                            // Log admin
+                            if (window.adminAuthManager) {
+                                window.adminAuthManager.logAdminAction(`Utilisateur supprimé: ${user.nom_user} (${user.identifiant_user})`, 'WARNING');
+                            }
+                            
                             this.showNotification(`✅ Utilisateur ${user.nom_user} supprimé`, 'success');
                         }
                     );
@@ -1045,7 +1594,11 @@
                         this.showNotification('✅ Cache système vidé avec succès', 'success');
                         this.loadAdminStats();
                         this.loadClassificationsHistory();
-                        this.logAction('Cache système vidé par l\'administrateur');
+                        
+                        // Log admin
+                        if (window.adminAuthManager) {
+                            window.adminAuthManager.logAdminAction('Cache système vidé', 'WARNING');
+                        }
                     }
                 );
             }
@@ -1074,10 +1627,19 @@
                     link.click();
                     
                     this.showNotification('✅ Sauvegarde créée avec succès', 'success');
-                    this.logAction('Sauvegarde système créée');
+                    
+                    // Log admin
+                    if (window.adminAuthManager) {
+                        window.adminAuthManager.logAdminAction('Sauvegarde système créée', 'INFO');
+                    }
                 } catch (error) {
                     console.error('Erreur sauvegarde:', error);
                     this.showNotification('❌ Erreur lors de la création de la sauvegarde', 'error');
+                    
+                    // Log erreur
+                    if (window.adminAuthManager) {
+                        window.adminAuthManager.logAdminAction(`Erreur sauvegarde: ${error.message}`, 'ERROR');
+                    }
                 }
             }
 
@@ -1135,8 +1697,8 @@
                 if (existingLogs.length === 0) {
                     const defaultLogs = [
                         { time: new Date().toISOString().replace('T', ' ').substring(0, 19), level: 'INFO', message: 'Système démarré', user: 'System' },
-                        { time: new Date(Date.now() - 300000).toISOString().replace('T', ' ').substring(0, 19), level: 'SUCCESS', message: `Connexion administrateur: ${this.currentUser.nom_user}`, user: this.currentUser.nom_user },
-                        { time: new Date(Date.now() - 600000).toISOString().replace('T', ' ').substring(0, 19), level: 'INFO', message: 'Panneau administrateur ouvert', user: this.currentUser.nom_user }
+                        { time: new Date(Date.now() - 300000).toISOString().replace('T', ' ').substring(0, 19), level: 'SUCCESS', message: `[ADMIN] Connexion administrateur: ${this.currentUser.nom_user}`, user: this.currentUser.nom_user },
+                        { time: new Date(Date.now() - 600000).toISOString().replace('T', ' ').substring(0, 19), level: 'INFO', message: '[ADMIN] Panneau administrateur ouvert', user: this.currentUser.nom_user }
                     ];
                     
                     localStorage.setItem('system_logs', JSON.stringify(defaultLogs));
@@ -1144,26 +1706,6 @@
                 }
                 
                 return existingLogs.sort((a, b) => new Date(b.time) - new Date(a.time));
-            }
-
-            logAction(message, level = 'INFO') {
-                const logs = this.getSystemLogs();
-                const newLog = {
-                    time: new Date().toISOString().replace('T', ' ').substring(0, 19),
-                    level: level,
-                    message: message,
-                    user: this.currentUser.nom_user
-                };
-                
-                logs.unshift(newLog);
-                
-                // Garder seulement les 100 derniers logs
-                if (logs.length > 100) {
-                    logs.splice(100);
-                }
-                
-                localStorage.setItem('system_logs', JSON.stringify(logs));
-                console.log(`[${level}] ${message}`);
             }
 
             exportLogs() {
@@ -1180,6 +1722,11 @@
                     link.click();
                     
                     this.showNotification('✅ Logs exportés avec succès', 'success');
+                    
+                    // Log admin
+                    if (window.adminAuthManager) {
+                        window.adminAuthManager.logAdminAction('Logs système exportés', 'INFO');
+                    }
                 } catch (error) {
                     console.error('Erreur export logs:', error);
                     this.showNotification('❌ Erreur lors de l\'export des logs', 'error');
@@ -1193,7 +1740,11 @@
                     () => {
                         // Simulation de déconnexion de tous les utilisateurs
                         this.showNotification('✅ Toutes les sessions ont été réinitialisées', 'success');
-                        this.logAction('Réinitialisation de toutes les sessions utilisateurs', 'WARNING');
+                        
+                        // Log admin
+                        if (window.adminAuthManager) {
+                            window.adminAuthManager.logAdminAction('Réinitialisation de toutes les sessions utilisateurs', 'WARNING');
+                        }
                         
                         // Mettre à jour le compteur de sessions actives
                         document.getElementById('active-sessions').textContent = '1';
@@ -1204,7 +1755,11 @@
             toggleMaintenanceMode(enabled) {
                 const status = enabled ? 'activé' : 'désactivé';
                 this.showNotification(`🛠️ Mode maintenance ${status}`, enabled ? 'info' : 'success');
-                this.logAction(`Mode maintenance ${status}`, enabled ? 'WARNING' : 'INFO');
+                
+                // Log admin
+                if (window.adminAuthManager) {
+                    window.adminAuthManager.logAdminAction(`Mode maintenance ${status}`, enabled ? 'WARNING' : 'INFO');
+                }
                 
                 // Simuler l'effet du mode maintenance
                 if (enabled) {
@@ -1217,7 +1772,11 @@
             toggleAdvancedLogging(enabled) {
                 const status = enabled ? 'activé' : 'désactivé';
                 this.showNotification(`📝 Logging avancé ${status}`, 'info');
-                this.logAction(`Logging avancé ${status}`, 'INFO');
+                
+                // Log admin
+                if (window.adminAuthManager) {
+                    window.adminAuthManager.logAdminAction(`Logging avancé ${status}`, 'INFO');
+                }
                 
                 // Sauvegarder la préférence
                 const preferences = JSON.parse(localStorage.getItem('admin_preferences') || '{}');
@@ -1227,7 +1786,11 @@
 
             updateSessionDuration(minutes) {
                 this.showNotification(`⏱️ Durée de session mise à jour: ${minutes} minutes`, 'info');
-                this.logAction(`Durée de session modifiée: ${minutes} minutes`, 'INFO');
+                
+                // Log admin
+                if (window.adminAuthManager) {
+                    window.adminAuthManager.logAdminAction(`Durée de session modifiée: ${minutes} minutes`, 'INFO');
+                }
                 
                 // Sauvegarder la préférence
                 const preferences = JSON.parse(localStorage.getItem('admin_preferences') || '{}');
@@ -1239,56 +1802,30 @@
         // Initialiser le panneau administrateur
         let adminPanel;
         document.addEventListener('DOMContentLoaded', function() {
-            adminPanel = new AdminPanel();
-            console.log('👑 Panneau administrateur CEDEAO initialisé');
-            
-            // Ajouter des animations d'entrée
-            const sections = document.querySelectorAll('main > div');
-            sections.forEach((section, index) => {
-                section.style.animationDelay = `${index * 0.1}s`;
-                section.classList.add('animate-fade-in');
-            });
+            // Attendre que l'auth manager soit initialisé
+            setTimeout(() => {
+                adminPanel = new AdminPanel();
+                window.adminPanel = adminPanel; // Pour les boutons onclick
+                console.log('👑 Panneau administrateur CEDEAO initialisé');
+                
+                // Ajouter des animations d'entrée
+                const sections = document.querySelectorAll('main > div');
+                sections.forEach((section, index) => {
+                    section.style.animationDelay = `${index * 0.1}s`;
+                    section.classList.add('animate-fade-in');
+                });
+            }, 200);
         });
 
         // Gestionnaire global d'erreurs
         window.addEventListener('error', function(e) {
-            console.error('Erreur système:', e.error);
-            if (adminPanel) {
-                adminPanel.logAction(`Erreur système: ${e.message}`, 'ERROR');
+            console.error('Erreur système admin:', e.error);
+            if (window.adminAuthManager) {
+                window.adminAuthManager.logAdminAction(`Erreur système: ${e.message}`, 'ERROR');
             }
         });
 
-        // Gestionnaire de déconnexion d'urgence
-        window.addEventListener('keydown', function(e) {
-            if (e.ctrlKey && e.altKey && e.key === 'x') {
-                e.preventDefault();
-                if (confirm('⚠️ Déconnexion d\'urgence - Êtes-vous sûr ?')) {
-                    localStorage.clear();
-                    sessionStorage.clear();
-                    window.location.replace('index.html');
-                }
-            }
-        });
-
-        // Auto-actualisation des statistiques toutes les 5 minutes
-        setInterval(() => {
-            if (adminPanel && document.visibilityState === 'visible') {
-                adminPanel.loadAdminStats();
-                console.log('🔄 Statistiques actualisées automatiquement');
-            }
-        }, 300000); // 5 minutes
-
-        // Notification de bienvenue
-        setTimeout(() => {
-            if (adminPanel && adminPanel.currentUser) {
-                adminPanel.showNotification(`👑 Bienvenue dans le panneau administrateur, ${adminPanel.currentUser.nom_user}!`, 'info');
-            }
-        }, 1000);
-
-        // Fonction globale pour gérer les clics sur les boutons utilisateurs
-        window.adminPanel = null; // Sera défini après l'initialisation
-
-        // Gestion des raccourcis clavier avancés
+        // Raccourcis clavier avancés pour admin
         document.addEventListener('keydown', function(e) {
             // Ctrl+Alt+S = Sauvegarde rapide
             if (e.ctrlKey && e.altKey && e.key === 's') {
@@ -1298,7 +1835,7 @@
                 }
             }
             
-            // Ctrl+Alt+L = Logs système
+            // Ctrl+Alt+L = Logs système  
             if (e.ctrlKey && e.altKey && e.key === 'l') {
                 e.preventDefault();
                 if (adminPanel) {
@@ -1316,6 +1853,21 @@
             }
         });
 
+        // Auto-actualisation des statistiques toutes les 3 minutes (plus fréquent pour admin)
+        setInterval(() => {
+            if (adminPanel && document.visibilityState === 'visible') {
+                adminPanel.loadAdminStats();
+                console.log('🔄 Statistiques admin actualisées automatiquement');
+            }
+        }, 180000); // 3 minutes
+
+        // Notification de bienvenue admin
+        setTimeout(() => {
+            if (adminPanel && adminPanel.currentUser) {
+                adminPanel.showNotification(`👑 Bienvenue dans le panneau administrateur, ${adminPanel.currentUser.nom_user}!`, 'info');
+            }
+        }, 1500);
+
         // Gestion de la visibilité de la page pour optimiser les performances
         document.addEventListener('visibilitychange', function() {
             if (document.visibilityState === 'visible' && adminPanel) {
@@ -1324,21 +1876,11 @@
             }
         });
 
-        // Nettoyage automatique des notifications obsolètes
-        setInterval(() => {
-            const notifications = document.querySelectorAll('[class*="fixed top-4 right-4"]');
-            notifications.forEach(notif => {
-                if (notif.style.opacity === '0') {
-                    notif.remove();
-                }
-            });
-        }, 10000);
-
-        console.log('🚀 Scripts du panneau administrateur chargés');
+        console.log('🚀 Scripts du panneau administrateur avec authentification robuste chargés');
         console.log('⚡ Raccourcis disponibles:');
-        console.log('   • Ctrl+Alt+X = Déconnexion d\'urgence');
+        console.log('   • Ctrl+Alt+Shift+X = Déconnexion d\'urgence admin');
         console.log('   • Ctrl+Alt+S = Sauvegarde système');
-        console.log('   • Ctrl+Alt+L = Afficher les logs');
+        console.log('   • Ctrl+Alt+L = Afficher les logs + Déconnexion normale');
         console.log('   • Ctrl+Alt+R = Actualiser les statistiques');
         console.log('   • Échap = Fermer les modales');
     </script>
