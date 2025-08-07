@@ -1,0 +1,1346 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panneau Administrateur - CEDEAO</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                colors: {
+                    'douane-vert': '#1B5E20',
+                    'douane-or': '#FFD700',
+                    'douane-blanc': '#FFFFFF',
+                    'orange-ci': '#FF8C00',
+                    'vert-ci': '#00B04F',
+                    'lion-or': '#B8860B'
+                },
+                animation: {
+                    'fade-in': 'fadeIn 0.5s ease-in',
+                    'slide-up': 'slideUp 0.3s ease-out',
+                    'pulse-glow': 'pulseGlow 2s infinite'
+                }
+            }
+        }
+    }
+    </script>
+    
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.3); }
+            50% { box-shadow: 0 0 40px rgba(255, 215, 0, 0.6); }
+        }
+        
+        .glass-effect {
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .hover-lift:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+    </style>
+    
+    <!-- Vérification de l'authentification admin -->
+    <script>
+        (function() {
+            const currentUser = localStorage.getItem('current_user');
+            const sessionToken = localStorage.getItem('session_token');
+            
+            if (!currentUser || !sessionToken) {
+                console.log('❌ Accès non autorisé - Redirection vers l\'authentification');
+                window.location.replace('index.html');
+                return;
+            }
+            
+            try {
+                const user = JSON.parse(currentUser);
+                if (!user.is_admin) {
+                    console.log('❌ Accès administrateur requis');
+                    alert('Accès restreint aux administrateurs uniquement.');
+                    window.location.replace('system.html');
+                    return;
+                }
+                console.log('✅ Utilisateur admin connecté:', user.nom_user);
+            } catch (e) {
+                localStorage.removeItem('current_user');
+                localStorage.removeItem('session_token');
+                window.location.replace('index.html');
+            }
+        })();
+    </script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-douane-vert to-gray-800 font-sans text-white">
+    <div class="max-w-7xl mx-auto p-5">
+        <!-- Header avec navigation -->
+        <header class="flex justify-between items-center flex-wrap gap-5 mb-8 bg-gray-900/80 p-8 rounded-2xl shadow-xl text-white border border-douane-or/30">
+            <div class="header-main">
+                <h1 class="text-4xl font-bold text-white mb-3">👑 Panneau Administrateur</h1>
+                <p class="text-xl text-douane-or font-medium">Direction Générale des Douanes de Côte d'Ivoire</p>
+            </div>
+            
+            <div class="flex flex-wrap items-center gap-5">
+                <!-- Informations utilisateur -->
+                <div class="bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg border border-douane-or/30">
+                    <div class="flex items-center space-x-2">
+                        <span class="text-douane-or">👤</span>
+                        <div class="text-sm">
+                            <div id="user-name" class="font-semibold">Chargement...</div>
+                            <div class="text-xs text-white/70">Administrateur</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Bouton retour au système -->
+                <a href="system.html" 
+                    class="bg-douane-vert/90 backdrop-blur-sm text-white border border-douane-or/50 px-4 py-2 rounded-lg font-medium cursor-pointer flex items-center gap-2 transition-all duration-300 shadow-lg hover:bg-douane-or/90 hover:-translate-y-0.5 hover:shadow-xl hover:border-douane-or">
+                    <span>🏠</span>
+                    <span>Retour au Système</span>
+                </a>
+            </div>
+        </header>
+
+        <main class="space-y-8">
+            <!-- Statistiques rapides -->
+            <div class="bg-gradient-to-r from-douane-vert/90 to-gray-800/90 p-6 rounded-2xl shadow-xl border border-douane-or/30">
+                <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+                    📊 Statistiques du Système
+                </h2>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6" id="admin-stats">
+                    <div class="bg-white/20 backdrop-blur-sm p-6 rounded-xl border border-douane-or/30 hover:bg-white/30 transition-all duration-300 text-center hover-lift">
+                        <div class="text-3xl font-bold text-douane-or mb-2" id="total-users">-</div>
+                        <div class="text-sm text-white/80">Utilisateurs Totaux</div>
+                    </div>
+                    <div class="bg-white/20 backdrop-blur-sm p-6 rounded-xl border border-douane-or/30 hover:bg-white/30 transition-all duration-300 text-center hover-lift">
+                        <div class="text-3xl font-bold text-douane-or mb-2" id="total-classifications">-</div>
+                        <div class="text-sm text-white/80">Classifications</div>
+                    </div>
+                    <div class="bg-white/20 backdrop-blur-sm p-6 rounded-xl border border-douane-or/30 hover:bg-white/30 transition-all duration-300 text-center hover-lift">
+                        <div class="text-3xl font-bold text-douane-or mb-2" id="active-sessions">1</div>
+                        <div class="text-sm text-white/80">Sessions Actives</div>
+                    </div>
+                    <div class="bg-white/20 backdrop-blur-sm p-6 rounded-xl border border-douane-or/30 hover:bg-white/30 transition-all duration-300 text-center hover-lift">
+                        <div class="text-3xl font-bold text-douane-or mb-2" id="system-status">🟢</div>
+                        <div class="text-sm text-white/80">Statut Système</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section inscription utilisateur -->
+            <div class="bg-white/95 p-8 rounded-2xl shadow-xl animate-fade-in">
+                <h3 class="text-2xl font-bold text-douane-vert mb-6 flex items-center gap-3">
+                    👤 Inscription d'un Nouvel Utilisateur
+                </h3>
+                
+                <form id="admin-register-form" class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-gray-700 font-semibold mb-2">Nom complet</label>
+                        <input type="text" id="admin-nom" required
+                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-base text-gray-800 bg-white placeholder-gray-500 focus:outline-none focus:border-douane-vert focus:ring-4 focus:ring-douane-vert/20 transition-all duration-300"
+                            placeholder="Ex: Jean Dupont">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-gray-700 font-semibold mb-2">Identifiant</label>
+                        <input type="text" id="admin-identifiant" required
+                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-base text-gray-800 bg-white placeholder-gray-500 focus:outline-none focus:border-douane-vert focus:ring-4 focus:ring-douane-vert/20 transition-all duration-300"
+                            placeholder="Ex: jean.dupont">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-gray-700 font-semibold mb-2">Email</label>
+                        <input type="email" id="admin-email" required
+                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-base text-gray-800 bg-white placeholder-gray-500 focus:outline-none focus:border-douane-vert focus:ring-4 focus:ring-douane-vert/20 transition-all duration-300"
+                            placeholder="jean.dupont@douane.ci">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-gray-700 font-semibold mb-2">Mot de passe</label>
+                        <input type="password" id="admin-password" required
+                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-base text-gray-800 bg-white placeholder-gray-500 focus:outline-none focus:border-douane-vert focus:ring-4 focus:ring-douane-vert/20 transition-all duration-300"
+                            placeholder="Minimum 6 caractères">
+                    </div>
+                    
+                    <div class="md:col-span-2 flex items-center space-x-4">
+                        <label class="flex items-center">
+                            <input type="checkbox" id="admin-is-admin" class="mr-2 w-4 h-4 text-douane-vert">
+                            <span class="text-gray-700 font-medium">👑 Accorder les privilèges d'administrateur</span>
+                        </label>
+                    </div>
+                    
+                    <div class="md:col-span-2">
+                        <button type="submit" id="admin-register-btn"
+                            class="inline-flex items-center gap-3 bg-gradient-to-r from-douane-vert to-douane-or text-white px-8 py-4 text-lg font-semibold rounded-xl hover:-translate-y-1 hover:shadow-2xl transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-douane-or/50">
+                            <span id="register-text">✅ Créer l'Utilisateur</span>
+                            <span id="register-spinner" class="hidden">🔄 Création...</span>
+                        </button>
+                    </div>
+                </form>
+                
+                <div id="admin-register-result" class="mt-6 p-4 rounded-xl hidden"></div>
+            </div>
+            
+            <!-- Section gestion des utilisateurs -->
+            <div class="bg-white/95 p-8 rounded-2xl shadow-xl animate-fade-in">
+                <h3 class="text-2xl font-bold text-douane-vert mb-6 flex items-center gap-3">
+                    👥 Gestion des Utilisateurs
+                </h3>
+                
+                <div class="mb-6">
+                    <div class="flex flex-wrap gap-4 items-center">
+                        <input type="text" id="user-search" placeholder="Rechercher un utilisateur..."
+                            class="flex-1 min-w-64 px-4 py-3 border-2 border-gray-200 rounded-xl text-base text-gray-800 bg-white placeholder-gray-500 focus:outline-none focus:border-douane-vert focus:ring-4 focus:ring-douane-vert/20 transition-all duration-300">
+                        <button id="refresh-users-btn" 
+                            class="bg-gradient-to-r from-douane-vert to-douane-or text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                            🔄 Actualiser
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="users-list" class="bg-gray-50 rounded-xl p-6 min-h-48">
+                    <div class="text-center text-gray-500">
+                        <div class="text-4xl mb-4">👥</div>
+                        <p>Chargement de la liste des utilisateurs...</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Section historique des classifications -->
+            <div class="bg-white/95 p-8 rounded-2xl shadow-xl animate-fade-in">
+                <h3 class="text-2xl font-bold text-douane-vert mb-6 flex items-center gap-3">
+                    📈 Historique des Classifications
+                </h3>
+                
+                <div class="grid md:grid-cols-2 gap-6 mb-6">
+                    <div class="bg-gradient-to-r from-blue-500 to-blue-600 p-6 rounded-xl text-white text-center">
+                        <div class="text-3xl font-bold mb-2" id="today-classifications">0</div>
+                        <div class="text-sm opacity-80">Classifications Aujourd'hui</div>
+                    </div>
+                    <div class="bg-gradient-to-r from-green-500 to-green-600 p-6 rounded-xl text-white text-center">
+                        <div class="text-3xl font-bold mb-2" id="week-classifications">0</div>
+                        <div class="text-sm opacity-80">Cette Semaine</div>
+                    </div>
+                </div>
+                
+                <div class="bg-gray-50 rounded-xl p-6">
+                    <div id="classifications-chart" class="min-h-64">
+                        <div class="text-center text-gray-500">
+                            <div class="text-4xl mb-4">📊</div>
+                            <p>Génération des graphiques en cours...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section maintenance système -->
+            <div class="bg-white/95 p-8 rounded-2xl shadow-xl animate-fade-in">
+                <h3 class="text-2xl font-bold text-douane-vert mb-6 flex items-center gap-3">
+                    🛠️ Maintenance du Système
+                </h3>
+                
+                <div class="grid md:grid-cols-3 gap-6">
+                    <button id="clear-cache-btn" 
+                        class="bg-gradient-to-r from-orange-500 to-orange-600 text-white p-6 rounded-xl font-semibold hover:shadow-lg transition-all duration-300 hover:-translate-y-1 hover-lift">
+                        <div class="text-3xl mb-2">🧹</div>
+                        <div>Vider le Cache</div>
+                        <div class="text-sm opacity-80">Nettoyer les données temporaires</div>
+                    </button>
+                    
+                    <button id="backup-system-btn" 
+                        class="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-6 rounded-xl font-semibold hover:shadow-lg transition-all duration-300 hover:-translate-y-1 hover-lift">
+                        <div class="text-3xl mb-2">💾</div>
+                        <div>Sauvegarder</div>
+                        <div class="text-sm opacity-80">Créer une sauvegarde</div>
+                    </button>
+                    
+                    <button id="system-logs-btn" 
+                        class="bg-gradient-to-r from-purple-500 to-purple-600 text-white p-6 rounded-xl font-semibold hover:shadow-lg transition-all duration-300 hover:-translate-y-1 hover-lift">
+                        <div class="text-3xl mb-2">📋</div>
+                        <div>Logs Système</div>
+                        <div class="text-sm opacity-80">Consulter les journaux</div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Section configurations système -->
+            <div class="bg-white/95 p-8 rounded-2xl shadow-xl animate-fade-in">
+                <h3 class="text-2xl font-bold text-douane-vert mb-6 flex items-center gap-3">
+                    ⚙️ Configuration du Système
+                </h3>
+                
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <h4 class="text-lg font-semibold text-gray-800 mb-4">Paramètres Généraux</h4>
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                                <div>
+                                    <div class="font-medium text-gray-800">Mode Maintenance</div>
+                                    <div class="text-sm text-gray-600">Activer le mode maintenance</div>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="maintenance-mode" class="sr-only peer">
+                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-douane-vert/30 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-douane-vert"></div>
+                                </label>
+                            </div>
+                            
+                            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                                <div>
+                                    <div class="font-medium text-gray-800">Logging Avancé</div>
+                                    <div class="text-sm text-gray-600">Enregistrer tous les détails</div>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="advanced-logging" class="sr-only peer" checked>
+                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-douane-vert/30 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-douane-vert"></div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h4 class="text-lg font-semibold text-gray-800 mb-4">Sécurité</h4>
+                        <div class="space-y-4">
+                            <div class="p-4 bg-gray-50 rounded-xl">
+                                <div class="font-medium text-gray-800 mb-2">Durée de Session</div>
+                                <select id="session-duration" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-douane-vert focus:border-douane-vert">
+                                    <option value="30">30 minutes</option>
+                                    <option value="60" selected>1 heure</option>
+                                    <option value="120">2 heures</option>
+                                    <option value="480">8 heures</option>
+                                </select>
+                            </div>
+                            
+                            <button id="reset-all-sessions" 
+                                class="w-full bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-3 rounded-xl font-semibold hover:shadow-lg transition-all duration-300">
+                                🚪 Déconnecter Tous les Utilisateurs
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="text-center text-white/80 py-8 mt-12 border-t border-white/20">
+            <p>&copy; 2025 - Direction Générale des Douanes de Côte d'Ivoire - Panneau Administrateur</p>
+        </footer>
+    </div>
+
+    <!-- Modal pour les logs système -->
+    <div id="logs-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full mx-4 max-h-[80vh] overflow-hidden">
+            <div class="bg-gradient-to-r from-douane-vert to-douane-or p-6 text-white">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-xl font-bold flex items-center gap-2">
+                        📋 Journaux Système
+                    </h3>
+                    <button id="close-logs-modal" class="text-white hover:text-gray-200 text-2xl">×</button>
+                </div>
+            </div>
+            <div class="p-6 overflow-y-auto max-h-96">
+                <div id="logs-content">
+                    <!-- Les logs seront chargés ici -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de confirmation pour actions critiques -->
+    <div id="confirmation-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4">
+            <div class="p-6">
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-3xl">⚠️</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2" id="confirmation-title">Confirmer l'action</h3>
+                    <p class="text-gray-600 mb-6" id="confirmation-message">
+                        Êtes-vous sûr de vouloir effectuer cette action ?
+                    </p>
+                    <div class="flex space-x-4">
+                        <button id="cancel-action" class="flex-1 px-4 py-3 bg-gray-200 text-gray-800 rounded-xl font-medium hover:bg-gray-300 transition-colors">
+                            ❌ Annuler
+                        </button>
+                        <button id="confirm-action" class="flex-1 px-4 py-3 bg-red-500 text-white rounded-xl font-medium hover:bg-red-600 transition-colors">
+                            ✅ Confirmer
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts complets -->
+    <script>
+        class AdminPanel {
+            constructor() {
+                this.currentUser = null;
+                this.sessionToken = null;
+                this.allUsers = [];
+                this.filteredUsers = [];
+                this.loadUserInfo();
+                this.initializePanel();
+                this.setupEventListeners();
+            }
+
+            loadUserInfo() {
+                try {
+                    const userData = localStorage.getItem('current_user');
+                    const token = localStorage.getItem('session_token');
+                    
+                    if (userData && token) {
+                        this.currentUser = JSON.parse(userData);
+                        this.sessionToken = token;
+                        
+                        // Mettre à jour l'interface
+                        document.getElementById('user-name').textContent = this.currentUser.nom_user;
+                    }
+                } catch (error) {
+                    console.error('Erreur chargement utilisateur:', error);
+                    window.location.replace('index.html');
+                }
+            }
+
+            initializePanel() {
+                this.loadAdminStats();
+                this.loadUsersList();
+                this.loadClassificationsHistory();
+                console.log('🔥 Panneau administrateur initialisé');
+            }
+
+            setupEventListeners() {
+                // Formulaire d'inscription
+                document.getElementById('admin-register-form').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.handleUserRegistration();
+                });
+
+                // Boutons de maintenance
+                document.getElementById('clear-cache-btn').addEventListener('click', () => this.clearSystemCache());
+                document.getElementById('backup-system-btn').addEventListener('click', () => this.createSystemBackup());
+                document.getElementById('system-logs-btn').addEventListener('click', () => this.showSystemLogs());
+                document.getElementById('refresh-users-btn').addEventListener('click', () => this.loadUsersList());
+                document.getElementById('reset-all-sessions').addEventListener('click', () => this.resetAllSessions());
+
+                // Recherche utilisateurs
+                document.getElementById('user-search').addEventListener('input', (e) => {
+                    this.filterUsers(e.target.value);
+                });
+
+                // Modal des logs
+                document.getElementById('close-logs-modal').addEventListener('click', () => {
+                    document.getElementById('logs-modal').classList.add('hidden');
+                });
+
+                // Modal de confirmation
+                document.getElementById('cancel-action').addEventListener('click', () => {
+                    document.getElementById('confirmation-modal').classList.add('hidden');
+                });
+
+                // Raccourcis clavier
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') {
+                        document.getElementById('logs-modal').classList.add('hidden');
+                        document.getElementById('confirmation-modal').classList.add('hidden');
+                    }
+                });
+
+                // Configuration système
+                document.getElementById('maintenance-mode').addEventListener('change', (e) => {
+                    this.toggleMaintenanceMode(e.target.checked);
+                });
+
+                document.getElementById('advanced-logging').addEventListener('change', (e) => {
+                    this.toggleAdvancedLogging(e.target.checked);
+                });
+
+                document.getElementById('session-duration').addEventListener('change', (e) => {
+                    this.updateSessionDuration(e.target.value);
+                });
+            }
+
+            async loadAdminStats() {
+                try {
+                    // Charger depuis localStorage et simuler des données
+                    const history = JSON.parse(localStorage.getItem('classification_history') || '[]');
+                    const today = new Date().toISOString().split('T')[0];
+                    const thisWeek = this.getWeekDates();
+                    
+                    // Calculer les statistiques
+                    const todayClassifications = history.filter(item => 
+                        item.timestamp && item.timestamp.startsWith(today)
+                    ).length;
+                    
+                    const weekClassifications = history.filter(item => {
+                        if (!item.timestamp) return false;
+                        const itemDate = item.timestamp.split('T')[0];
+                        return thisWeek.includes(itemDate);
+                    }).length;
+                    
+                    // Mettre à jour l'interface
+                    document.getElementById('total-users').textContent = this.allUsers.length || '5';
+                    document.getElementById('total-classifications').textContent = history.length;
+                    document.getElementById('active-sessions').textContent = '1';
+                    document.getElementById('today-classifications').textContent = todayClassifications;
+                    document.getElementById('week-classifications').textContent = weekClassifications;
+                    
+                    // Animer les chiffres
+                    this.animateNumbers();
+                    
+                    console.log('✅ Statistiques admin chargées');
+                } catch (error) {
+                    console.error('Erreur chargement statistiques:', error);
+                }
+            }
+
+            animateNumbers() {
+                const numbers = document.querySelectorAll('#admin-stats [id$="-users"], #admin-stats [id$="-classifications"], #admin-stats [id$="-sessions"]');
+                numbers.forEach(el => {
+                    if (el.textContent !== '-') {
+                        el.style.transform = 'scale(1.1)';
+                        setTimeout(() => {
+                            el.style.transform = 'scale(1)';
+                        }, 200);
+                    }
+                });
+            }
+
+            getWeekDates() {
+                const dates = [];
+                const today = new Date();
+                const dayOfWeek = today.getDay();
+                const startOfWeek = new Date(today);
+                startOfWeek.setDate(today.getDate() - dayOfWeek);
+                
+                for (let i = 0; i < 7; i++) {
+                    const date = new Date(startOfWeek);
+                    date.setDate(startOfWeek.getDate() + i);
+                    dates.push(date.toISOString().split('T')[0]);
+                }
+                
+                return dates;
+            }
+
+            async handleUserRegistration() {
+                const registerBtn = document.getElementById('admin-register-btn');
+                const registerText = document.getElementById('register-text');
+                const registerSpinner = document.getElementById('register-spinner');
+                const resultDiv = document.getElementById('admin-register-result');
+                
+                // Récupérer les données
+                const formData = {
+                    nom: document.getElementById('admin-nom').value.trim(),
+                    identifiant: document.getElementById('admin-identifiant').value.trim(),
+                    email: document.getElementById('admin-email').value.trim(),
+                    password: document.getElementById('admin-password').value,
+                    confirmPassword: document.getElementById('admin-password').value,
+                    is_admin: document.getElementById('admin-is-admin').checked
+                };
+                
+                // Validation
+                if (!this.validateRegistrationData(formData)) {
+                    return;
+                }
+                
+                // Interface de chargement
+                registerBtn.disabled = true;
+                registerText.classList.add('hidden');
+                registerSpinner.classList.remove('hidden');
+                
+                try {
+                    const response = await fetch('./registerUser.php', {
+                        method: 'POST',
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${this.sessionToken}`
+                        },
+                        body: JSON.stringify(formData)
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        this.showResult(`✅ Utilisateur créé avec succès : ${result.user.nom_user}`, 'success');
+                        document.getElementById('admin-register-form').reset();
+                        this.loadAdminStats();
+                        this.loadUsersList();
+                        this.logAction(`Utilisateur créé: ${result.user.nom_user} (${result.user.identifiant_user})`);
+                    } else {
+                        throw new Error(result.message || 'Erreur lors de la création');
+                    }
+                    
+                } catch (error) {
+                    console.error('Erreur inscription:', error);
+                    
+                    // Gestion des erreurs réseau - Mode fallback
+                    if (error.name === 'TypeError' && error.message.includes('fetch')) {
+                        // Simulation locale
+                        const newUser = {
+                            user_id: Date.now(),
+                            nom_user: formData.nom,
+                            identifiant_user: formData.identifiant,
+                            email: formData.email,
+                            is_admin: formData.is_admin,
+                            statut: 'actif',
+                            date_creation: new Date().toISOString()
+                        };
+                        
+                        this.allUsers.push(newUser);
+                        this.showResult(`✅ Utilisateur créé localement : ${newUser.nom_user}`, 'success');
+                        document.getElementById('admin-register-form').reset();
+                        this.loadAdminStats();
+                        this.loadUsersList();
+                    } else {
+                        this.showResult(`❌ ${error.message}`, 'error');
+                    }
+                } finally {
+                    registerBtn.disabled = false;
+                    registerText.classList.remove('hidden');
+                    registerSpinner.classList.add('hidden');
+                }
+            }
+
+            validateRegistrationData(data) {
+                if (!data.nom || !data.identifiant || !data.email || !data.password) {
+                    this.showResult('❌ Tous les champs sont obligatoires', 'error');
+                    return false;
+                }
+                
+                if (data.nom.length < 2) {
+                    this.showResult('❌ Le nom doit contenir au moins 2 caractères', 'error');
+                    return false;
+                }
+                
+                if (data.identifiant.length < 3) {
+                    this.showResult('❌ L\'identifiant doit contenir au moins 3 caractères', 'error');
+                    return false;
+                }
+                
+                if (!data.email.includes('@') || !data.email.includes('.')) {
+                    this.showResult('❌ Format d\'email invalide', 'error');
+                    return false;
+                }
+                
+                if (data.password.length < 6) {
+                    this.showResult('❌ Le mot de passe doit contenir au moins 6 caractères', 'error');
+                    return false;
+                }
+                
+                // Vérifier si l'identifiant existe déjà
+                if (this.allUsers.some(user => user.identifiant_user === data.identifiant)) {
+                    this.showResult('❌ Cet identifiant existe déjà', 'error');
+                    return false;
+                }
+                
+                return true;
+            }
+
+            showResult(message, type) {
+                const resultDiv = document.getElementById('admin-register-result');
+                const colors = {
+                    success: 'bg-green-100 border-2 border-green-300 text-green-800',
+                    error: 'bg-red-100 border-2 border-red-300 text-red-800',
+                    info: 'bg-blue-100 border-2 border-blue-300 text-blue-800'
+                };
+                
+                resultDiv.className = `mt-6 p-4 rounded-xl ${colors[type]} animate-slide-up`;
+                resultDiv.textContent = message;
+                resultDiv.classList.remove('hidden');
+                
+                setTimeout(() => {
+                    resultDiv.classList.add('hidden');
+                }, 5000);
+            }
+
+            async loadUsersList() {
+                const usersListDiv = document.getElementById('users-list');
+                
+                try {
+                    // Charger les utilisateurs (simulation si pas d'API)
+                    if (this.allUsers.length === 0) {
+                        this.allUsers = [
+                            { 
+                                user_id: 1, 
+                                nom_user: 'Admin Principal', 
+                                identifiant_user: 'admin',
+                                email: 'admin@douane.ci', 
+                                statut: 'actif', 
+                                is_admin: true,
+                                date_creation: '2025-01-01T00:00:00Z',
+                                derniere_connexion: new Date().toISOString()
+                            },
+                            { 
+                                user_id: 2, 
+                                nom_user: 'Agent Douanes', 
+                                identifiant_user: 'agent.douanes',
+                                email: 'agent@douane.ci', 
+                                statut: 'actif', 
+                                is_admin: false,
+                                date_creation: '2025-01-02T00:00:00Z',
+                                derniere_connexion: '2025-01-07T14:30:00Z'
+                            },
+                            { 
+                                user_id: 3, 
+                                nom_user: 'Superviseur Commercial', 
+                                identifiant_user: 'superviseur',
+                                email: 'super@douane.ci', 
+                                statut: 'actif', 
+                                is_admin: false,
+                                date_creation: '2025-01-03T00:00:00Z',
+                                derniere_connexion: '2025-01-06T16:45:00Z'
+                            },
+                            { 
+                                user_id: 4, 
+                                nom_user: 'Marie Kouassi', 
+                                identifiant_user: 'marie.k',
+                                email: 'marie.kouassi@douane.ci', 
+                                statut: 'inactif', 
+                                is_admin: false,
+                                date_creation: '2025-01-04T00:00:00Z',
+                                derniere_connexion: '2025-01-04T10:00:00Z'
+                            }
+                        ];
+                    }
+                    
+                    this.filteredUsers = [...this.allUsers];
+                    this.renderUsersList();
+                    
+                } catch (error) {
+                    console.error('Erreur chargement utilisateurs:', error);
+                    usersListDiv.innerHTML = `
+                        <div class="text-center text-red-500">
+                            <div class="text-4xl mb-4">❌</div>
+                            <p>Erreur lors du chargement des utilisateurs</p>
+                        </div>
+                    `;
+                }
+            }
+
+            renderUsersList() {
+                const usersListDiv = document.getElementById('users-list');
+                
+                if (this.filteredUsers.length === 0) {
+                    usersListDiv.innerHTML = `
+                        <div class="text-center text-gray-500">
+                            <div class="text-4xl mb-4">🔍</div>
+                            <p>Aucun utilisateur trouvé</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                const usersHTML = this.filteredUsers.map(user => {
+                    const lastConnection = user.derniere_connexion ? 
+                        this.formatDate(user.derniere_connexion) : 'Jamais';
+                    const creationDate = user.date_creation ? 
+                        this.formatDate(user.date_creation) : 'Inconnue';
+                    
+                    return `
+                        <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-200 hover:shadow-md transition-all hover-lift">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-4">
+                                    <div class="w-12 h-12 bg-gradient-to-r from-douane-vert to-douane-or rounded-full flex items-center justify-center text-white font-bold text-lg">
+                                        ${user.nom_user.charAt(0).toUpperCase()}
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="font-semibold text-gray-800 text-lg">${user.nom_user}</div>
+                                        <div class="text-sm text-gray-600 flex items-center gap-2">
+                                            <span>📧 ${user.email}</span>
+                                            <span class="text-gray-400">•</span>
+                                            <span>🆔 ${user.identifiant_user}</span>
+                                        </div>
+                                        <div class="text-xs text-gray-500 mt-1 flex items-center gap-3">
+                                            <span>👤 Créé: ${creationDate}</span>
+                                            <span>🕒 Dernière connexion: ${lastConnection}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <div class="text-center">
+                                        <div class="text-xs text-douane-vert font-bold mb-1">
+                                            ${user.is_admin ? '👑 ADMIN' : '👤 USER'}
+                                        </div>
+                                        <span class="px-3 py-1 rounded-full text-xs font-medium ${
+                                            user.statut === 'actif' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                                        }">
+                                            ${user.statut === 'actif' ? '🟢 Actif' : '🔴 Inactif'}
+                                        </span>
+                                    </div>
+                                    <div class="flex flex-col space-y-2">
+                                        <button onclick="adminPanel.toggleUserStatus(${user.user_id})" 
+                                            class="px-3 py-1 text-xs rounded-lg transition-colors ${
+                                                user.statut === 'actif' ? 
+                                                'bg-orange-100 text-orange-600 hover:bg-orange-200' : 
+                                                'bg-green-100 text-green-600 hover:bg-green-200'
+                                            }">
+                                            ${user.statut === 'actif' ? '⏸️ Suspendre' : '▶️ Activer'}
+                                        </button>
+                                        <button onclick="adminPanel.deleteUser(${user.user_id})" 
+                                            class="px-3 py-1 text-xs bg-red-100 text-red-600 hover:bg-red-200 rounded-lg transition-colors">
+                                            🗑️ Supprimer
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                
+                usersListDiv.innerHTML = `
+                    <div class="space-y-4">
+                        <div class="bg-douane-vert/10 border border-douane-vert/30 rounded-xl p-4 mb-4">
+                            <div class="flex items-center justify-between text-sm">
+                                <span class="font-medium text-douane-vert">
+                                    📊 ${this.filteredUsers.length} utilisateur(s) affiché(s)
+                                </span>
+                                <span class="text-gray-600">
+                                    👑 ${this.filteredUsers.filter(u => u.is_admin).length} admin(s) • 
+                                    👤 ${this.filteredUsers.filter(u => !u.is_admin).length} utilisateur(s) • 
+                                    🟢 ${this.filteredUsers.filter(u => u.statut === 'actif').length} actif(s)
+                                </span>
+                            </div>
+                        </div>
+                        ${usersHTML}
+                    </div>
+                `;
+            }
+
+            filterUsers(searchTerm) {
+                if (!searchTerm) {
+                    this.filteredUsers = [...this.allUsers];
+                } else {
+                    const term = searchTerm.toLowerCase();
+                    this.filteredUsers = this.allUsers.filter(user => 
+                        user.nom_user.toLowerCase().includes(term) ||
+                        user.email.toLowerCase().includes(term) ||
+                        user.identifiant_user.toLowerCase().includes(term)
+                    );
+                }
+                this.renderUsersList();
+            }
+
+            toggleUserStatus(userId) {
+                const user = this.allUsers.find(u => u.user_id === userId);
+                if (user) {
+                    user.statut = user.statut === 'actif' ? 'inactif' : 'actif';
+                    this.renderUsersList();
+                    this.logAction(`Statut modifié pour ${user.nom_user}: ${user.statut}`);
+                    this.showNotification(`✅ Statut de ${user.nom_user} modifié: ${user.statut}`, 'success');
+                }
+            }
+
+            deleteUser(userId) {
+                const user = this.allUsers.find(u => u.user_id === userId);
+                if (user) {
+                    this.showConfirmation(
+                        'Supprimer l\'utilisateur',
+                        `Êtes-vous sûr de vouloir supprimer définitivement l'utilisateur "${user.nom_user}" ?`,
+                        () => {
+                            this.allUsers = this.allUsers.filter(u => u.user_id !== userId);
+                            this.filteredUsers = this.filteredUsers.filter(u => u.user_id !== userId);
+                            this.renderUsersList();
+                            this.loadAdminStats();
+                            this.logAction(`Utilisateur supprimé: ${user.nom_user}`);
+                            this.showNotification(`✅ Utilisateur ${user.nom_user} supprimé`, 'success');
+                        }
+                    );
+                }
+            }
+
+            showConfirmation(title, message, onConfirm) {
+                const modal = document.getElementById('confirmation-modal');
+                const titleEl = document.getElementById('confirmation-title');
+                const messageEl = document.getElementById('confirmation-message');
+                const confirmBtn = document.getElementById('confirm-action');
+                
+                titleEl.textContent = title;
+                messageEl.textContent = message;
+                
+                // Nettoyer les anciens listeners
+                const newConfirmBtn = confirmBtn.cloneNode(true);
+                confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+                
+                // Ajouter le nouveau listener
+                newConfirmBtn.addEventListener('click', () => {
+                    onConfirm();
+                    modal.classList.add('hidden');
+                });
+                
+                modal.classList.remove('hidden');
+            }
+
+            showNotification(message, type = 'info') {
+                const notification = document.createElement('div');
+                const colors = {
+                    success: 'bg-green-500',
+                    error: 'bg-red-500',
+                    info: 'bg-blue-500'
+                };
+                
+                notification.className = `fixed top-4 right-4 ${colors[type]} text-white p-4 rounded-xl shadow-lg z-50 animate-slide-up`;
+                notification.textContent = message;
+                
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    if (document.body.contains(notification)) {
+                        document.body.removeChild(notification);
+                    }
+                }, 4000);
+            }
+
+            loadClassificationsHistory() {
+                const chartDiv = document.getElementById('classifications-chart');
+                
+                try {
+                    const history = JSON.parse(localStorage.getItem('classification_history') || '[]');
+                    
+                    if (history.length === 0) {
+                        chartDiv.innerHTML = `
+                            <div class="text-center text-gray-500">
+                                <div class="text-4xl mb-4">📊</div>
+                                <p>Aucune classification enregistrée</p>
+                                <small class="text-gray-400">Les données apparaîtront après les premières classifications</small>
+                            </div>
+                        `;
+                        return;
+                    }
+                    
+                    // Statistiques par section
+                    const sectionStats = {};
+                    const dailyStats = {};
+                    
+                    history.forEach(item => {
+                        // Stats par section
+                        const section = item.section || 'Inconnu';
+                        sectionStats[section] = (sectionStats[section] || 0) + 1;
+                        
+                        // Stats par jour
+                        const date = item.timestamp ? item.timestamp.split('T')[0] : 'Inconnu';
+                        dailyStats[date] = (dailyStats[date] || 0) + 1;
+                    });
+                    
+                    // Créer les graphiques
+                    const sectionChartHTML = Object.entries(sectionStats)
+                        .sort(([,a], [,b]) => b - a)
+                        .slice(0, 10)
+                        .map(([section, count], index) => {
+                            const percentage = (count / history.length * 100).toFixed(1);
+                            const barWidth = Math.max(percentage, 5);
+                            return `
+                                <div class="flex items-center justify-between py-2 border-b border-gray-200 last:border-b-0">
+                                    <div class="flex items-center space-x-3 flex-1">
+                                        <span class="text-sm font-medium text-gray-700 min-w-20">Section ${section}</span>
+                                        <div class="flex-1 bg-gray-200 rounded-full h-3 relative">
+                                            <div class="bg-gradient-to-r from-douane-vert to-douane-or h-3 rounded-full transition-all duration-500" 
+                                                 style="width: ${barWidth}%"></div>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center space-x-2 ml-4">
+                                        <span class="bg-douane-vert text-white px-3 py-1 rounded-full text-sm font-medium">${count}</span>
+                                        <span class="text-xs text-gray-500">${percentage}%</span>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('');
+                    
+                    const dailyChartHTML = Object.entries(dailyStats)
+                        .sort(([a], [b]) => b.localeCompare(a))
+                        .slice(0, 7)
+                        .map(([date, count]) => `
+                            <div class="flex items-center justify-between py-2 border-b border-gray-200 last:border-b-0">
+                                <span class="text-gray-700 font-medium">${this.formatDate(date)}</span>
+                                <span class="bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-medium">${count}</span>
+                            </div>
+                        `).join('');
+                    
+                    chartDiv.innerHTML = `
+                        <div class="grid md:grid-cols-2 gap-8">
+                            <div>
+                                <h4 class="font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                                    📈 Top Sections Classifiées
+                                    <span class="bg-gray-100 text-gray-600 px-2 py-1 rounded-full text-xs">${history.length} total</span>
+                                </h4>
+                                <div class="space-y-3">
+                                    ${sectionChartHTML}
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                                    📅 Classifications Récentes
+                                    <span class="bg-gray-100 text-gray-600 px-2 py-1 rounded-full text-xs">7 derniers jours</span>
+                                </h4>
+                                <div class="space-y-2">
+                                    ${dailyChartHTML}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    
+                } catch (error) {
+                    console.error('Erreur chargement historique:', error);
+                    chartDiv.innerHTML = `
+                        <div class="text-center text-red-500">
+                            <div class="text-4xl mb-4">❌</div>
+                            <p>Erreur lors du chargement de l'historique</p>
+                        </div>
+                    `;
+                }
+            }
+
+            formatDate(dateString) {
+                try {
+                    const date = new Date(dateString);
+                    const now = new Date();
+                    const diffTime = Math.abs(now - date);
+                    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+                    
+                    if (diffDays === 0) {
+                        return 'Aujourd\'hui';
+                    } else if (diffDays === 1) {
+                        return 'Hier';
+                    } else if (diffDays < 7) {
+                        return `Il y a ${diffDays} jours`;
+                    } else {
+                        return date.toLocaleDateString('fr-FR', { 
+                            day: '2-digit', 
+                            month: '2-digit', 
+                            year: 'numeric' 
+                        });
+                    }
+                } catch {
+                    return dateString;
+                }
+            }
+
+            clearSystemCache() {
+                this.showConfirmation(
+                    'Vider le cache système',
+                    'Cette action supprimera toutes les données temporaires et l\'historique local. Continuer ?',
+                    () => {
+                        // Nettoyer le localStorage
+                        const keysToKeep = ['current_user', 'session_token'];
+                        const allKeys = Object.keys(localStorage);
+                        allKeys.forEach(key => {
+                            if (!keysToKeep.includes(key)) {
+                                localStorage.removeItem(key);
+                            }
+                        });
+                        
+                        // Nettoyer sessionStorage
+                        sessionStorage.clear();
+                        
+                        this.showNotification('✅ Cache système vidé avec succès', 'success');
+                        this.loadAdminStats();
+                        this.loadClassificationsHistory();
+                        this.logAction('Cache système vidé par l\'administrateur');
+                    }
+                );
+            }
+
+            createSystemBackup() {
+                try {
+                    const backupData = {
+                        metadata: {
+                            version: '1.0',
+                            timestamp: new Date().toISOString(),
+                            admin_user: this.currentUser.nom_user,
+                            system: 'CEDEAO Classification System'
+                        },
+                        users: this.allUsers,
+                        history: JSON.parse(localStorage.getItem('classification_history') || '[]'),
+                        preferences: JSON.parse(localStorage.getItem('user_preferences') || '{}'),
+                        logs: this.getSystemLogs()
+                    };
+                    
+                    const dataStr = JSON.stringify(backupData, null, 2);
+                    const dataBlob = new Blob([dataStr], {type: 'application/json'});
+                    
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(dataBlob);
+                    link.download = `backup-cedeao-${new Date().toISOString().split('T')[0]}-${Date.now()}.json`;
+                    link.click();
+                    
+                    this.showNotification('✅ Sauvegarde créée avec succès', 'success');
+                    this.logAction('Sauvegarde système créée');
+                } catch (error) {
+                    console.error('Erreur sauvegarde:', error);
+                    this.showNotification('❌ Erreur lors de la création de la sauvegarde', 'error');
+                }
+            }
+
+            showSystemLogs() {
+                const modal = document.getElementById('logs-modal');
+                const logsContent = document.getElementById('logs-content');
+                
+                const logs = this.getSystemLogs();
+                
+                const logsHTML = logs.map(log => `
+                    <div class="flex items-start space-x-4 py-3 border-b border-gray-200 last:border-b-0 hover:bg-gray-50 transition-colors rounded px-2">
+                        <span class="text-xs text-gray-500 min-w-32 font-mono">${log.time}</span>
+                        <span class="px-2 py-1 rounded text-xs font-medium ${
+                            log.level === 'ERROR' ? 'bg-red-100 text-red-700' :
+                            log.level === 'WARNING' ? 'bg-yellow-100 text-yellow-700' :
+                            log.level === 'SUCCESS' ? 'bg-green-100 text-green-700' :
+                            'bg-blue-100 text-blue-700'
+                        }">${log.level}</span>
+                        <span class="text-gray-800 flex-1">${log.message}</span>
+                        <span class="text-xs text-gray-400">${log.user || 'System'}</span>
+                    </div>
+                `).join('');
+                
+                logsContent.innerHTML = `
+                    <div class="mb-4">
+                        <div class="flex items-center justify-between mb-4">
+                            <h4 class="font-semibold text-gray-800">Journaux Système</h4>
+                            <div class="flex items-center space-x-4 text-sm text-gray-600">
+                                <span>📊 ${logs.length} entrées</span>
+                                <button onclick="adminPanel.exportLogs()" 
+                                    class="bg-douane-vert text-white px-3 py-1 rounded-lg hover:bg-douane-or transition-colors">
+                                    💾 Exporter
+                                </button>
+                            </div>
+                        </div>
+                        <div class="max-h-80 overflow-y-auto bg-gray-50 rounded-lg">
+                            ${logs.length > 0 ? logsHTML : `
+                                <div class="text-center py-8 text-gray-500">
+                                    <div class="text-4xl mb-2">📝</div>
+                                    <p>Aucun journal disponible</p>
+                                </div>
+                            `}
+                        </div>
+                    </div>
+                `;
+                
+                modal.classList.remove('hidden');
+            }
+
+            getSystemLogs() {
+                // Récupérer ou créer les logs système
+                const existingLogs = JSON.parse(localStorage.getItem('system_logs') || '[]');
+                
+                // Ajouter quelques logs par défaut si vide
+                if (existingLogs.length === 0) {
+                    const defaultLogs = [
+                        { time: new Date().toISOString().replace('T', ' ').substring(0, 19), level: 'INFO', message: 'Système démarré', user: 'System' },
+                        { time: new Date(Date.now() - 300000).toISOString().replace('T', ' ').substring(0, 19), level: 'SUCCESS', message: `Connexion administrateur: ${this.currentUser.nom_user}`, user: this.currentUser.nom_user },
+                        { time: new Date(Date.now() - 600000).toISOString().replace('T', ' ').substring(0, 19), level: 'INFO', message: 'Panneau administrateur ouvert', user: this.currentUser.nom_user }
+                    ];
+                    
+                    localStorage.setItem('system_logs', JSON.stringify(defaultLogs));
+                    return defaultLogs;
+                }
+                
+                return existingLogs.sort((a, b) => new Date(b.time) - new Date(a.time));
+            }
+
+            logAction(message, level = 'INFO') {
+                const logs = this.getSystemLogs();
+                const newLog = {
+                    time: new Date().toISOString().replace('T', ' ').substring(0, 19),
+                    level: level,
+                    message: message,
+                    user: this.currentUser.nom_user
+                };
+                
+                logs.unshift(newLog);
+                
+                // Garder seulement les 100 derniers logs
+                if (logs.length > 100) {
+                    logs.splice(100);
+                }
+                
+                localStorage.setItem('system_logs', JSON.stringify(logs));
+                console.log(`[${level}] ${message}`);
+            }
+
+            exportLogs() {
+                try {
+                    const logs = this.getSystemLogs();
+                    const csvContent = "data:text/csv;charset=utf-8," 
+                        + "Heure,Niveau,Message,Utilisateur\n"
+                        + logs.map(log => `"${log.time}","${log.level}","${log.message}","${log.user}"`).join("\n");
+                    
+                    const encodedUri = encodeURI(csvContent);
+                    const link = document.createElement("a");
+                    link.setAttribute("href", encodedUri);
+                    link.setAttribute("download", `logs-cedeao-${new Date().toISOString().split('T')[0]}.csv`);
+                    link.click();
+                    
+                    this.showNotification('✅ Logs exportés avec succès', 'success');
+                } catch (error) {
+                    console.error('Erreur export logs:', error);
+                    this.showNotification('❌ Erreur lors de l\'export des logs', 'error');
+                }
+            }
+
+            resetAllSessions() {
+                this.showConfirmation(
+                    'Déconnecter tous les utilisateurs',
+                    'Cette action déconnectera immédiatement tous les utilisateurs connectés au système. Continuer ?',
+                    () => {
+                        // Simulation de déconnexion de tous les utilisateurs
+                        this.showNotification('✅ Toutes les sessions ont été réinitialisées', 'success');
+                        this.logAction('Réinitialisation de toutes les sessions utilisateurs', 'WARNING');
+                        
+                        // Mettre à jour le compteur de sessions actives
+                        document.getElementById('active-sessions').textContent = '1';
+                    }
+                );
+            }
+
+            toggleMaintenanceMode(enabled) {
+                const status = enabled ? 'activé' : 'désactivé';
+                this.showNotification(`🛠️ Mode maintenance ${status}`, enabled ? 'info' : 'success');
+                this.logAction(`Mode maintenance ${status}`, enabled ? 'WARNING' : 'INFO');
+                
+                // Simuler l'effet du mode maintenance
+                if (enabled) {
+                    document.getElementById('system-status').textContent = '🟡';
+                } else {
+                    document.getElementById('system-status').textContent = '🟢';
+                }
+            }
+
+            toggleAdvancedLogging(enabled) {
+                const status = enabled ? 'activé' : 'désactivé';
+                this.showNotification(`📝 Logging avancé ${status}`, 'info');
+                this.logAction(`Logging avancé ${status}`, 'INFO');
+                
+                // Sauvegarder la préférence
+                const preferences = JSON.parse(localStorage.getItem('admin_preferences') || '{}');
+                preferences.advancedLogging = enabled;
+                localStorage.setItem('admin_preferences', JSON.stringify(preferences));
+            }
+
+            updateSessionDuration(minutes) {
+                this.showNotification(`⏱️ Durée de session mise à jour: ${minutes} minutes`, 'info');
+                this.logAction(`Durée de session modifiée: ${minutes} minutes`, 'INFO');
+                
+                // Sauvegarder la préférence
+                const preferences = JSON.parse(localStorage.getItem('admin_preferences') || '{}');
+                preferences.sessionDuration = minutes;
+                localStorage.setItem('admin_preferences', JSON.stringify(preferences));
+            }
+        }
+
+        // Initialiser le panneau administrateur
+        let adminPanel;
+        document.addEventListener('DOMContentLoaded', function() {
+            adminPanel = new AdminPanel();
+            console.log('👑 Panneau administrateur CEDEAO initialisé');
+            
+            // Ajouter des animations d'entrée
+            const sections = document.querySelectorAll('main > div');
+            sections.forEach((section, index) => {
+                section.style.animationDelay = `${index * 0.1}s`;
+                section.classList.add('animate-fade-in');
+            });
+        });
+
+        // Gestionnaire global d'erreurs
+        window.addEventListener('error', function(e) {
+            console.error('Erreur système:', e.error);
+            if (adminPanel) {
+                adminPanel.logAction(`Erreur système: ${e.message}`, 'ERROR');
+            }
+        });
+
+        // Gestionnaire de déconnexion d'urgence
+        window.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.altKey && e.key === 'x') {
+                e.preventDefault();
+                if (confirm('⚠️ Déconnexion d\'urgence - Êtes-vous sûr ?')) {
+                    localStorage.clear();
+                    sessionStorage.clear();
+                    window.location.replace('index.html');
+                }
+            }
+        });
+
+        // Auto-actualisation des statistiques toutes les 5 minutes
+        setInterval(() => {
+            if (adminPanel && document.visibilityState === 'visible') {
+                adminPanel.loadAdminStats();
+                console.log('🔄 Statistiques actualisées automatiquement');
+            }
+        }, 300000); // 5 minutes
+
+        // Notification de bienvenue
+        setTimeout(() => {
+            if (adminPanel && adminPanel.currentUser) {
+                adminPanel.showNotification(`👑 Bienvenue dans le panneau administrateur, ${adminPanel.currentUser.nom_user}!`, 'info');
+            }
+        }, 1000);
+
+        // Fonction globale pour gérer les clics sur les boutons utilisateurs
+        window.adminPanel = null; // Sera défini après l'initialisation
+
+        // Gestion des raccourcis clavier avancés
+        document.addEventListener('keydown', function(e) {
+            // Ctrl+Alt+S = Sauvegarde rapide
+            if (e.ctrlKey && e.altKey && e.key === 's') {
+                e.preventDefault();
+                if (adminPanel) {
+                    adminPanel.createSystemBackup();
+                }
+            }
+            
+            // Ctrl+Alt+L = Logs système
+            if (e.ctrlKey && e.altKey && e.key === 'l') {
+                e.preventDefault();
+                if (adminPanel) {
+                    adminPanel.showSystemLogs();
+                }
+            }
+            
+            // Ctrl+Alt+R = Actualiser stats
+            if (e.ctrlKey && e.altKey && e.key === 'r') {
+                e.preventDefault();
+                if (adminPanel) {
+                    adminPanel.loadAdminStats();
+                    adminPanel.showNotification('🔄 Statistiques actualisées', 'info');
+                }
+            }
+        });
+
+        // Gestion de la visibilité de la page pour optimiser les performances
+        document.addEventListener('visibilitychange', function() {
+            if (document.visibilityState === 'visible' && adminPanel) {
+                // Actualiser les données quand la page redevient visible
+                adminPanel.loadAdminStats();
+            }
+        });
+
+        // Nettoyage automatique des notifications obsolètes
+        setInterval(() => {
+            const notifications = document.querySelectorAll('[class*="fixed top-4 right-4"]');
+            notifications.forEach(notif => {
+                if (notif.style.opacity === '0') {
+                    notif.remove();
+                }
+            });
+        }, 10000);
+
+        console.log('🚀 Scripts du panneau administrateur chargés');
+        console.log('⚡ Raccourcis disponibles:');
+        console.log('   • Ctrl+Alt+X = Déconnexion d\'urgence');
+        console.log('   • Ctrl+Alt+S = Sauvegarde système');
+        console.log('   • Ctrl+Alt+L = Afficher les logs');
+        console.log('   • Ctrl+Alt+R = Actualiser les statistiques');
+        console.log('   • Échap = Fermer les modales');
+    </script>
+</body>
+</html>

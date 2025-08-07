@@ -1,4 +1,3 @@
-
 <!--system.html-->
 <!DOCTYPE html>
 <html lang="fr" class="scroll-smooth">
@@ -94,7 +93,18 @@
                                 </div>
                             </div>
                             
+                            <!-- Bouton Panneau Admin (visible seulement pour les admins) -->
+                            <a href="admin.html" id="admin-panel-link" class="hidden flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors">
+                                <span class="mr-3">👑</span>
+                                Panneau Administrateur
+                            </a>
+                            
                             <a href="historique.html" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors">
+                                <span class="mr-3">📋</span>
+                                Historique
+                            </a>
+                            
+                            <a href="parametres.html" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors">
                                 <span class="mr-3">⚙️</span>
                                 Paramètres
                             </a>
@@ -201,7 +211,7 @@
             <div class="bg-gradient-to-br from-douane-vert/10 to-douane-or/10 p-8 rounded-2xl border border-douane-or/20 mb-8">
                 <h3 class="text-2xl font-bold text-douane-vert mb-6">❓ Comment utiliser ce système</h3>
                 
-                <ol class="list-decimal list-inside space-y-2 mb-8 text-white-700">
+                <ol class="list-decimal list-inside space-y-2 mb-8 text-gray-700">
                     <li>Saisissez une description détaillée de votre produit</li>
                     <li>Cliquez sur "Classifier le produit"</li>
                     <li>Le système analysera la description et proposera la section appropriée</li>
@@ -211,17 +221,17 @@
                 <h4 class="text-xl font-bold text-douane-vert mb-4">💡 Exemples de descriptions efficaces</h4>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="bg-vert p-4 rounded-lg border-l-4 border-douane-vert shadow-sm">
-                        <strong class="text-douane-blanc-bold">Animaux :</strong> "Cheval reproducteur de race pure", "Poules pondeuses vivantes"
+                    <div class="bg-white p-4 rounded-lg border-l-4 border-douane-vert shadow-sm">
+                        <strong class="text-douane-vert font-bold">Animaux :</strong> "Cheval reproducteur de race pure", "Poules pondeuses vivantes"
                     </div>
-                    <div class="bg-vert p-4 rounded-lg border-l-4 border-douane-vert shadow-sm">
-                        <strong class="text-douane-blanc-bold">Produits alimentaires :</strong> "Riz blanchi long grain", "Tomates fraîches", "Huile d'olive vierge"
+                    <div class="bg-white p-4 rounded-lg border-l-4 border-douane-vert shadow-sm">
+                        <strong class="text-douane-vert font-bold">Produits alimentaires :</strong> "Riz blanchi long grain", "Tomates fraîches", "Huile d'olive vierge"
                     </div>
-                    <div class="bg-vert p-4 rounded-lg border-l-4 border-douane-vert shadow-sm">
-                        <strong class="text-douane-blanc-bold">Textiles :</strong> "Tissu 100% coton", "Chemise en soie", "Jean en denim"
+                    <div class="bg-white p-4 rounded-lg border-l-4 border-douane-vert shadow-sm">
+                        <strong class="text-douane-vert font-bold">Textiles :</strong> "Tissu 100% coton", "Chemise en soie", "Jean en denim"
                     </div>
-                    <div class="bg-vert p-4 rounded-lg border-l-4 border-douane-vert shadow-sm">
-                        <strong class="text-douane-blanc-bold">Véhicules :</strong> "Voiture d'occasion diesel", "Camion de transport", "Moto 250cc"
+                    <div class="bg-white p-4 rounded-lg border-l-4 border-douane-vert shadow-sm">
+                        <strong class="text-douane-vert font-bold">Véhicules :</strong> "Voiture d'occasion diesel", "Camion de transport", "Moto 250cc"
                     </div>
                 </div>
             </div>
@@ -296,6 +306,11 @@
                     
                     document.getElementById('dropdown-user-name').textContent = this.currentUser.nom_user;
                     document.getElementById('dropdown-user-email').textContent = this.currentUser.email || this.currentUser.identifiant_user;
+
+                    // Afficher le lien du panneau admin si l'utilisateur est admin
+                    if (this.currentUser.is_admin) {
+                        document.getElementById('admin-panel-link').classList.remove('hidden');
+                    }
                 }
             }
 
@@ -585,29 +600,28 @@
                     }
                 }
 
-        saveToLocalHistory(description, result) {
-            try {
-                let history = JSON.parse(localStorage.getItem('classification_history') || '[]');
-                const entry = {
-                    timestamp: new Date().toISOString(),
-                    description: description,
-                    section: result.section?.number || 'Inconnu',
-                    title: result.section?.title || 'Section inconnue',
-                    confidence: result.confidence || 0,
-                    code: result.code || 'N/A'
-                };
-                history.unshift(entry);
-                if (history.length > 100) history = history.slice(0, 100);
-                localStorage.setItem('classification_history', JSON.stringify(history));
-                return entry;
-            } catch (error) {
-                console.error('Erreur sauvegarde locale:', error);
-                return null;
-            }
-        }
-    };
-};
-
+                saveToLocalHistory(description, result) {
+                    try {
+                        let history = JSON.parse(localStorage.getItem('classification_history') || '[]');
+                        const entry = {
+                            timestamp: new Date().toISOString(),
+                            description: description,
+                            section: result.section?.number || 'Inconnu',
+                            title: result.section?.title || 'Section inconnue',
+                            confidence: result.confidence || 0,
+                            code: result.code || 'N/A'
+                        };
+                        history.unshift(entry);
+                        if (history.length > 100) history = history.slice(0, 100);
+                        localStorage.setItem('classification_history', JSON.stringify(history));
+                        return entry;
+                    } catch (error) {
+                        console.error('Erreur sauvegarde locale:', error);
+                        return null;
+                    }
+                }
+            };
+        };
     </script>
     <script src="ai-classifier.js"></script>
     <script>

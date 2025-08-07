@@ -59,10 +59,10 @@ function handlePost($pdo, $action, $data) {
         case 'save_temp_classification':
             saveTempClassification($pdo, $data);
             break;
-        case 'save_classified_product':  // NOUVELLE ACTION AJOUTÉE
+        case 'save_classified_product':
             saveClassifiedProduct($pdo, $data);
             break;
-        case 'save_product':  // NOUVELLE ACTION AJOUTÉE
+        case 'save_product':
             saveProduct($pdo, $data);
             break;
         case 'validate_product':
@@ -116,7 +116,7 @@ function handleDelete($pdo, $action, $data) {
     }
 }
 
-// Fonction de connexion utilisateur
+// Fonction de connexion utilisateur - CORRIGÉE
 function login($pdo, $data) {
     try {
         // Récupérer l'identifiant (peut être email ou identifiant_user)
@@ -158,8 +158,11 @@ function login($pdo, $data) {
         // Nettoyer les données sensibles
         unset($user['mot_de_passe']);
         
-        // Log de succès
-        error_log("Connexion réussie pour: " . $user['nom_user'] . " (ID: " . $user['user_id'] . ")");
+        // 🚨 CORRECTION CRITIQUE: Convertir les entiers en booleans pour JavaScript
+        $user['is_admin'] = (bool)$user['is_admin'];  // Convertir 0/1 en false/true
+        
+        // Log de succès avec debug
+        error_log("Connexion réussie pour: " . $user['nom_user'] . " (ID: " . $user['user_id'] . ") - Is Admin: " . ($user['is_admin'] ? 'true' : 'false'));
         
         echo json_encode([
             'success' => true,
@@ -180,13 +183,14 @@ function login($pdo, $data) {
     }
 }
 
-// Fonction d'enregistrement d'utilisateur
+// Fonction d'enregistrement d'utilisateur - CORRIGÉE
 function registerUser($pdo, $data) {
     try {
-        $nom = $data['nom_user'] ?? '';
-        $identifiant = $data['identifiant_user'] ?? '';
+        $nom = $data['nom'] ?? $data['nom_user'] ?? '';
+        $identifiant = $data['identifiant'] ?? $data['identifiant_user'] ?? '';
         $email = $data['email'] ?? '';
         $password = $data['password'] ?? '';
+        $isAdmin = isset($data['is_admin']) ? ($data['is_admin'] ? 1 : 0) : 0;  // Convertir boolean en 0/1 pour MySQL
         
         if (empty($nom) || empty($identifiant) || empty($email) || empty($password)) {
             throw new Exception('Tous les champs sont requis');
@@ -204,16 +208,27 @@ function registerUser($pdo, $data) {
         
         // Insérer l'utilisateur
         $stmt = $pdo->prepare("
-            INSERT INTO User (nom_user, identifiant_user, email, mot_de_passe) 
-            VALUES (?, ?, ?, ?)
+            INSERT INTO User (nom_user, identifiant_user, email, mot_de_passe, is_admin) 
+            VALUES (?, ?, ?, ?, ?)
         ");
-        $stmt->execute([$nom, $identifiant, $email, $hashedPassword]);
+        $stmt->execute([$nom, $identifiant, $email, $hashedPassword, $isAdmin]);
         
         $userId = $pdo->lastInsertId();
         
+        // Récupérer l'utilisateur créé
+        $getUserStmt = $pdo->prepare("SELECT * FROM User WHERE user_id = ?");
+        $getUserStmt->execute([$userId]);
+        $newUser = $getUserStmt->fetch();
+        
+        // Nettoyer les données sensibles
+        unset($newUser['mot_de_passe']);
+        
+        // Convertir is_admin en boolean
+        $newUser['is_admin'] = (bool)$newUser['is_admin'];
+        
         echo json_encode([
             'success' => true,
-            'user_id' => $userId,
+            'user' => $newUser,
             'message' => 'Utilisateur créé avec succès'
         ]);
         
@@ -226,7 +241,7 @@ function registerUser($pdo, $data) {
     }
 }
 
-// NOUVELLE FONCTION: Sauvegarder un produit classifié
+// Fonction pour sauvegarder un produit classifié
 function saveClassifiedProduct($pdo, $data) {
     try {
         $product = $data['product'] ?? [];
@@ -251,12 +266,12 @@ function saveClassifiedProduct($pdo, $data) {
             $product['origine_produit'] ?? 'Non spécifié',
             $product['description_produit'] ?? '',
             $product['numero_serie'] ?? null,
-            ($product['is_groupe'] ?? false) ? 1 : 0,
+            isset($product['is_groupe']) ? ($product['is_groupe'] ? 1 : 0) : 0,  // Convertir boolean en 0/1
             $product['nombre_produits'] ?? 1,
             $product['taux_imposition'] ?? 0,
             $product['section_produit'] ?? 'I',
             $product['sous_section_produit'] ?? null,
-            $defaultUserId, // À modifier selon votre système d'authentification
+            $defaultUserId,
             $product['statut_validation'] ?? 'valide',
             $product['code_tarifaire'] ?? null,
             $product['valeur_declaree'] ?? 0,
@@ -282,7 +297,7 @@ function saveClassifiedProduct($pdo, $data) {
     }
 }
 
-// NOUVELLE FONCTION: Sauvegarder un produit générique
+// Fonction pour sauvegarder un produit générique
 function saveProduct($pdo, $data) {
     try {
         $product = $data['product'] ?? [];
@@ -418,7 +433,7 @@ function getTariffRates($pdo) {
     }
 }
 
-// Fonction pour récupérer les classifications
+// Fonction pour récupérer les classifications - CORRIGÉE
 function getClassifications($pdo) {
     try {
         $userId = $_GET['user_id'] ?? null;
@@ -442,6 +457,11 @@ function getClassifications($pdo) {
         $stmt = $pdo->prepare($sql);
         $stmt->execute($params);
         $classifications = $stmt->fetchAll();
+        
+        // Convertir is_groupe en boolean pour chaque produit
+        foreach ($classifications as &$classification) {
+            $classification['is_groupe'] = (bool)$classification['is_groupe'];
+        }
         
         echo json_encode([
             'success' => true,
@@ -495,6 +515,11 @@ function updateProduct($pdo, $data) {
         $params = [];
         
         foreach ($updates as $field => $value) {
+            // Convertir les booleans en 0/1 pour MySQL si nécessaire
+            if ($field === 'is_groupe' && is_bool($value)) {
+                $value = $value ? 1 : 0;
+            }
+            
             $setParts[] = "$field = ?";
             $params[] = $value;
         }
