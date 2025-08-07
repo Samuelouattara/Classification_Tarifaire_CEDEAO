@@ -945,6 +945,69 @@
             }, 1000);
         })();
     </script>
+    <script src="script.js"></script>
     <script src="script-advanced.js"></script>
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🔧 Initialisation du dropdown sections...');
+
+    // Éléments du dropdown sections
+    const sectionsBtn = document.getElementById('sections-dropdown-btn');
+    const sectionsDropdown = document.getElementById('sections-dropdown-content');
+    const sectionsArrow = document.getElementById('sections-arrow') || sectionsBtn?.querySelector('.dropdown-arrow');
+
+    // Fonctions pour afficher/masquer
+    function showDropdown(dropdown, arrow) {
+        if (dropdown && arrow) {
+            dropdown.classList.remove('opacity-0', 'invisible', 'translate-y-2');
+            dropdown.classList.add('opacity-100', 'visible', 'translate-y-0');
+            arrow.style.transform = 'rotate(180deg)';
+        }
+    }
+
+    function hideDropdown(dropdown, arrow) {
+        if (dropdown && arrow) {
+            dropdown.classList.add('opacity-0', 'invisible', 'translate-y-2');
+            dropdown.classList.remove('opacity-100', 'visible', 'translate-y-0');
+            arrow.style.transform = 'rotate(0deg)';
+        }
+    }
+
+    // Gestionnaire du clic sur le bouton sections
+    if (sectionsBtn && sectionsDropdown && sectionsArrow) {
+        sectionsBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const isVisible = sectionsDropdown.classList.contains('opacity-100');
+            
+            if (isVisible) {
+                hideDropdown(sectionsDropdown, sectionsArrow);
+            } else {
+                showDropdown(sectionsDropdown, sectionsArrow);
+            }
+        });
+        console.log('✅ Dropdown sections configuré');
+    } else {
+        console.error('❌ Éléments dropdown sections non trouvés');
+    }
+
+    // Fermeture en cliquant ailleurs
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('#sections-dropdown-btn') && 
+            !e.target.closest('#sections-dropdown-content') && 
+            sectionsDropdown) {
+            hideDropdown(sectionsDropdown, sectionsArrow);
+        }
+    });
+
+    // Fermeture avec la touche Échap
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && sectionsDropdown && sectionsDropdown.classList.contains('opacity-100')) {
+            hideDropdown(sectionsDropdown, sectionsArrow);
+        }
+    });
+});
+</script>
 </body>
 </html>
