@@ -113,6 +113,14 @@ function createToastStyles() {
 function showToast(config) {
     const container = document.getElementById('toast-container');
     if (!container) return;
+
+    // Supprimer tous les toasts existants
+    const existingToasts = container.querySelectorAll('.toast');
+    existingToasts.forEach(toast => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 200);
+    });
+
     
     const toast = document.createElement('div');
     toast.className = `toast ${config.type || 'success'}`;
@@ -163,14 +171,20 @@ function showToast(config) {
     }, duration);
 }
 
-// Fonctions spécifiques pour chaque type de toast
+// Fonctions spécifiques pour chaque type de toast et cliquable quand le message contient "Cliquez pour continuer"
 function showSuccessToast(title, message = '', duration = 4000) {
+    const isClickable = message.includes('Cliquez pour continuer');
+    
     showToast({
         type: 'success',
         icon: '✅',
         title: title,
         message: message,
-        duration: duration
+        duration: duration,
+        clickable: isClickable,
+        onClick: isClickable ? () => {
+            continueClassification();
+        } : undefined
     });
 }
 
@@ -656,16 +670,93 @@ function getSectionDescription(sectionNumber) {
     return descriptions[sectionNumber] || 'Description non disponible';
 }
 
-// Fonctions pour les boutons avec toasts simples
+function getSectionTitle(sectionNumber) {
+    const titles = {
+        'I': 'Animaux vivants et produits du règne animal',
+        'II': 'Produits du règne végétal',
+        'III': 'Graisses et huiles animales, végétales ou d\'origine microbienne',
+        'IV': 'Produits des industries alimentaires; boissons, liquides alcooliques et vinaigres; tabacs',
+        'V': 'Produits minéraux',
+        'VI': 'Produits des industries chimiques ou des industries connexes',
+        'VII': 'Matières plastiques et ouvrages en ces matières; caoutchouc et ouvrages en caoutchouc',
+        'VIII': 'Peaux, cuirs, pelleteries et ouvrages en ces matières',
+        'IX': 'Bois, charbon de bois et ouvrages en bois; liège et ouvrages en liège',
+        'X': 'Pâtes de bois ou d\'autres matières fibreuses cellulosiques; papier ou carton',
+        'XI': 'Matières textiles et ouvrages en ces matières',
+        'XII': 'Chaussures, coiffures, parapluies, cannes, fouets, cravaches',
+        'XIII': 'Ouvrages en pierres, plâtre, ciment, amiante, mica; produits céramiques; verre',
+        'XIV': 'Perles fines ou de culture, pierres gemmes, métaux précieux',
+        'XV': 'Métaux communs et ouvrages en ces métaux',
+        'XVI': 'Machines et appareils, matériel électrique et leurs parties',
+        'XVII': 'Matériel de transport',
+        'XVIII': 'Instruments et appareils d\'optique, de photographie, de mesure, de contrôle',
+        'XIX': 'Armes, munitions et leurs parties et accessoires',
+        'XX': 'Marchandises et produits divers',
+        'XXI': 'Objets d\'art, de collection ou d\'antiquité'
+    };
+    return titles[sectionNumber] || 'Section inconnue';
+}
+
+// Fonction mise à jour pour afficher les détails complets dans un toast (style image)
 window.showSectionDetails = function(sectionNumber) {
     const description = getSectionDescription(sectionNumber);
     const taxRate = getTaxRate(sectionNumber);
+    const sectionTitle = getSectionTitle(sectionNumber);
     
-    showInfoToast(
-        `Section ${sectionNumber} - Détails`,
-        `Taux: ${taxRate}% • Système Harmonisé CEDEAO`,
-        5000
-    );
+    // Toast détaillé reproduisant le style de votre image
+    showToast({
+        type: 'info',
+        icon: '📊',
+        title: `SECTION ${sectionNumber} - DÉTAILS COMPLETS`,
+        message: `
+            <div style="margin-top: 15px; text-align: left; line-height: 1.7; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+                
+                <!-- Titre de la section -->
+                <div style="background: linear-gradient(135deg, rgba(6, 182, 212, 0.15), rgba(8, 145, 178, 0.1)); padding: 14px; border-radius: 12px; margin-bottom: 12px; border: 1px solid rgba(6, 182, 212, 0.3); box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                        <span style="font-size: 20px;">🏷️</span>
+                        <strong style="color: #0891b2; font-size: 16px; text-transform: uppercase; letter-spacing: 0.5px;">Titre Officiel</strong>
+                    </div>
+                    <div style="color: rgba(255,255,255,0.95); font-size: 15px; font-weight: 600; line-height: 1.4;">${sectionTitle}</div>
+                </div>
+                
+                <!-- Description détaillée -->
+                <div style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(217, 119, 6, 0.1)); padding: 14px; border-radius: 12px; margin-bottom: 12px; border: 1px solid rgba(245, 158, 11, 0.3); box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                        <span style="font-size: 20px;">📖</span>
+                        <strong style="color: #d97706; font-size: 16px; text-transform: uppercase; letter-spacing: 0.5px;">Description</strong>
+                    </div>
+                    <div style="color: rgba(255,255,255,0.9); font-size: 14px; line-height: 1.5;">${description}</div>
+                </div>
+                
+                <!-- Taux d'imposition -->
+                <div style="background: linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(22, 163, 74, 0.1)); padding: 14px; border-radius: 12px; margin-bottom: 12px; border: 1px solid rgba(34, 197, 94, 0.3); box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                        <span style="font-size: 20px;">💰</span>
+                        <strong style="color: #16a34a; font-size: 16px; text-transform: uppercase; letter-spacing: 0.5px;">Taux d'imposition</strong>
+                    </div>
+                    <div style="color: rgba(255,255,255,0.95); font-size: 18px; font-weight: 700;">${taxRate}%</div>
+                </div>
+                
+                <!-- Système de référence -->
+                <div style="background: linear-gradient(135deg, rgba(168, 85, 247, 0.15), rgba(147, 51, 234, 0.1)); padding: 14px; border-radius: 12px; border: 1px solid rgba(168, 85, 247, 0.3); box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                        <span style="font-size: 20px;">🌍</span>
+                        <strong style="color: #a855f7; font-size: 16px; text-transform: uppercase; letter-spacing: 0.5px;">Système de référence</strong>
+                    </div>
+                    <div style="color: rgba(255,255,255,0.9); font-size: 14px; line-height: 1.4;">
+                        Cette section fait partie du Système Harmonisé (SH) 2022 utilisé par la CEDEAO.
+                    </div>
+                </div>
+                
+            </div>
+        `,
+        duration: 12000,
+        clickable: true,
+        onClick: () => {
+            console.log(`Détails Section ${sectionNumber} consultés`);
+        }
+    });
 };
 
 window.provideFeedback = function(sectionNumber, isCorrect) {
@@ -727,19 +818,19 @@ window.selectAndStoreClassification = async function(sectionNumber, sectionTitle
             
             if (result && result.success) {
                 dbSuccess = true;
-                dbMessage = `Sauvegardé en base de données`;
+                dbMessage = `Base de données connectée`;
                 showSuccessToast(
                     'Classification stockée avec succès !',
-                    `Section ${sectionNumber} • Base de données connectée`,
-                    4000
+                    `Section ${sectionNumber} • Base de données connectée • Cliquez pour continuer`,
+                    6000
                 );
             } else if (result && result.fallback) {
                 dbSuccess = false;
                 dbMessage = 'Mode hors ligne';
                 showSuccessToast(
                     'Classification stockée !',
-                    `Section ${sectionNumber} • Mode hors ligne`,
-                    4000
+                    `Section ${sectionNumber} • Mode hors ligne • Cliquez pour continuer`,
+                    6000
                 );
             } else {
                 throw new Error(result?.message || 'Erreur inconnue');
@@ -750,31 +841,13 @@ window.selectAndStoreClassification = async function(sectionNumber, sectionTitle
             saveToHistory(description, classificationResult);
             showSuccessToast(
                 'Classification stockée !',
-                `Section ${sectionNumber} • Mode hors ligne`,
-                4000
+                `Section ${sectionNumber} • Mode hors ligne • Cliquez pour continuer`,
+                6000
             );
         }
         
         // 3. Toujours sauvegarder localement
         saveToHistory(description, classificationResult);
-        
-        // 4. Toast pour proposer de continuer
-        setTimeout(() => {
-            showToast({
-                type: 'info',
-                icon: '🔄',
-                title: 'Produit classé avec succès !',
-                message: 'Cliquez ici pour classifier un autre produit',
-                duration: 6000,
-                clickable: true,
-                onClick: () => {
-                    document.getElementById('product-description').value = '';
-                    document.getElementById('results').classList.add('hidden');
-                    document.getElementById('product-description').focus();
-                    showInfoToast('Prêt pour une nouvelle classification !', '', 2000);
-                }
-            });
-        }, 2000);
         
     } catch (error) {
         console.error('❌ Erreur stockage:', error);
@@ -783,6 +856,13 @@ window.selectAndStoreClassification = async function(sectionNumber, sectionTitle
             error.message || 'Une erreur inattendue s\'est produite'
         );
     }
+};
+
+// Fonction helper pour continuer la classification
+window.continueClassification = function() {
+    document.getElementById('product-description').value = '';
+    document.getElementById('results').classList.add('hidden');
+    document.getElementById('product-description').focus();
 };
 
 // Sauvegarde base de données
