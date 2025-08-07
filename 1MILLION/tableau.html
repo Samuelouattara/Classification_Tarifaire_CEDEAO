@@ -687,7 +687,7 @@
 
         async function saveProductToDatabase(product) {
             try {
-                const response = await fetch('../database/api.php', {
+                const response = await fetch('./api.php', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

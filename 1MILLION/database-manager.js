@@ -3,13 +3,51 @@
 
 class DatabaseManager {
     constructor() {
-        this.apiUrl = '../database/api.php';
+        // URLs cohérentes avec votre structure
+        this.possibleUrls = [
+            './api.php',                                                             // Chemin relatif
+            'api.php',                                                               // Alternative
+            'http://localhost/Classification_Tarifaire_CEDEAO/1MILLION/api.php'     // Chemin absolu MAMP
+        ];
+        
+        // ✅ LIGNE MANQUANTE AJOUTÉE :
+        this.apiUrl = null;
+        
         this.currentUser = null;
         this.loadCurrentUser();
     }
 
-    // Méthode générique pour faire des requêtes API
+    // ✅ MÉTHODE AJOUTÉE :
+    async findWorkingUrl() {
+        for (const url of this.possibleUrls) {
+            try {
+                const response = await fetch(url + '?action=test_connection');
+                if (response.ok) {
+                    const result = await response.json();
+                    if (result.success) {
+                        this.apiUrl = url;
+                        console.log(`✅ URL fonctionnelle trouvée: ${url}`);
+                        return true;
+                    }
+                }
+            } catch (error) {
+                console.log(`❌ ${url}: ${error.message}`);
+            }
+        }
+        console.error('❌ Aucune URL API fonctionnelle trouvée');
+        return false;
+    }
+
+    // ✅ MÉTHODE CORRIGÉE :
     async makeRequest(method, action, data = null) {
+        // S'assurer qu'on a une URL qui fonctionne
+        if (!this.apiUrl) {
+            const found = await this.findWorkingUrl();
+            if (!found) {
+                throw new Error('Aucune API accessible');
+            }
+        }
+
         try {
             const config = {
                 method: method,
@@ -511,7 +549,7 @@ class DatabaseManager {
             .map(row => row.map(cell => `"${cell}"`).join(';'))
             .join('\n');
     }
-}
+} // ✅ FERMETURE CORRECTE DE LA CLASSE
 
 // Export pour utilisation globale
 if (typeof window !== 'undefined') {
