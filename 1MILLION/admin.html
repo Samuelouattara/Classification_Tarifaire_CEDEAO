@@ -136,72 +136,75 @@
                 </div>
             </div>
             
-            <div class="flex flex-wrap items-center gap-5">
-                <!-- ✅ BOUTON RETOUR BIEN VISIBLE -->
-                <a href="system.html" 
-                    class="bg-douane-or text-douane-vert border-2 border-douane-or px-6 py-3 rounded-xl font-bold text-lg cursor-pointer flex items-center gap-3 transition-all duration-300 shadow-lg hover:bg-douane-or hover:text-douane-vert hover:-translate-y-1 hover:shadow-2xl hover:border-douane-or hover:scale-105">
-                    <span class="text-2xl">🏠</span>
-                    <span>Retour au Système</span>
-                </a>
+            <div class="flex flex-col gap-5">
+    <!-- Premier niveau : Bouton Retour (seul sur sa ligne) -->
+    <div class="flex justify-start">
+        <a href="system.html" 
+           class="bg-douane-or text-douane-vert border-2 border-douane-or px-3 py-1 rounded-lg font-bold text-base cursor-pointer flex items-center gap-2 transition-all duration-300 shadow-md hover:bg-douane-or hover:text-douane-vert hover:-translate-y-1 hover:shadow-xl hover:border-douane-or hover:scale-105">
+           <span class="text-sm">🏠</span>
+           <span>Retour au Système</span>
+        </a>
+    </div>
+    
+    <!-- Deuxième niveau : Autres éléments (sur une nouvelle ligne) -->
+    <div class="flex flex-wrap items-center gap-5 justify-end">
+        <!-- Informations utilisateur -->
+        <div class="bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg border border-douane-or/30">
+            <div class="flex items-center space-x-2">
+                <span class="text-douane-or">👤</span>
+                <div class="text-sm">
+                    <div id="user-name" class="font-semibold">Chargement...</div>
+                    <div id="user-role" class="text-xs text-white/70">Administrateur</div>
+                </div>
             </div>
+        </div>
+        
+        <!-- Menu utilisateur avec déconnexion -->
+        <div class="relative" id="user-menu">
+            <button id="user-menu-btn" 
+                class="bg-douane-vert/90 backdrop-blur-sm text-white border border-douane-or/50 px-4 py-2 rounded-lg font-medium cursor-pointer flex items-center gap-2 transition-all duration-300 shadow-lg hover:bg-douane-or/90 hover:-translate-y-0.5 hover:shadow-xl hover:border-douane-or">
+                <span>⚙️</span>
+                <span>Menu Admin</span>
+                <span class="transition-transform duration-300" id="menu-arrow">▼</span>
+            </button>
             
-            <div class="flex flex-wrap items-center gap-5">
-                
-                <!-- Informations utilisateur -->
-                <div class="bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg border border-douane-or/30">
-                    <div class="flex items-center space-x-2">
-                        <span class="text-douane-or">👤</span>
-                        <div class="text-sm">
-                            <div id="user-name" class="font-semibold">Chargement...</div>
-                            <div id="user-role" class="text-xs text-white/70">Administrateur</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Menu utilisateur avec déconnexion -->
-                <div class="relative" id="user-menu">
-                    <button id="user-menu-btn" 
-                        class="bg-douane-vert/90 backdrop-blur-sm text-white border border-douane-or/50 px-4 py-2 rounded-lg font-medium cursor-pointer flex items-center gap-2 transition-all duration-300 shadow-lg hover:bg-douane-or/90 hover:-translate-y-0.5 hover:shadow-xl hover:border-douane-or">
-                        <span>⚙️</span>
-                        <span>Menu Admin</span>
-                        <span class="transition-transform duration-300" id="menu-arrow">▼</span>
-                    </button>
-                    
-                    <!-- Dropdown menu -->
-                    <div id="user-dropdown" class="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-2xl border opacity-0 invisible transform translate-y-2 transition-all duration-300 z-50">
-                        <div class="py-2">
-                            <div class="px-4 py-3 border-b border-gray-200">
-                                <div class="flex items-center space-x-2">
-                                    <span class="text-2xl">👑</span>
-                                    <div>
-                                        <div id="dropdown-user-name" class="font-semibold text-gray-800">-</div>
-                                        <div class="text-sm text-gray-500" id="dropdown-user-email">-</div>
-                                    </div>
-                                </div>
+            <!-- Dropdown menu -->
+            <div id="user-dropdown" class="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-2xl border opacity-0 invisible transform translate-y-2 transition-all duration-300 z-50">
+                <div class="py-2">
+                    <div class="px-4 py-3 border-b border-gray-200">
+                        <div class="flex items-center space-x-2">
+                            <span class="text-2xl">👑</span>
+                            <div>
+                                <div id="dropdown-user-name" class="font-semibold text-gray-800">-</div>
+                                <div class="text-sm text-gray-500" id="dropdown-user-email">-</div>
                             </div>
-                            
-                            <a href="system.html" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors">
-                                <span class="mr-3">🏠</span>
-                                Retour au Système
-                            </a>
-                            
-                            <a href="historique.html" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors">
-                                <span class="mr-3">📋</span>
-                                Historique
-                            </a>
-                            
-                            <hr class="my-2">
-                            
-                            <!-- Bouton de déconnexion -->
-                            <button id="logout-btn" 
-                                class="w-full flex items-center px-4 py-3 text-red-600 hover:bg-red-50 transition-colors font-medium">
-                                <span class="mr-3">🚪</span>
-                                Déconnexion
-                            </button>
                         </div>
                     </div>
+                    
+                    <a href="system.html" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors">
+                        <span class="mr-3">🏠</span>
+                        Retour au Système
+                    </a>
+                    
+                    <a href="historique.html" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors">
+                        <span class="mr-3">📋</span>
+                        Historique
+                    </a>
+                    
+                    <hr class="my-2">
+                    
+                    <!-- Bouton de déconnexion -->
+                    <button id="logout-btn" 
+                        class="w-full flex items-center px-4 py-3 text-red-600 hover:bg-red-50 transition-colors font-medium">
+                        <span class="mr-3">🚪</span>
+                        Déconnexion
+                    </button>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
+
         </header>
 
         <main class="space-y-8">

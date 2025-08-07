@@ -1,4 +1,4 @@
-// Système de Classification Tarifaire CEDEAO - Version Propre et Fonctionnelle
+// Système de Classification Tarifaire CEDEAO - Version avec Notifications Toast
 let aiClassifier;
 let isAIReady = false;
 let classificationHistory = [];
@@ -9,7 +9,210 @@ let dbManager = null;
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🚀 Initialisation du système...');
     initializeSystem();
+    createToastStyles(); // Ajouter les styles pour les toasts
 });
+
+// Créer les styles CSS pour les notifications toast
+function createToastStyles() {
+    const style = document.createElement('style');
+    style.textContent = `
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            pointer-events: none;
+        }
+        
+        .toast {
+            background: linear-gradient(135deg, #4ade80, #22c55e);
+            color: white;
+            padding: 16px 24px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            transform: translateX(100%);
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            pointer-events: auto;
+            max-width: 400px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+        }
+        
+        .toast.show {
+            transform: translateX(0);
+        }
+        
+        .toast.success {
+            background: linear-gradient(135deg, #4ade80, #22c55e);
+        }
+        
+        .toast.positive {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        }
+        
+        .toast.negative {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+        
+        .toast.error {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+        
+        .toast.info {
+            background: linear-gradient(135deg, #06b6d4, #0891b2);
+        }
+        
+        .toast .toast-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .toast .toast-icon {
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+        
+        .toast .toast-text {
+            flex: 1;
+        }
+        
+        .toast .toast-title {
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+        
+        .toast .toast-message {
+            font-size: 14px;
+            opacity: 0.9;
+            line-height: 1.4;
+        }
+        
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes slideOutRight {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+    `;
+    document.head.appendChild(style);
+    
+    // Créer le conteneur pour les toasts
+    const toastContainer = document.createElement('div');
+    toastContainer.className = 'toast-container';
+    toastContainer.id = 'toast-container';
+    document.body.appendChild(toastContainer);
+}
+
+// Fonction principale pour afficher les toasts
+function showToast(config) {
+    const container = document.getElementById('toast-container');
+    if (!container) return;
+    
+    const toast = document.createElement('div');
+    toast.className = `toast ${config.type || 'success'}`;
+    
+    // Ajouter la classe clickable si nécessaire
+    if (config.clickable) {
+        toast.style.cursor = 'pointer';
+        toast.addEventListener('click', () => {
+            if (config.onClick) {
+                config.onClick();
+                // Fermer le toast après clic
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    if (toast && toast.parentNode) {
+                        toast.remove();
+                    }
+                }, 300);
+            }
+        });
+    }
+    
+    toast.innerHTML = `
+        <div class="toast-content">
+            <div class="toast-icon">${config.icon}</div>
+            <div class="toast-text">
+                <div class="toast-title">${config.title}</div>
+                ${config.message ? `<div class="toast-message">${config.message}</div>` : ''}
+            </div>
+        </div>
+    `;
+    
+    container.appendChild(toast);
+    
+    // Animation d'entrée
+    setTimeout(() => {
+        toast.classList.add('show');
+    }, 100);
+    
+    // Suppression automatique (sauf si clickable et pas de durée spécifiée)
+    const duration = config.duration || (config.clickable ? 8000 : 4000);
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => {
+            if (toast && toast.parentNode) {
+                toast.remove();
+            }
+        }, 300);
+    }, duration);
+}
+
+// Fonctions spécifiques pour chaque type de toast
+function showSuccessToast(title, message = '', duration = 4000) {
+    showToast({
+        type: 'success',
+        icon: '✅',
+        title: title,
+        message: message,
+        duration: duration
+    });
+}
+
+function showPositiveToast(title, message = '', duration = 3000) {
+    showToast({
+        type: 'positive',
+        icon: '👍',
+        title: title,
+        message: message,
+        duration: duration
+    });
+}
+
+function showNegativeToast(title, message = '', duration = 3500) {
+    showToast({
+        type: 'negative',
+        icon: '📝',
+        title: title,
+        message: message,
+        duration: duration
+    });
+}
+
+function showErrorToast(title, message = '', duration = 5000) {
+    showToast({
+        type: 'error',
+        icon: '❌',
+        title: title,
+        message: message,
+        duration: duration
+    });
+}
+
+function showInfoToast(title, message = '', duration = 4000) {
+    showToast({
+        type: 'info',
+        icon: 'ℹ️',
+        title: title,
+        message: message,
+        duration: duration
+    });
+}
 
 // Initialisation du système
 async function initializeSystem() {
@@ -52,18 +255,15 @@ async function initializeDatabaseManager() {
     return false;
 }
 
-// DatabaseManager de secours
-// DatabaseManager de secours
+// DatabaseManager de secours (sans localStorage)
 function createFallbackDatabaseManager() {
     console.log('🔧 DatabaseManager de secours...');
     
     window.DatabaseManager = class {
         constructor() {
-            // URLs harmonisées avec database-manager.js
             this.possibleUrls = [
-                './api.php',                                                             // Chemin relatif
-                'api.php',                                                               // Alternative  
-                'http://localhost/Classification_Tarifaire_CEDEAO/1MILLION/api.php'     // Chemin absolu MAMP
+                './api.php',
+                'api.php'
             ];
             this.apiUrl = null;
         }
@@ -105,12 +305,10 @@ function createFallbackDatabaseManager() {
         }
         
         async saveClassifiedProduct(productData) {
-            // S'assurer qu'on a une URL qui fonctionne
             if (!this.apiUrl) {
                 const found = await this.findWorkingUrl();
                 if (!found) {
-                    // Fallback local si aucune API
-                    this.saveToLocalHistory(productData.description_produit, {
+                    this.saveToMemoryHistory(productData.description_produit, {
                         section: { number: productData.section_produit },
                         confidence: 75,
                         code: productData.code_tarifaire
@@ -118,7 +316,7 @@ function createFallbackDatabaseManager() {
                     
                     return { 
                         success: false, 
-                        message: 'Aucune API accessible. Sauvé localement.',
+                        message: 'Mode hors ligne',
                         fallback: true
                     };
                 }
@@ -140,8 +338,7 @@ function createFallbackDatabaseManager() {
                 }
                 throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             } catch (error) {
-                // Fallback local en cas d'erreur
-                this.saveToLocalHistory(productData.description_produit, {
+                this.saveToMemoryHistory(productData.description_produit, {
                     section: { number: productData.section_produit },
                     confidence: 75,
                     code: productData.code_tarifaire
@@ -149,29 +346,27 @@ function createFallbackDatabaseManager() {
                 
                 return { 
                     success: false, 
-                    message: `Erreur DB: ${error.message}. Sauvé localement.`,
+                    message: 'Mode hors ligne',
                     fallback: true
                 };
             }
         }
         
-        saveToLocalHistory(description, result) {
-            try {
-                let history = JSON.parse(localStorage.getItem('classification_history') || '[]');
-                history.unshift({
-                    timestamp: new Date().toISOString(),
-                    description: description,
-                    section: result.section?.number || 'Inconnu',
-                    confidence: result.confidence || 0,
-                    code: result.code || 'N/A'
-                });
-                if (history.length > 100) history = history.slice(0, 100);
-                localStorage.setItem('classification_history', JSON.stringify(history));
-                return history[0];
-            } catch (error) {
-                console.error('❌ Erreur sauvegarde locale:', error);
-                return null;
+        saveToMemoryHistory(description, result) {
+            const historyItem = {
+                timestamp: new Date().toISOString(),
+                description: description,
+                section: result.section?.number || 'Inconnu',
+                confidence: result.confidence || 0,
+                code: result.code || 'N/A'
+            };
+            
+            classificationHistory.unshift(historyItem);
+            if (classificationHistory.length > 100) {
+                classificationHistory = classificationHistory.slice(0, 100);
             }
+            
+            return historyItem;
         }
     };
     
@@ -236,7 +431,8 @@ async function handleClassification() {
     const description = productDescription.value.trim();
     
     if (!description) {
-        alert('Veuillez saisir une description du produit.');
+        showErrorToast('Description requise', 'Veuillez saisir une description du produit à classifier');
+        productDescription.focus();
         return;
     }
     
@@ -267,7 +463,7 @@ async function handleClassification() {
     } catch (error) {
         console.error('Erreur classification:', error);
         if (loadingDiv) loadingDiv.classList.add('hidden');
-        alert('Erreur lors de la classification');
+        showErrorToast('Erreur de classification', 'Une erreur s\'est produite. Veuillez réessayer.');
     }
 }
 
@@ -308,7 +504,7 @@ function classifySimple(description) {
     }
 }
 
-// Affichage résultats (VOTRE STYLE ORIGINAL RESTAURÉ)
+// Affichage résultats (conservé votre style original)
 function displayResults(results) {
     const resultsContainer = document.getElementById('classification-result');
     if (!resultsContainer) return;
@@ -460,34 +656,40 @@ function getSectionDescription(sectionNumber) {
     return descriptions[sectionNumber] || 'Description non disponible';
 }
 
-// Fonctions pour les boutons additionnels
-function showSectionDetails(sectionNumber) {
+// Fonctions pour les boutons avec toasts simples
+window.showSectionDetails = function(sectionNumber) {
     const description = getSectionDescription(sectionNumber);
     const taxRate = getTaxRate(sectionNumber);
     
-    alert(`SECTION ${sectionNumber} - DÉTAILS COMPLETS\n\n` +
-          `Description: ${description}\n\n` +
-          `Taux d'imposition: ${taxRate}%\n\n` +
-          `Cette section fait partie du Système Harmonisé (SH) 2022 utilisé par la CEDEAO.`);
-}
+    showInfoToast(
+        `Section ${sectionNumber} - Détails`,
+        `Taux: ${taxRate}% • Système Harmonisé CEDEAO`,
+        5000
+    );
+};
 
-function provideFeedback(sectionNumber, isCorrect) {
-    const message = isCorrect 
-        ? `✅ Merci ! Votre retour positif sur la Section ${sectionNumber} nous aide à améliorer le système.`
-        : `👎 Merci pour votre retour. Nous noterons que la Section ${sectionNumber} n'était pas appropriée pour cette classification.`;
+window.provideFeedback = function(sectionNumber, isCorrect) {
+    if (isCorrect) {
+        showPositiveToast(
+            'Merci pour votre retour !',
+            `Classification Section ${sectionNumber} validée`
+        );
+    } else {
+        showNegativeToast(
+            'Correction notée',
+            `Section ${sectionNumber} marquée comme incorrecte`
+        );
+    }
     
-    alert(message);
-    
-    // Ici vous pourriez ajouter une logique pour envoyer le feedback à votre système d'apprentissage
     console.log(`Feedback: Section ${sectionNumber} - ${isCorrect ? 'Correct' : 'Incorrect'}`);
-}
+};
 
-// FONCTION PRINCIPALE - Sélection et stockage
+// FONCTION PRINCIPALE - Sélection et stockage avec toast de succès
 window.selectAndStoreClassification = async function(sectionNumber, sectionTitle, confidence, code) {
     const description = document.getElementById('product-description').value;
     
     if (!description) {
-        alert('Description manquante');
+        showErrorToast('Description manquante', 'Impossible de stocker sans description du produit');
         return;
     }
     
@@ -525,38 +727,61 @@ window.selectAndStoreClassification = async function(sectionNumber, sectionTitle
             
             if (result && result.success) {
                 dbSuccess = true;
-                dbMessage = `Sauvegardé en base (ID: ${result.product_id})`;
+                dbMessage = `Sauvegardé en base de données`;
+                showSuccessToast(
+                    'Classification stockée avec succès !',
+                    `Section ${sectionNumber} • Base de données connectée`,
+                    4000
+                );
             } else if (result && result.fallback) {
                 dbSuccess = false;
-                dbMessage = 'Base inaccessible, sauvegardé localement';
+                dbMessage = 'Mode hors ligne';
+                showSuccessToast(
+                    'Classification stockée !',
+                    `Section ${sectionNumber} • Mode hors ligne`,
+                    4000
+                );
             } else {
                 throw new Error(result?.message || 'Erreur inconnue');
             }
         } catch (dbError) {
             dbSuccess = false;
-            dbMessage = `Erreur DB: ${dbError.message}`;
+            dbMessage = 'Mode hors ligne';
             saveToHistory(description, classificationResult);
+            showSuccessToast(
+                'Classification stockée !',
+                `Section ${sectionNumber} • Mode hors ligne`,
+                4000
+            );
         }
         
         // 3. Toujours sauvegarder localement
         saveToHistory(description, classificationResult);
         
-        // 4. Message final
-        const successMessage = dbSuccess 
-            ? `✅ Classification stockée avec succès en Section ${sectionNumber}!\n${dbMessage}`
-            : `⚠️ Classification partiellement stockée.\nSection ${sectionNumber} - Ajouté au tableau.\nBase de données: ${dbMessage}`;
-        
-        alert(successMessage);
-        
-        // 5. Réinitialiser
-        if (confirm('Classifier un autre produit ?')) {
-            document.getElementById('product-description').value = '';
-            document.getElementById('results').classList.add('hidden');
-        }
+        // 4. Toast pour proposer de continuer
+        setTimeout(() => {
+            showToast({
+                type: 'info',
+                icon: '🔄',
+                title: 'Produit classé avec succès !',
+                message: 'Cliquez ici pour classifier un autre produit',
+                duration: 6000,
+                clickable: true,
+                onClick: () => {
+                    document.getElementById('product-description').value = '';
+                    document.getElementById('results').classList.add('hidden');
+                    document.getElementById('product-description').focus();
+                    showInfoToast('Prêt pour une nouvelle classification !', '', 2000);
+                }
+            });
+        }, 2000);
         
     } catch (error) {
         console.error('❌ Erreur stockage:', error);
-        alert('Erreur de stockage: ' + error.message);
+        showErrorToast(
+            'Erreur de stockage',
+            error.message || 'Une erreur inattendue s\'est produite'
+        );
     }
 };
 
@@ -607,22 +832,15 @@ function saveToHistory(description, result) {
             classificationHistory = classificationHistory.slice(0, 50);
         }
         
-        localStorage.setItem('classification_history', JSON.stringify(classificationHistory));
+        console.log('📚 Historique mis à jour:', classificationHistory.length, 'éléments');
     } catch (error) {
         console.error('Erreur sauvegarde historique:', error);
     }
 }
 
 function loadClassificationHistory() {
-    try {
-        const stored = localStorage.getItem('classification_history');
-        if (stored) {
-            classificationHistory = JSON.parse(stored);
-        }
-    } catch (error) {
-        console.error('Erreur chargement historique:', error);
-        classificationHistory = [];
-    }
+    classificationHistory = [];
+    console.log('📚 Historique initialisé (mode mémoire)');
 }
 
 // Statistiques
@@ -681,4 +899,4 @@ function updateAIStatus(ready) {
 // Export compatibilité
 window.selectClassification = window.selectAndStoreClassification;
 
-console.log('✅ Script Advanced Clean chargé et prêt');
+console.log('✅ Script avec Notifications Toast chargé et prêt');

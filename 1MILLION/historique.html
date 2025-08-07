@@ -5,6 +5,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Historique des Classifications - CEDEAO</title>
+
+        <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                colors: {
+                    'douane-vert': '#1B5E20',
+                    'douane-or': '#FFD700',
+                    'douane-blanc': '#FFFFFF',
+                    'orange-ci': '#FF8C00',
+                    'vert-ci': '#00B04F',
+                    'lion-or': '#B8860B'
+                },
+            }
+        }
+    }
+    </script>
+
     <style>
         * {
             margin: 0;
@@ -446,6 +466,14 @@
 <body>
     <div class="container">
         <div class="header">
+            <div class="flex flex-wrap items-center gap-5">
+                <a href="system.html" 
+   class="bg-douane-or text-douane-vert border-2 border-douane-or px-3 py-1 rounded-lg font-bold text-base cursor-pointer flex items-center gap-2 transition-all duration-300 shadow-md hover:bg-douane-or hover:text-douane-vert hover:-translate-y-1 hover:shadow-xl hover:border-douane-or hover:scale-105 self-start">
+   <span class="text-sm">🏠</span>
+   <span>Retour au Système</span>
+</a>
+
+            </div>
             <h1>📊 Historique des Classifications</h1>
             <p>Système de Suivi et Gestion des Produits Classifiés - CEDEAO TEC SH 2022</p>
             <div class="header-actions">
