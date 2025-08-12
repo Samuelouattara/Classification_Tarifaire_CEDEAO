@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Classification Avancée - TEC CEDEAO</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="gradient-bg text-white py-8">
+        <div class="max-w-7xl mx-auto px-4">
+            <h1 class="text-4xl font-bold text-center mb-4">🧠 Test Classification Avancée</h1>
+            <p class="text-xl text-center opacity-90">Système de Classification Tarifaire CEDEAO - Solutions Intelligentes</p>
+        </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <!-- Onglets -->
+        <div class="flex space-x-1 bg-white rounded-lg p-1 mb-8 shadow-lg">
+            <button onclick="showTab('intelligent')" id="tab-intelligent" 
+                    class="flex-1 py-3 px-4 rounded-md font-medium transition-colors tab-button active">
+                🧠 Classification Intelligente
+            </button>
+            <button onclick="showTab('image')" id="tab-image" 
+                    class="flex-1 py-3 px-4 rounded-md font-medium transition-colors tab-button">
+                📸 Reconnaissance d'Images
+            </button>
+            <button onclick="showTab('ai')" id="tab-ai" 
+                    class="flex-1 py-3 px-4 rounded-md font-medium transition-colors tab-button">
+                🤖 IA Personnalisée
+            </button>
+            <button onclick="showTab('comparison')" id="tab-comparison" 
+                    class="flex-1 py-3 px-4 rounded-md font-medium transition-colors tab-button">
+                📊 Comparaison
+            </button>
+        </div>
+
+        <!-- Contenu des onglets -->
+        <div id="content-intelligent" class="tab-content">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Test Classification Intelligente -->
+                <div class="bg-white rounded-lg p-6 shadow-lg card-hover">
+                    <h2 class="text-2xl font-bold mb-4 text-gray-800">🧠 Classification Intelligente</h2>
+                    <p class="text-gray-600 mb-6">Test du nouveau système de classification avec règles contextuelles avancées.</p>
+                    
+                    <div class="space-y-4">
+                        <input type="text" id="intelligent-input" placeholder="Entrez un produit à classifier..."
+                               class="w-full p-3 border border-gray-300 rounded-lg bg-white text-gray-800">
+                        
+                        <button onclick="testIntelligentClassification()" 
+                                class="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                            🧠 Classifier avec IA
+                        </button>
+                        
+                        <div id="intelligent-result" class="mt-4 p-4 bg-gray-50 rounded-lg min-h-[200px]">
+                            <p class="text-gray-500 text-center">Résultats de classification intelligente...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tests Automatiques -->
+                <div class="bg-white rounded-lg p-6 shadow-lg card-hover">
+                    <h2 class="text-2xl font-bold mb-4 text-gray-800">🧪 Tests Automatiques</h2>
+                    <p class="text-gray-600 mb-6">Tests automatiques avec des cas d'usage réels.</p>
+                    
+                    <div class="space-y-3">
+                        <button onclick="runAutoTests()" 
+                                class="w-full py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                            🚀 Lancer Tests Automatiques
+                        </button>
+                        
+                        <div id="auto-test-results" class="mt-4 p-4 bg-gray-50 rounded-lg min-h-[300px] overflow-y-auto">
+                            <p class="text-gray-500 text-center">Résultats des tests automatiques...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="content-image" class="tab-content hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Upload d'Image -->
+                <div class="bg-white rounded-lg p-6 shadow-lg card-hover">
+                    <h2 class="text-2xl font-bold mb-4 text-gray-800">📸 Reconnaissance d'Images</h2>
+                    <p class="text-gray-600 mb-6">Test de la classification par reconnaissance d'images.</p>
+                    
+                    <div class="space-y-4">
+                        <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                            <input type="file" id="image-upload" accept="image/*" class="hidden">
+                            <label for="image-upload" class="cursor-pointer">
+                                <div class="text-4xl mb-2">📷</div>
+                                <p class="text-gray-600">Cliquez pour sélectionner une image</p>
+                                <p class="text-sm text-gray-500 mt-1">JPEG, PNG, WebP (max 10MB)</p>
+                            </label>
+                        </div>
+                        
+                        <button onclick="classifyImage()" id="classify-image-btn" disabled
+                                class="w-full py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                            🔍 Classifier l'Image
+                        </button>
+                        
+                        <div id="image-result" class="mt-4 p-4 bg-gray-50 rounded-lg min-h-[200px]">
+                            <p class="text-gray-500 text-center">Résultats de reconnaissance d'image...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Test URL d'Image -->
+                <div class="bg-white rounded-lg p-6 shadow-lg card-hover">
+                    <h2 class="text-2xl font-bold mb-4 text-gray-800">🌐 Test URL d'Image</h2>
+                    <p class="text-gray-600 mb-6">Test avec une URL d'image externe.</p>
+                    
+                    <div class="space-y-4">
+                        <input type="url" id="image-url" placeholder="https://example.com/image.jpg"
+                               class="w-full p-3 border border-gray-300 rounded-lg bg-white text-gray-800">
+                        
+                        <button onclick="classifyImageURL()" 
+                                class="w-full py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
+                            🌐 Classifier depuis URL
+                        </button>
+                        
+                        <div id="url-image-result" class="mt-4 p-4 bg-gray-50 rounded-lg min-h-[200px]">
+                            <p class="text-gray-500 text-center">Résultats de classification URL...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="content-ai" class="tab-content hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Entraînement IA -->
+                <div class="bg-white rounded-lg p-6 shadow-lg card-hover">
+                    <h2 class="text-2xl font-bold mb-4 text-gray-800">🤖 IA Personnalisée</h2>
+                    <p class="text-gray-600 mb-6">Entraînement et test de l'IA personnalisée CEDEAO.</p>
+                    
+                    <div class="space-y-4">
+                        <button onclick="trainCustomAI()" 
+                                class="w-full py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
+                            🎯 Entraîner l'IA
+                        </button>
+                        
+                        <button onclick="testCustomAI()" 
+                                class="w-full py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors">
+                            🧪 Tester l'IA
+                        </button>
+                        
+                        <button onclick="saveAIModel()" 
+                                class="w-full py-3 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors">
+                            💾 Sauvegarder Modèle
+                        </button>
+                        
+                        <button onclick="loadAIModel()" 
+                                class="w-full py-3 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors">
+                            📂 Charger Modèle
+                        </button>
+                        
+                        <div id="ai-result" class="mt-4 p-4 bg-gray-50 rounded-lg min-h-[200px]">
+                            <p class="text-gray-500 text-center">Résultats de l'IA personnalisée...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Configuration IA -->
+                <div class="bg-white rounded-lg p-6 shadow-lg card-hover">
+                    <h2 class="text-2xl font-bold mb-4 text-gray-800">⚙️ Configuration IA</h2>
+                    <p class="text-gray-600 mb-6">Paramètres de l'IA personnalisée.</p>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Taux d'apprentissage</label>
+                            <input type="range" id="learning-rate" min="0.001" max="0.1" step="0.001" value="0.01"
+                                   class="w-full">
+                            <span id="learning-rate-value" class="text-sm text-gray-600">0.01</span>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Époques</label>
+                            <input type="range" id="epochs" min="10" max="500" step="10" value="100"
+                                   class="w-full">
+                            <span id="epochs-value" class="text-sm text-gray-600">100</span>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Taille du lot</label>
+                            <input type="range" id="batch-size" min="8" max="64" step="8" value="32"
+                                   class="w-full">
+                            <span id="batch-size-value" class="text-sm text-gray-600">32</span>
+                        </div>
+                        
+                        <div id="ai-status" class="p-3 bg-blue-50 rounded-lg">
+                            <p class="text-sm text-blue-800">IA non entraînée</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="content-comparison" class="tab-content hidden">
+            <div class="bg-white rounded-lg p-6 shadow-lg">
+                <h2 class="text-2xl font-bold mb-4 text-gray-800">📊 Comparaison des Méthodes</h2>
+                <p class="text-gray-600 mb-6">Comparaison des différentes méthodes de classification.</p>
+                
+                <div class="space-y-4">
+                    <input type="text" id="comparison-input" placeholder="Entrez un produit à comparer..."
+                           class="w-full p-3 border border-gray-300 rounded-lg bg-white text-gray-800">
+                    
+                    <button onclick="runComparison()" 
+                            class="w-full py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-colors">
+                        🔄 Comparer Toutes les Méthodes
+                    </button>
+                    
+                    <div id="comparison-results" class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="p-4 bg-gray-50 rounded-lg">
+                            <h3 class="font-bold text-gray-800 mb-2">🧠 Intelligente</h3>
+                            <div id="comparison-intelligent" class="text-sm text-gray-600">En attente...</div>
+                        </div>
+                        <div class="p-4 bg-gray-50 rounded-lg">
+                            <h3 class="font-bold text-gray-800 mb-2">🤖 IA Personnalisée</h3>
+                            <div id="comparison-ai" class="text-sm text-gray-600">En attente...</div>
+                        </div>
+                        <div class="p-4 bg-gray-50 rounded-lg">
+                            <h3 class="font-bold text-gray-800 mb-2">📸 Reconnaissance</h3>
+                            <div id="comparison-image" class="text-sm text-gray-600">En attente...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="script.js"></script>
+    <script src="classification-improved.js"></script>
+    <script src="api-classification-intelligence.js"></script>
+    <script src="image-recognition-api.js"></script>
+    <script src="custom-ai-classifier.js"></script>
+    
+    <script>
+        // Variables globales
+        let intelligentClassifier = null;
+        let imageRecognitionAPI = null;
+        let customAI = null;
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeSystems();
+            setupEventListeners();
+            updateSliderValues();
+        });
+
+        // Initialisation des systèmes
+        function initializeSystems() {
+            try {
+                intelligentClassifier = new IntelligentTariffClassifier();
+                imageRecognitionAPI = new ImageRecognitionAPI();
+                customAI = new CustomCedeoAI();
+                
+                console.log('✅ Tous les systèmes initialisés');
+            } catch (error) {
+                console.error('❌ Erreur d\'initialisation:', error);
+            }
+        }
+
+        // Configuration des événements
+        function setupEventListeners() {
+            // Upload d'image
+            document.getElementById('image-upload').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    document.getElementById('classify-image-btn').disabled = false;
+                    console.log('📸 Image sélectionnée:', file.name);
+                }
+            });
+
+            // Sliders
+            document.getElementById('learning-rate').addEventListener('input', updateSliderValues);
+            document.getElementById('epochs').addEventListener('input', updateSliderValues);
+            document.getElementById('batch-size').addEventListener('input', updateSliderValues);
+        }
+
+        // Mise à jour des valeurs des sliders
+        function updateSliderValues() {
+            document.getElementById('learning-rate-value').textContent = document.getElementById('learning-rate').value;
+            document.getElementById('epochs-value').textContent = document.getElementById('epochs').value;
+            document.getElementById('batch-size-value').textContent = document.getElementById('batch-size').value;
+        }
+
+        // Gestion des onglets
+        function showTab(tabName) {
+            // Masquer tous les contenus
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+            
+            // Désactiver tous les boutons
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('bg-blue-600', 'text-white');
+                button.classList.add('text-gray-600', 'hover:bg-gray-100');
+            });
+            
+            // Afficher le contenu sélectionné
+            document.getElementById(`content-${tabName}`).classList.remove('hidden');
+            
+            // Activer le bouton sélectionné
+            document.getElementById(`tab-${tabName}`).classList.add('bg-blue-600', 'text-white');
+            document.getElementById(`tab-${tabName}`).classList.remove('text-gray-600', 'hover:bg-gray-100');
+        }
+
+        // Test Classification Intelligente
+        async function testIntelligentClassification() {
+            const input = document.getElementById('intelligent-input').value;
+            const resultDiv = document.getElementById('intelligent-result');
+            
+            if (!input) {
+                resultDiv.innerHTML = '<p class="text-red-600">Veuillez entrer un produit à classifier</p>';
+                return;
+            }
+            
+            resultDiv.innerHTML = '<p class="text-blue-600">🔄 Classification en cours...</p>';
+            
+            try {
+                const results = await intelligentClassifier.classifyProduct(input);
+                
+                if (results && results.length > 0) {
+                    const best = results[0];
+                    resultDiv.innerHTML = `
+                        <div class="text-green-600 font-semibold mb-3">✅ Classification réussie!</div>
+                        <div class="space-y-2 text-sm">
+                            <div><strong>Section:</strong> ${best.section.number} - ${best.section.title}</div>
+                            <div><strong>Chapitre:</strong> ${best.chapter}</div>
+                            <div><strong>Code:</strong> ${best.code}</div>
+                            <div><strong>Confiance:</strong> ${best.confidence}%</div>
+                            <div><strong>Méthode:</strong> ${best.method}</div>
+                            ${best.matchedKeywords ? `<div><strong>Mots-clés:</strong> ${best.matchedKeywords.join(', ')}</div>` : ''}
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = '<p class="text-yellow-600">⚠️ Aucun résultat trouvé</p>';
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<p class="text-red-600">❌ Erreur: ${error.message}</p>`;
+            }
+        }
+
+        // Tests automatiques
+        async function runAutoTests() {
+            const resultDiv = document.getElementById('auto-test-results');
+            resultDiv.innerHTML = '<p class="text-blue-600">🔄 Lancement des tests automatiques...</p>';
+            
+            const testCases = [
+                { description: 'jouet', expected: '9503.00' },
+                { description: 'poisson', expected: '0302' },
+                { description: 'meuble', expected: '9401' },
+                { description: 'téléphone', expected: '8517.12' },
+                { description: 'voiture', expected: '8703' }
+            ];
+            
+            let results = '';
+            let successCount = 0;
+            
+            for (const testCase of testCases) {
+                try {
+                    const classification = await intelligentClassifier.classifyProduct(testCase.description);
+                    const predicted = classification[0]?.code;
+                    const success = predicted && predicted.startsWith(testCase.expected);
+                    
+                    if (success) successCount++;
+                    
+                    results += `
+                        <div class="mb-2 p-2 ${success ? 'bg-green-50' : 'bg-red-50'} rounded">
+                            <strong>${testCase.description}</strong><br>
+                            Attendu: ${testCase.expected} | Obtenu: ${predicted || 'Aucun'} 
+                            ${success ? '✅' : '❌'}
+                        </div>
+                    `;
+                } catch (error) {
+                    results += `
+                        <div class="mb-2 p-2 bg-red-50 rounded">
+                            <strong>${testCase.description}</strong><br>
+                            Erreur: ${error.message} ❌
+                        </div>
+                    `;
+                }
+            }
+            
+            const accuracy = (successCount / testCases.length * 100).toFixed(1);
+            resultDiv.innerHTML = `
+                <div class="text-lg font-bold mb-3">📊 Résultats: ${accuracy}% de réussite</div>
+                ${results}
+            `;
+        }
+
+        // Classification d'image
+        async function classifyImage() {
+            const file = document.getElementById('image-upload').files[0];
+            const resultDiv = document.getElementById('image-result');
+            
+            if (!file) {
+                resultDiv.innerHTML = '<p class="text-red-600">Veuillez sélectionner une image</p>';
+                return;
+            }
+            
+            resultDiv.innerHTML = '<p class="text-blue-600">🔄 Analyse d\'image en cours...</p>';
+            
+            try {
+                const results = await imageRecognitionAPI.classifyImageFromFile(file);
+                
+                if (results.success && results.results.length > 0) {
+                    const best = results.results[0];
+                    resultDiv.innerHTML = `
+                        <div class="text-green-600 font-semibold mb-3">✅ Reconnaissance réussie!</div>
+                        <div class="space-y-2 text-sm">
+                            <div><strong>Objet détecté:</strong> ${best.detectedObject}</div>
+                            <div><strong>Section:</strong> ${best.section.number} - ${best.section.title}</div>
+                            <div><strong>Chapitre:</strong> ${best.chapter}</div>
+                            <div><strong>Code:</strong> ${best.code}</div>
+                            <div><strong>Confiance:</strong> ${(best.confidence * 100).toFixed(1)}%</div>
+                            <div><strong>Service:</strong> ${results.service}</div>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = '<p class="text-yellow-600">⚠️ Aucun objet reconnu</p>';
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<p class="text-red-600">❌ Erreur: ${error.message}</p>`;
+            }
+        }
+
+        // Classification d'image depuis URL
+        async function classifyImageURL() {
+            const url = document.getElementById('image-url').value;
+            const resultDiv = document.getElementById('url-image-result');
+            
+            if (!url) {
+                resultDiv.innerHTML = '<p class="text-red-600">Veuillez entrer une URL d\'image</p>';
+                return;
+            }
+            
+            resultDiv.innerHTML = '<p class="text-blue-600">🔄 Analyse d\'image depuis URL...</p>';
+            
+            try {
+                const results = await imageRecognitionAPI.classifyImageFromURL(url);
+                
+                if (results.success && results.results.length > 0) {
+                    const best = results.results[0];
+                    resultDiv.innerHTML = `
+                        <div class="text-green-600 font-semibold mb-3">✅ Reconnaissance réussie!</div>
+                        <div class="space-y-2 text-sm">
+                            <div><strong>Objet détecté:</strong> ${best.detectedObject}</div>
+                            <div><strong>Section:</strong> ${best.section.number} - ${best.section.title}</div>
+                            <div><strong>Chapitre:</strong> ${best.chapter}</div>
+                            <div><strong>Code:</strong> ${best.code}</div>
+                            <div><strong>Confiance:</strong> ${(best.confidence * 100).toFixed(1)}%</div>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = '<p class="text-yellow-600">⚠️ Aucun objet reconnu</p>';
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<p class="text-red-600">❌ Erreur: ${error.message}</p>`;
+            }
+        }
+
+        // Entraînement IA personnalisée
+        async function trainCustomAI() {
+            const resultDiv = document.getElementById('ai-result');
+            resultDiv.innerHTML = '<p class="text-blue-600">🎯 Entraînement de l\'IA en cours...</p>';
+            
+            try {
+                // Données d'entraînement simulées
+                const trainingData = [
+                    { description: 'jouet', tariffCode: '9503.00', section: 'XX', chapter: '95' },
+                    { description: 'poisson', tariffCode: '0302.11', section: 'I', chapter: '03' },
+                    { description: 'meuble', tariffCode: '9401.61', section: 'XX', chapter: '94' },
+                    { description: 'téléphone', tariffCode: '8517.12', section: 'XVI', chapter: '85' }
+                ];
+                
+                customAI.addTrainingData(trainingData);
+                const result = await customAI.trainModel(trainingData);
+                
+                resultDiv.innerHTML = `
+                    <div class="text-green-600 font-semibold mb-3">✅ IA entraînée avec succès!</div>
+                    <div class="space-y-2 text-sm">
+                        <div><strong>Score de validation:</strong> ${(result.validationScore * 100).toFixed(1)}%</div>
+                        <div><strong>Époques:</strong> ${result.epochs}</div>
+                        <div><strong>Échantillons:</strong> ${result.trainingSamples}</div>
+                    </div>
+                `;
+                
+                document.getElementById('ai-status').innerHTML = '<p class="text-sm text-green-800">✅ IA entraînée</p>';
+            } catch (error) {
+                resultDiv.innerHTML = `<p class="text-red-600">❌ Erreur: ${error.message}</p>`;
+            }
+        }
+
+        // Test IA personnalisée
+        async function testCustomAI() {
+            const input = document.getElementById('intelligent-input').value || 'jouet';
+            const resultDiv = document.getElementById('ai-result');
+            
+            resultDiv.innerHTML = '<p class="text-blue-600">🧠 Test de l\'IA en cours...</p>';
+            
+            try {
+                const results = await customAI.classifyWithAI(input);
+                
+                if (results && results.length > 0) {
+                    const best = results[0];
+                    resultDiv.innerHTML = `
+                        <div class="text-green-600 font-semibold mb-3">✅ Classification IA réussie!</div>
+                        <div class="space-y-2 text-sm">
+                            <div><strong>Section:</strong> ${best.section.number} - ${best.section.title}</div>
+                            <div><strong>Chapitre:</strong> ${best.chapter}</div>
+                            <div><strong>Code:</strong> ${best.code}</div>
+                            <div><strong>Confiance:</strong> ${(best.confidence * 100).toFixed(1)}%</div>
+                            <div><strong>Méthode:</strong> ${best.method}</div>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = '<p class="text-yellow-600">⚠️ Aucun résultat</p>';
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<p class="text-red-600">❌ Erreur: ${error.message}</p>`;
+            }
+        }
+
+        // Sauvegarde du modèle IA
+        async function saveAIModel() {
+            const resultDiv = document.getElementById('ai-result');
+            
+            try {
+                const success = await customAI.saveModel();
+                if (success) {
+                    resultDiv.innerHTML = '<p class="text-green-600">💾 Modèle sauvegardé avec succès!</p>';
+                } else {
+                    resultDiv.innerHTML = '<p class="text-red-600">❌ Erreur lors de la sauvegarde</p>';
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<p class="text-red-600">❌ Erreur: ${error.message}</p>`;
+            }
+        }
+
+        // Chargement du modèle IA
+        async function loadAIModel() {
+            const resultDiv = document.getElementById('ai-result');
+            
+            try {
+                const success = await customAI.loadModel();
+                if (success) {
+                    resultDiv.innerHTML = '<p class="text-green-600">📂 Modèle chargé avec succès!</p>';
+                    document.getElementById('ai-status').innerHTML = '<p class="text-sm text-green-800">✅ IA chargée</p>';
+                } else {
+                    resultDiv.innerHTML = '<p class="text-red-600">❌ Erreur lors du chargement</p>';
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<p class="text-red-600">❌ Erreur: ${error.message}</p>`;
+            }
+        }
+
+        // Comparaison des méthodes
+        async function runComparison() {
+            const input = document.getElementById('comparison-input').value;
+            
+            if (!input) {
+                alert('Veuillez entrer un produit à comparer');
+                return;
+            }
+            
+            // Test Classification Intelligente
+            try {
+                const intelligentResult = await intelligentClassifier.classifyProduct(input);
+                document.getElementById('comparison-intelligent').innerHTML = `
+                    <div class="text-sm">
+                        <div><strong>Code:</strong> ${intelligentResult[0]?.code || 'N/A'}</div>
+                        <div><strong>Confiance:</strong> ${intelligentResult[0]?.confidence || 0}%</div>
+                        <div><strong>Méthode:</strong> ${intelligentResult[0]?.method || 'N/A'}</div>
+                    </div>
+                `;
+            } catch (error) {
+                document.getElementById('comparison-intelligent').innerHTML = `<div class="text-red-600 text-sm">Erreur: ${error.message}</div>`;
+            }
+            
+            // Test IA Personnalisée
+            try {
+                const aiResult = await customAI.classifyWithAI(input);
+                document.getElementById('comparison-ai').innerHTML = `
+                    <div class="text-sm">
+                        <div><strong>Code:</strong> ${aiResult[0]?.code || 'N/A'}</div>
+                        <div><strong>Confiance:</strong> ${aiResult[0] ? (aiResult[0].confidence * 100).toFixed(1) : 0}%</div>
+                        <div><strong>Méthode:</strong> ${aiResult[0]?.method || 'N/A'}</div>
+                    </div>
+                `;
+            } catch (error) {
+                document.getElementById('comparison-ai').innerHTML = `<div class="text-red-600 text-sm">Erreur: ${error.message}</div>`;
+            }
+            
+            // Test Reconnaissance d'Images (simulation)
+            document.getElementById('comparison-image').innerHTML = `
+                <div class="text-sm text-gray-500">
+                    Nécessite une image
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>

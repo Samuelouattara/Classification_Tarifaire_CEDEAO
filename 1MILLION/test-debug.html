@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Debug Classification</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold text-center mb-8">🧪 Test Debug Classification</h1>
+        
+        <div class="bg-white rounded-lg p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4">Test de disponibilité des fonctions</h2>
+            <div id="status" class="space-y-2"></div>
+        </div>
+        
+        <div class="bg-white rounded-lg p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4">Test de classification</h2>
+            <input type="text" id="test-input" placeholder="Entrez un produit à tester..." 
+                   class="w-full p-3 border border-gray-300 rounded-lg mb-4">
+            <button onclick="testClassification()" 
+                    class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                Tester
+            </button>
+            <div id="result" class="mt-4 p-4 bg-gray-50 rounded-lg"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="classification-improved.js"></script>
+    <script>
+        function checkStatus() {
+            const status = document.getElementById('status');
+            const checks = [
+                { name: 'sectionsData', value: typeof sectionsData !== 'undefined' },
+                { name: 'classifyProductImproved', value: typeof classifyProductImproved === 'function' },
+                { name: 'classifySimple', value: typeof classifySimple === 'function' },
+                { name: 'specificRules', value: typeof specificRules !== 'undefined' }
+            ];
+            
+            let html = '';
+            checks.forEach(check => {
+                const color = check.value ? 'text-green-600' : 'text-red-600';
+                const icon = check.value ? '✅' : '❌';
+                html += `<div class="${color}">${icon} ${check.name}: ${check.value ? 'Disponible' : 'Non disponible'}</div>`;
+            });
+            
+            status.innerHTML = html;
+        }
+        
+        function testClassification() {
+            const input = document.getElementById('test-input').value;
+            const result = document.getElementById('result');
+            
+            if (!input) {
+                result.innerHTML = '<div class="text-red-600">Veuillez entrer un produit à tester</div>';
+                return;
+            }
+            
+            try {
+                console.log('🧪 Test de classification pour:', input);
+                
+                let results;
+                if (typeof classifyProductImproved === 'function') {
+                    console.log('📋 Utilisation de classifyProductImproved');
+                    results = classifyProductImproved(input);
+                } else if (typeof classifySimple === 'function') {
+                    console.log('📋 Utilisation de classifySimple (fallback)');
+                    results = classifySimple(input);
+                } else {
+                    throw new Error('Aucune fonction de classification disponible');
+                }
+                
+                console.log('📊 Résultats:', results);
+                
+                if (results && results.length > 0) {
+                    const best = results[0];
+                    result.innerHTML = `
+                        <div class="text-green-600 font-semibold">✅ Classification réussie!</div>
+                        <div class="mt-2">
+                            <strong>Section:</strong> ${best.section.number} - ${best.section.title}<br>
+                            <strong>Confiance:</strong> ${best.confidence}%<br>
+                            <strong>Code:</strong> ${best.code || 'N/A'}<br>
+                            ${best.specificRule ? '<strong>Règle spécifique:</strong> Oui<br>' : ''}
+                            ${best.matchedKeywords ? `<strong>Mots-clés:</strong> ${best.matchedKeywords.join(', ')}<br>` : ''}
+                        </div>
+                    `;
+                } else {
+                    result.innerHTML = '<div class="text-yellow-600">⚠️ Aucun résultat trouvé</div>';
+                }
+                
+            } catch (error) {
+                console.error('❌ Erreur de classification:', error);
+                result.innerHTML = `<div class="text-red-600">❌ Erreur: ${error.message}</div>`;
+            }
+        }
+        
+        // Vérifier le statut au chargement
+        window.addEventListener('load', () => {
+            setTimeout(checkStatus, 100); // Attendre un peu que les scripts se chargent
+        });
+    </script>
+</body>
+</html>

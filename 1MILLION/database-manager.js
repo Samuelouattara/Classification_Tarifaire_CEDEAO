@@ -190,6 +190,19 @@ class DatabaseManager {
         }
     }
 
+    // NOUVEAU: Sauvegarder un paquet de produits
+    async savePackage(packageData) {
+        try {
+            const result = await this.makeRequest('POST', 'save_package', {
+                package: packageData
+            });
+            return result;
+        } catch (error) {
+            console.error('Erreur sauvegarde paquet:', error);
+            return { success: false, message: error.message };
+        }
+    }
+
     // Valider et enregistrer un produit
     async validateAndRegisterProduct(productId, isValid) {
         try {

@@ -56,6 +56,10 @@ function handlePost($pdo, $action, $data) {
         case 'register_user':
             registerUser($pdo, $data);
             break;
+        case 'migrate_package_support':
+            migratePackageSupport($pdo);
+            echo json_encode(['success' => true, 'message' => 'Migration exécutée']);
+            break;
         case 'save_temp_classification':
             saveTempClassification($pdo, $data);
             break;
@@ -64,6 +68,9 @@ function handlePost($pdo, $action, $data) {
             break;
         case 'save_product':
             saveProduct($pdo, $data);
+            break;
+        case 'save_package':
+            savePackage($pdo, $data);
             break;
         case 'validate_product':
             validateProduct($pdo, $data);
@@ -253,32 +260,64 @@ function saveClassifiedProduct($pdo, $data) {
         // Utiliser un utilisateur par défaut si non spécifié (à adapter selon vos besoins)
         $defaultUserId = 5; // ID de l'admin par défaut
         
-        $stmt = $pdo->prepare("
-            INSERT INTO Produits (
-                origine_produit, description_produit, numero_serie, is_groupe, 
-                nombre_produits, taux_imposition, section_produit, sous_section_produit,
-                user_id, statut_validation, code_tarifaire, valeur_declaree, 
-                poids_kg, unite_mesure, commentaires
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ");
+        // Migration soft pour paquets/groupes
+        try { migratePackageSupport($pdo); } catch (Exception $e) {}
+
+        // Vérifier si les colonnes paquet_id/groupe_id existent
+        $hasPaquet = false; $hasGroupe = false; $hasDep = false;
+        try {
+            $cols = $pdo->query("SHOW COLUMNS FROM Produits")->fetchAll(PDO::FETCH_COLUMN);
+            $hasPaquet = in_array('paquet_id', $cols);
+            $hasGroupe = in_array('groupe_id', $cols);
+            $hasDep = in_array('utilisation_dependante', $cols);
+        } catch (Exception $e) {}
+
+        if ($hasPaquet && $hasGroupe && $hasDep) {
+            $stmt = $pdo->prepare("\n                INSERT INTO Produits (\n                    origine_produit, description_produit, numero_serie, is_groupe, \n                    nombre_produits, taux_imposition, section_produit, sous_section_produit,\n                    user_id, statut_validation, code_tarifaire, valeur_declaree, \n                    poids_kg, unite_mesure, commentaires, paquet_id, groupe_id, utilisation_dependante\n                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)\n            ");
+        } else {
+            $stmt = $pdo->prepare("\n                INSERT INTO Produits (\n                    origine_produit, description_produit, numero_serie, is_groupe, \n                    nombre_produits, taux_imposition, section_produit, sous_section_produit,\n                    user_id, statut_validation, code_tarifaire, valeur_declaree, \n                    poids_kg, unite_mesure, commentaires\n                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)\n            ");
+        }
         
-        $stmt->execute([
-            $product['origine_produit'] ?? 'Non spécifié',
-            $product['description_produit'] ?? '',
-            $product['numero_serie'] ?? null,
-            isset($product['is_groupe']) ? ($product['is_groupe'] ? 1 : 0) : 0,  // Convertir boolean en 0/1
-            $product['nombre_produits'] ?? 1,
-            $product['taux_imposition'] ?? 0,
-            $product['section_produit'] ?? 'I',
-            $product['sous_section_produit'] ?? null,
-            $defaultUserId,
-            $product['statut_validation'] ?? 'valide',
-            $product['code_tarifaire'] ?? null,
-            $product['valeur_declaree'] ?? 0,
-            $product['poids_kg'] ?? 0,
-            $product['unite_mesure'] ?? 'unité',
-            $product['commentaires'] ?? null
-        ]);
+        if ($hasPaquet && $hasGroupe && $hasDep) {
+            $stmt->execute([
+                $product['origine_produit'] ?? 'Non spécifié',
+                $product['description_produit'] ?? '',
+                $product['numero_serie'] ?? null,
+                isset($product['is_groupe']) ? ($product['is_groupe'] ? 1 : 0) : 0,
+                $product['nombre_produits'] ?? 1,
+                $product['taux_imposition'] ?? 0,
+                $product['section_produit'] ?? 'I',
+                $product['sous_section_produit'] ?? null,
+                $defaultUserId,
+                $product['statut_validation'] ?? 'valide',
+                $product['code_tarifaire'] ?? null,
+                $product['valeur_declaree'] ?? 0,
+                $product['poids_kg'] ?? 0,
+                $product['unite_mesure'] ?? 'unité',
+                $product['commentaires'] ?? null,
+                $product['paquet_id'] ?? null,
+                $product['groupe_id'] ?? null,
+                isset($product['utilisation_dependante']) ? ($product['utilisation_dependante'] ? 1 : 0) : 0
+            ]);
+        } else {
+            $stmt->execute([
+                $product['origine_produit'] ?? 'Non spécifié',
+                $product['description_produit'] ?? '',
+                $product['numero_serie'] ?? null,
+                isset($product['is_groupe']) ? ($product['is_groupe'] ? 1 : 0) : 0,
+                $product['nombre_produits'] ?? 1,
+                $product['taux_imposition'] ?? 0,
+                $product['section_produit'] ?? 'I',
+                $product['sous_section_produit'] ?? null,
+                $defaultUserId,
+                $product['statut_validation'] ?? 'valide',
+                $product['code_tarifaire'] ?? null,
+                $product['valeur_declaree'] ?? 0,
+                $product['poids_kg'] ?? 0,
+                $product['unite_mesure'] ?? 'unité',
+                $product['commentaires'] ?? null
+            ]);
+        }
         
         $productId = $pdo->lastInsertId();
         
@@ -374,6 +413,57 @@ function saveTempClassification($pdo, $data) {
             'success' => false,
             'message' => $e->getMessage()
         ]);
+    }
+}
+
+/**
+ * Gestion d'un paquet complet: format attendu
+ * {
+ *   action: 'save_package',
+ *   package: {
+ *     nom: 'Kit X',
+ *     nombre_produits: 3,
+ *     created_by: 5,
+ *     products: [
+ *       { description_produit, section_produit, code_tarifaire, utilisation_dependante: true, groupe_id: 1 },
+ *       ...
+ *     ]
+ *   }
+ * }
+ */
+function savePackage($pdo, $data) {
+    try {
+        $package = $data['package'] ?? null;
+        if (!$package || empty($package['products']) || !is_array($package['products'])) {
+            throw new Exception('Format package invalide');
+        }
+
+        // S’assurer du schéma
+        migratePackageSupport($pdo);
+
+        $name = $package['nom'] ?? null;
+        $createdBy = $package['created_by'] ?? 5;
+        $count = $package['nombre_produits'] ?? count($package['products']);
+
+        $pdo->beginTransaction();
+        $stmt = $pdo->prepare("INSERT INTO Paquets (nom_paquet, nombre_produits, created_by) VALUES (?, ?, ?)");
+        $stmt->execute([$name, $count, $createdBy]);
+        $paquetId = $pdo->lastInsertId();
+
+        $saved = [];
+        foreach ($package['products'] as $p) {
+            $p['paquet_id'] = $paquetId;
+            // Immerger via saveClassifiedProduct
+            saveClassifiedProduct($pdo, ['product' => $p]);
+            $saved[] = $pdo->lastInsertId();
+        }
+        $pdo->commit();
+
+        echo json_encode(['success' => true, 'paquet_id' => $paquetId, 'product_ids' => $saved]);
+    } catch (Exception $e) {
+        if ($pdo->inTransaction()) { $pdo->rollBack(); }
+        http_response_code(400);
+        echo json_encode(['success' => false, 'message' => $e->getMessage()]);
     }
 }
 

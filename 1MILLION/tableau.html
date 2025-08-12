@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -150,6 +149,10 @@
             border-color: #4CAF50;
             font-weight: bold;
         }
+        .data-cell.wrong-chapter {
+            background-color: #FFE0E0 !important;
+            border-color: #FF5722 !important;
+        }
         .product-info {
             max-width: 120px;
             overflow: hidden;
@@ -208,6 +211,21 @@
             justify-content: center;
             font-weight: bold;
         }
+        .chapter-stats {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            background: #FFC107;
+            color: #1B5E20;
+            border-radius: 50%;
+            width: 14px;
+            height: 14px;
+            font-size: 7px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -218,6 +236,7 @@
             <button onclick="clearAllData()">🗑️ Vider le tableau</button>
             <button onclick="exportTableData()">📊 Exporter données</button>
             <button onclick="viewStatistics()">📈 Voir statistiques</button>
+            <button onclick="testAddProduct()">🧪 Test</button>
         </div>
 
         <div id="notification" class="notification"></div>
@@ -228,136 +247,127 @@
                 <tr>
                     <td class="section-header" colspan="5" data-section="I">
                         <span class="section-number">I</span>
-                        <span class="section-code">0101</span>
+                        <span class="section-code">01-05</span>
                         ANIMAUX VIVANTS ET PRODUITS DU REGNE ANIMAL
-                        
                         <div class="section-stats" id="stats-I">0</div>
                     </td>
                     <td class="section-header" colspan="9" data-section="II">
                         <span class="section-number">II</span>
-                        <span class="section-code">0601</span>
+                        <span class="section-code">06-14</span>
                         PRODUITS DU REGNE VEGETAL
-                        
                         <div class="section-stats" id="stats-II">0</div>
                     </td>
                     <td class="section-header" colspan="1" data-section="III">
                         <span class="section-number">III</span>
-                        <span class="section-code">1501</span>
+                        <span class="section-code">15</span>
                         GRAISSES ET HUILES
                         <div class="section-stats" id="stats-III">0</div>
                     </td>
                     <td class="section-header" colspan="9" data-section="IV">
                         <span class="section-number">IV</span>
-                        <span class="section-code">1601</span>
+                        <span class="section-code">16-24</span>
                         PRODUITS INDUSTRIES ALIMENTAIRES
-                        
                         <div class="section-stats" id="stats-IV">0</div>
                     </td>
                     <td class="section-header" colspan="3" data-section="V">
                         <span class="section-number">V</span>
-                        <span class="section-code">2501</span>
+                        <span class="section-code">25-27</span>
                         PRODUITS MINERAUX
                         <div class="section-stats" id="stats-V">0</div>
                     </td>
                     <td class="section-header" colspan="11" data-section="VI">
                         <span class="section-number">VI</span>
-                        <span class="section-code">2801</span>
+                        <span class="section-code">28-38</span>
                         PRODUITS INDUSTRIES CHIMIQUES
-                        
                         <div class="section-stats" id="stats-VI">0</div>
                     </td>
                     <td class="section-header" colspan="2" data-section="VII">
                         <span class="section-number">VII</span>
-                        <span class="section-code">3901</span>
+                        <span class="section-code">39-40</span>
                         PLASTIQUES ET CAOUTCHOUC
-                        
                         <div class="section-stats" id="stats-VII">0</div>
                     </td>
                     <td class="section-header" colspan="3" data-section="VIII">
                         <span class="section-number">VIII</span>
-                        <span class="section-code">4101</span>
+                        <span class="section-code">41-43</span>
                         PEAUX, CUIRS, PELLETERIES
                         <div class="section-stats" id="stats-VIII">0</div>
                     </td>
                     <td class="section-header" colspan="3" data-section="IX">
                         <span class="section-number">IX</span>
-                        <span class="section-code">4401</span>
+                        <span class="section-code">44-46</span>
                         BOIS, LIEGE, SPARTERIE
                         <div class="section-stats" id="stats-IX">0</div>
                     </td>
                     <td class="section-header" colspan="3" data-section="X">
                         <span class="section-number">X</span>
-                        <span class="section-code">4701</span>
+                        <span class="section-code">47-49</span>
                         PATES BOIS, PAPIER, CARTON
                         <div class="section-stats" id="stats-X">0</div>
                     </td>
                     <td class="section-header" colspan="14" data-section="XI">
                         <span class="section-number">XI</span>
-                        <span class="section-code">5001</span>
+                        <span class="section-code">50-63</span>
                         MATIERES TEXTILES ET OUVRAGES
-                        
                         <div class="section-stats" id="stats-XI">0</div>
                     </td>
                     <td class="section-header" colspan="4" data-section="XII">
                         <span class="section-number">XII</span>
-                        <span class="section-code">6401</span>
+                        <span class="section-code">64-67</span>
                         CHAUSSURES, COIFFURES
                         <div class="section-stats" id="stats-XII">0</div>
                     </td>
                     <td class="section-header" colspan="3" data-section="XIII">
                         <span class="section-number">XIII</span>
-                        <span class="section-code">6801</span>
+                        <span class="section-code">68-70</span>
                         PIERRES, CERAMIQUE, VERRE
                         <div class="section-stats" id="stats-XIII">0</div>
                     </td>
                     <td class="section-header" colspan="1" data-section="XIV">
                         <span class="section-number">XIV</span>
-                        <span class="section-code">7101</span>
+                        <span class="section-code">71</span>
                         METAUX PRECIEUX, BIJOUX
                         <div class="section-stats" id="stats-XIV">0</div>
                     </td>
                     <td class="section-header" colspan="11" data-section="XV">
                         <span class="section-number">XV</span>
-                        <span class="section-code">7201</span>
+                        <span class="section-code">72-83</span>
                         METAUX COMMUNS ET OUVRAGES
-                        
                         <div class="section-stats" id="stats-XV">0</div>
                     </td>
                     <td class="section-header" colspan="2" data-section="XVI">
                         <span class="section-number">XVI</span>
-                        <span class="section-code">8401</span>
+                        <span class="section-code">84-85</span>
                         MACHINES ET APPAREILS
-                        
                         <div class="section-stats" id="stats-XVI">0</div>
                     </td>
                     <td class="section-header" colspan="4" data-section="XVII">
                         <span class="section-number">XVII</span>
-                        <span class="section-code">8601</span>
+                        <span class="section-code">86-89</span>
                         MATERIEL DE TRANSPORT
-                        
                         <div class="section-stats" id="stats-XVII">0</div>
                     </td>
                     <td class="section-header" colspan="3" data-section="XVIII">
                         <span class="section-number">XVIII</span>
-                        <span class="section-code">9001</span>
+                        <span class="section-code">90-92</span>
                         INSTRUMENTS PRECISION, MUSIQUE
                         <div class="section-stats" id="stats-XVIII">0</div>
                     </td>
                     <td class="section-header" colspan="1" data-section="XIX">
                         <span class="section-number">XIX</span>
-                        <span class="section-code">9301</span>
+                        <span class="section-code">93</span>
                         ARMES, MUNITIONS
                         <div class="section-stats" id="stats-XIX">0</div>
                     </td>
                     <td class="section-header" colspan="3" data-section="XX">
                         <span class="section-number">XX</span>
-                        <span class="section-code">9401</span>
+                        <span class="section-code">94-96</span>
                         MARCHANDISES DIVERSES
                         <div class="section-stats" id="stats-XX">0</div>
                     </td>
                     <td class="section-header" colspan="1" data-section="XXI">
                         <span class="section-number">XXI</span>
-                        <span class="section-code">9701</span>
+                        <span class="section-code">97</span>
                         OBJETS D'ART, ANTIQUITES
                         <div class="section-stats" id="stats-XXI">0</div>
                     </td>
@@ -366,143 +376,142 @@
                 <!-- Ligne des chapitres -->
                 <tr>
                     <!-- Section I -->
-                    <td class="chapter-row" data-chapter="01"><div class="chapter-number">01</div><div class="chapter-note">Animaux vivants</div></td>
-                    <td class="chapter-row" data-chapter="02"><div class="chapter-number">02</div><div class="chapter-note">Viandes et abats</div></td>
-                    <td class="chapter-row" data-chapter="03"><div class="chapter-number">03</div><div class="chapter-note">Poissons, crustacés</div></td>
-                    <td class="chapter-row" data-chapter="04"><div class="chapter-number">04</div><div class="chapter-note">Laits, œufs, miel</div></td>
-                    <td class="chapter-row" data-chapter="05"><div class="chapter-number">05</div><div class="chapter-note">Autres produits animaux</div></td>
+                    <td class="chapter-row" data-chapter="01"><div class="chapter-number">01</div><div class="chapter-note">Animaux vivants</div><div class="chapter-stats" id="chap-stats-01">0</div></td>
+                    <td class="chapter-row" data-chapter="02"><div class="chapter-number">02</div><div class="chapter-note">Viandes et abats</div><div class="chapter-stats" id="chap-stats-02">0</div></td>
+                    <td class="chapter-row" data-chapter="03"><div class="chapter-number">03</div><div class="chapter-note">Poissons, crustacés</div><div class="chapter-stats" id="chap-stats-03">0</div></td>
+                    <td class="chapter-row" data-chapter="04"><div class="chapter-number">04</div><div class="chapter-note">Laits, œufs, miel</div><div class="chapter-stats" id="chap-stats-04">0</div></td>
+                    <td class="chapter-row" data-chapter="05"><div class="chapter-number">05</div><div class="chapter-note">Autres produits animaux</div><div class="chapter-stats" id="chap-stats-05">0</div></td>
                     
                     <!-- Section II -->
-                    <td class="chapter-row" data-chapter="06"><div class="chapter-number">06</div><div class="chapter-note">Plantes vivantes</div></td>
-                    <td class="chapter-row" data-chapter="07"><div class="chapter-number">07</div><div class="chapter-note">Légumes</div></td>
-                    <td class="chapter-row" data-chapter="08"><div class="chapter-number">08</div><div class="chapter-note">Fruits</div></td>
-                    <td class="chapter-row" data-chapter="09"><div class="chapter-number">09</div><div class="chapter-note">Café, thé, épices</div></td>
-                    <td class="chapter-row" data-chapter="10"><div class="chapter-number">10</div><div class="chapter-note">Céréales</div></td>
-                    <td class="chapter-row" data-chapter="11"><div class="chapter-number">11</div><div class="chapter-note">Minoterie</div></td>
-                    <td class="chapter-row" data-chapter="12"><div class="chapter-number">12</div><div class="chapter-note">Graines oléagineuses</div></td>
-                    <td class="chapter-row" data-chapter="13"><div class="chapter-number">13</div><div class="chapter-note">Gommes, résines</div></td>
-                    <td class="chapter-row" data-chapter="14"><div class="chapter-number">14</div><div class="chapter-note">Matières à tresser</div></td>
+                    <td class="chapter-row" data-chapter="06"><div class="chapter-number">06</div><div class="chapter-note">Plantes vivantes</div><div class="chapter-stats" id="chap-stats-06">0</div></td>
+                    <td class="chapter-row" data-chapter="07"><div class="chapter-number">07</div><div class="chapter-note">Légumes</div><div class="chapter-stats" id="chap-stats-07">0</div></td>
+                    <td class="chapter-row" data-chapter="08"><div class="chapter-number">08</div><div class="chapter-note">Fruits</div><div class="chapter-stats" id="chap-stats-08">0</div></td>
+                    <td class="chapter-row" data-chapter="09"><div class="chapter-number">09</div><div class="chapter-note">Café, thé, épices</div><div class="chapter-stats" id="chap-stats-09">0</div></td>
+                    <td class="chapter-row" data-chapter="10"><div class="chapter-number">10</div><div class="chapter-note">Céréales</div><div class="chapter-stats" id="chap-stats-10">0</div></td>
+                    <td class="chapter-row" data-chapter="11"><div class="chapter-number">11</div><div class="chapter-note">Minoterie</div><div class="chapter-stats" id="chap-stats-11">0</div></td>
+                    <td class="chapter-row" data-chapter="12"><div class="chapter-number">12</div><div class="chapter-note">Graines oléagineuses</div><div class="chapter-stats" id="chap-stats-12">0</div></td>
+                    <td class="chapter-row" data-chapter="13"><div class="chapter-number">13</div><div class="chapter-note">Gommes, résines</div><div class="chapter-stats" id="chap-stats-13">0</div></td>
+                    <td class="chapter-row" data-chapter="14"><div class="chapter-number">14</div><div class="chapter-note">Matières à tresser</div><div class="chapter-stats" id="chap-stats-14">0</div></td>
                     
                     <!-- Section III -->
-                    <td class="chapter-row" data-chapter="15"><div class="chapter-number">15</div><div class="chapter-note">Graisses et huiles</div></td>
+                    <td class="chapter-row" data-chapter="15"><div class="chapter-number">15</div><div class="chapter-note">Graisses et huiles</div><div class="chapter-stats" id="chap-stats-15">0</div></td>
                     
                     <!-- Section IV -->
-                    <td class="chapter-row" data-chapter="16"><div class="chapter-number">16</div><div class="chapter-note">Prép. viande/poisson</div></td>
-                    <td class="chapter-row" data-chapter="17"><div class="chapter-number">17</div><div class="chapter-note">Sucres</div></td>
-                    <td class="chapter-row" data-chapter="18"><div class="chapter-number">18</div><div class="chapter-note">Cacao</div></td>
-                    <td class="chapter-row" data-chapter="19"><div class="chapter-number">19</div><div class="chapter-note">Prép. céréales</div></td>
-                    <td class="chapter-row" data-chapter="20"><div class="chapter-number">20</div><div class="chapter-note">Prép. légumes/fruits</div></td>
-                    <td class="chapter-row" data-chapter="21"><div class="chapter-number">21</div><div class="chapter-note">Prép. alimentaires</div></td>
-                    <td class="chapter-row" data-chapter="22"><div class="chapter-number">22</div><div class="chapter-note">Boissons</div></td>
-                    <td class="chapter-row" data-chapter="23"><div class="chapter-number">23</div><div class="chapter-note">Aliments animaux</div></td>
-                    <td class="chapter-row" data-chapter="24"><div class="chapter-number">24</div><div class="chapter-note">Tabacs</div></td>
+                    <td class="chapter-row" data-chapter="16"><div class="chapter-number">16</div><div class="chapter-note">Prép. viande/poisson</div><div class="chapter-stats" id="chap-stats-16">0</div></td>
+                    <td class="chapter-row" data-chapter="17"><div class="chapter-number">17</div><div class="chapter-note">Sucres</div><div class="chapter-stats" id="chap-stats-17">0</div></td>
+                    <td class="chapter-row" data-chapter="18"><div class="chapter-number">18</div><div class="chapter-note">Cacao</div><div class="chapter-stats" id="chap-stats-18">0</div></td>
+                    <td class="chapter-row" data-chapter="19"><div class="chapter-number">19</div><div class="chapter-note">Prép. céréales</div><div class="chapter-stats" id="chap-stats-19">0</div></td>
+                    <td class="chapter-row" data-chapter="20"><div class="chapter-number">20</div><div class="chapter-note">Prép. légumes/fruits</div><div class="chapter-stats" id="chap-stats-20">0</div></td>
+                    <td class="chapter-row" data-chapter="21"><div class="chapter-number">21</div><div class="chapter-note">Prép. alimentaires</div><div class="chapter-stats" id="chap-stats-21">0</div></td>
+                    <td class="chapter-row" data-chapter="22"><div class="chapter-number">22</div><div class="chapter-note">Boissons</div><div class="chapter-stats" id="chap-stats-22">0</div></td>
+                    <td class="chapter-row" data-chapter="23"><div class="chapter-number">23</div><div class="chapter-note">Aliments animaux</div><div class="chapter-stats" id="chap-stats-23">0</div></td>
+                    <td class="chapter-row" data-chapter="24"><div class="chapter-number">24</div><div class="chapter-note">Tabacs</div><div class="chapter-stats" id="chap-stats-24">0</div></td>
                     
-                    <!-- Continuez pour toutes les sections... -->
                     <!-- Section V -->
-                    <td class="chapter-row" data-chapter="25"><div class="chapter-number">25</div><div class="chapter-note">Sel, soufre, pierres</div></td>
-                    <td class="chapter-row" data-chapter="26"><div class="chapter-number">26</div><div class="chapter-note">Minerais</div></td>
-                    <td class="chapter-row" data-chapter="27"><div class="chapter-number">27</div><div class="chapter-note">Combustibles</div></td>
+                    <td class="chapter-row" data-chapter="25"><div class="chapter-number">25</div><div class="chapter-note">Sel, soufre, pierres</div><div class="chapter-stats" id="chap-stats-25">0</div></td>
+                    <td class="chapter-row" data-chapter="26"><div class="chapter-number">26</div><div class="chapter-note">Minerais</div><div class="chapter-stats" id="chap-stats-26">0</div></td>
+                    <td class="chapter-row" data-chapter="27"><div class="chapter-number">27</div><div class="chapter-note">Combustibles</div><div class="chapter-stats" id="chap-stats-27">0</div></td>
                     
                     <!-- Section VI -->
-                    <td class="chapter-row" data-chapter="28"><div class="chapter-number">28</div><div class="chapter-note">Prod. chim. inorg.</div></td>
-                    <td class="chapter-row" data-chapter="29"><div class="chapter-number">29</div><div class="chapter-note">Prod. chim. org.</div></td>
-                    <td class="chapter-row" data-chapter="30"><div class="chapter-number">30</div><div class="chapter-note">Pharmaceutiques</div></td>
-                    <td class="chapter-row" data-chapter="31"><div class="chapter-number">31</div><div class="chapter-note">Engrais</div></td>
-                    <td class="chapter-row" data-chapter="32"><div class="chapter-number">32</div><div class="chapter-note">Colorants</div></td>
-                    <td class="chapter-row" data-chapter="33"><div class="chapter-number">33</div><div class="chapter-note">Parfumerie</div></td>
-                    <td class="chapter-row" data-chapter="34"><div class="chapter-number">34</div><div class="chapter-note">Savons</div></td>
-                    <td class="chapter-row" data-chapter="35"><div class="chapter-number">35</div><div class="chapter-note">Albuminoïdes</div></td>
-                    <td class="chapter-row" data-chapter="36"><div class="chapter-number">36</div><div class="chapter-note">Explosifs</div></td>
-                    <td class="chapter-row" data-chapter="37"><div class="chapter-number">37</div><div class="chapter-note">Photo/cinéma</div></td>
-                    <td class="chapter-row" data-chapter="38"><div class="chapter-number">38</div><div class="chapter-note">Prod. chim. divers</div></td>
+                    <td class="chapter-row" data-chapter="28"><div class="chapter-number">28</div><div class="chapter-note">Prod. chim. inorg.</div><div class="chapter-stats" id="chap-stats-28">0</div></td>
+                    <td class="chapter-row" data-chapter="29"><div class="chapter-number">29</div><div class="chapter-note">Prod. chim. org.</div><div class="chapter-stats" id="chap-stats-29">0</div></td>
+                    <td class="chapter-row" data-chapter="30"><div class="chapter-number">30</div><div class="chapter-note">Pharmaceutiques</div><div class="chapter-stats" id="chap-stats-30">0</div></td>
+                    <td class="chapter-row" data-chapter="31"><div class="chapter-number">31</div><div class="chapter-note">Engrais</div><div class="chapter-stats" id="chap-stats-31">0</div></td>
+                    <td class="chapter-row" data-chapter="32"><div class="chapter-number">32</div><div class="chapter-note">Colorants</div><div class="chapter-stats" id="chap-stats-32">0</div></td>
+                    <td class="chapter-row" data-chapter="33"><div class="chapter-number">33</div><div class="chapter-note">Parfumerie</div><div class="chapter-stats" id="chap-stats-33">0</div></td>
+                    <td class="chapter-row" data-chapter="34"><div class="chapter-number">34</div><div class="chapter-note">Savons</div><div class="chapter-stats" id="chap-stats-34">0</div></td>
+                    <td class="chapter-row" data-chapter="35"><div class="chapter-number">35</div><div class="chapter-note">Albuminoïdes</div><div class="chapter-stats" id="chap-stats-35">0</div></td>
+                    <td class="chapter-row" data-chapter="36"><div class="chapter-number">36</div><div class="chapter-note">Explosifs</div><div class="chapter-stats" id="chap-stats-36">0</div></td>
+                    <td class="chapter-row" data-chapter="37"><div class="chapter-number">37</div><div class="chapter-note">Photo/cinéma</div><div class="chapter-stats" id="chap-stats-37">0</div></td>
+                    <td class="chapter-row" data-chapter="38"><div class="chapter-number">38</div><div class="chapter-note">Prod. chim. divers</div><div class="chapter-stats" id="chap-stats-38">0</div></td>
                     
                     <!-- Section VII -->
-                    <td class="chapter-row" data-chapter="39"><div class="chapter-number">39</div><div class="chapter-note">Matières plastiques</div></td>
-                    <td class="chapter-row" data-chapter="40"><div class="chapter-number">40</div><div class="chapter-note">Caoutchouc</div></td>
+                    <td class="chapter-row" data-chapter="39"><div class="chapter-number">39</div><div class="chapter-note">Matières plastiques</div><div class="chapter-stats" id="chap-stats-39">0</div></td>
+                    <td class="chapter-row" data-chapter="40"><div class="chapter-number">40</div><div class="chapter-note">Caoutchouc</div><div class="chapter-stats" id="chap-stats-40">0</div></td>
                     
                     <!-- Section VIII -->
-                    <td class="chapter-row" data-chapter="41"><div class="chapter-number">41</div><div class="chapter-note">Peaux et cuirs</div></td>
-                    <td class="chapter-row" data-chapter="42"><div class="chapter-number">42</div><div class="chapter-note">Ouvrages en cuir</div></td>
-                    <td class="chapter-row" data-chapter="43"><div class="chapter-number">43</div><div class="chapter-note">Pelleteries</div></td>
+                    <td class="chapter-row" data-chapter="41"><div class="chapter-number">41</div><div class="chapter-note">Peaux et cuirs</div><div class="chapter-stats" id="chap-stats-41">0</div></td>
+                    <td class="chapter-row" data-chapter="42"><div class="chapter-number">42</div><div class="chapter-note">Ouvrages en cuir</div><div class="chapter-stats" id="chap-stats-42">0</div></td>
+                    <td class="chapter-row" data-chapter="43"><div class="chapter-number">43</div><div class="chapter-note">Pelleteries</div><div class="chapter-stats" id="chap-stats-43">0</div></td>
                     
                     <!-- Section IX -->
-                    <td class="chapter-row" data-chapter="44"><div class="chapter-number">44</div><div class="chapter-note">Bois</div></td>
-                    <td class="chapter-row" data-chapter="45"><div class="chapter-number">45</div><div class="chapter-note">Liège</div></td>
-                    <td class="chapter-row" data-chapter="46"><div class="chapter-number">46</div><div class="chapter-note">Sparterie</div></td>
+                    <td class="chapter-row" data-chapter="44"><div class="chapter-number">44</div><div class="chapter-note">Bois</div><div class="chapter-stats" id="chap-stats-44">0</div></td>
+                    <td class="chapter-row" data-chapter="45"><div class="chapter-number">45</div><div class="chapter-note">Liège</div><div class="chapter-stats" id="chap-stats-45">0</div></td>
+                    <td class="chapter-row" data-chapter="46"><div class="chapter-number">46</div><div class="chapter-note">Sparterie</div><div class="chapter-stats" id="chap-stats-46">0</div></td>
                     
                     <!-- Section X -->
-                    <td class="chapter-row" data-chapter="47"><div class="chapter-number">47</div><div class="chapter-note">Pâtes de bois</div></td>
-                    <td class="chapter-row" data-chapter="48"><div class="chapter-number">48</div><div class="chapter-note">Papiers et cartons</div></td>
-                    <td class="chapter-row" data-chapter="49"><div class="chapter-number">49</div><div class="chapter-note">Produits édition</div></td>
+                    <td class="chapter-row" data-chapter="47"><div class="chapter-number">47</div><div class="chapter-note">Pâtes de bois</div><div class="chapter-stats" id="chap-stats-47">0</div></td>
+                    <td class="chapter-row" data-chapter="48"><div class="chapter-number">48</div><div class="chapter-note">Papiers et cartons</div><div class="chapter-stats" id="chap-stats-48">0</div></td>
+                    <td class="chapter-row" data-chapter="49"><div class="chapter-number">49</div><div class="chapter-note">Produits édition</div><div class="chapter-stats" id="chap-stats-49">0</div></td>
                     
                     <!-- Section XI -->
-                    <td class="chapter-row" data-chapter="50"><div class="chapter-number">50</div><div class="chapter-note">Soie</div></td>
-                    <td class="chapter-row" data-chapter="51"><div class="chapter-number">51</div><div class="chapter-note">Laine</div></td>
-                    <td class="chapter-row" data-chapter="52"><div class="chapter-number">52</div><div class="chapter-note">Coton</div></td>
-                    <td class="chapter-row" data-chapter="53"><div class="chapter-number">53</div><div class="chapter-note">Fibres végétales</div></td>
-                    <td class="chapter-row" data-chapter="54"><div class="chapter-number">54</div><div class="chapter-note">Filaments synth.</div></td>
-                    <td class="chapter-row" data-chapter="55"><div class="chapter-number">55</div><div class="chapter-note">Fibres synth.</div></td>
-                    <td class="chapter-row" data-chapter="56"><div class="chapter-number">56</div><div class="chapter-note">Ouates, feutres</div></td>
-                    <td class="chapter-row" data-chapter="57"><div class="chapter-number">57</div><div class="chapter-note">Tapis</div></td>
-                    <td class="chapter-row" data-chapter="58"><div class="chapter-number">58</div><div class="chapter-note">Tissus spéciaux</div></td>
-                    <td class="chapter-row" data-chapter="59"><div class="chapter-number">59</div><div class="chapter-note">Tissus techniques</div></td>
-                    <td class="chapter-row" data-chapter="60"><div class="chapter-number">60</div><div class="chapter-note">Bonneterie</div></td>
-                    <td class="chapter-row" data-chapter="61"><div class="chapter-number">61</div><div class="chapter-note">Vêtements bonnet.</div></td>
-                    <td class="chapter-row" data-chapter="62"><div class="chapter-number">62</div><div class="chapter-note">Vêtements</div></td>
-                    <td class="chapter-row" data-chapter="63"><div class="chapter-number">63</div><div class="chapter-note">Articles textiles</div></td>
+                    <td class="chapter-row" data-chapter="50"><div class="chapter-number">50</div><div class="chapter-note">Soie</div><div class="chapter-stats" id="chap-stats-50">0</div></td>
+                    <td class="chapter-row" data-chapter="51"><div class="chapter-number">51</div><div class="chapter-note">Laine</div><div class="chapter-stats" id="chap-stats-51">0</div></td>
+                    <td class="chapter-row" data-chapter="52"><div class="chapter-number">52</div><div class="chapter-note">Coton</div><div class="chapter-stats" id="chap-stats-52">0</div></td>
+                    <td class="chapter-row" data-chapter="53"><div class="chapter-number">53</div><div class="chapter-note">Fibres végétales</div><div class="chapter-stats" id="chap-stats-53">0</div></td>
+                    <td class="chapter-row" data-chapter="54"><div class="chapter-number">54</div><div class="chapter-note">Filaments synth.</div><div class="chapter-stats" id="chap-stats-54">0</div></td>
+                    <td class="chapter-row" data-chapter="55"><div class="chapter-number">55</div><div class="chapter-note">Fibres synth.</div><div class="chapter-stats" id="chap-stats-55">0</div></td>
+                    <td class="chapter-row" data-chapter="56"><div class="chapter-number">56</div><div class="chapter-note">Ouates, feutres</div><div class="chapter-stats" id="chap-stats-56">0</div></td>
+                    <td class="chapter-row" data-chapter="57"><div class="chapter-number">57</div><div class="chapter-note">Tapis</div><div class="chapter-stats" id="chap-stats-57">0</div></td>
+                    <td class="chapter-row" data-chapter="58"><div class="chapter-number">58</div><div class="chapter-note">Tissus spéciaux</div><div class="chapter-stats" id="chap-stats-58">0</div></td>
+                    <td class="chapter-row" data-chapter="59"><div class="chapter-number">59</div><div class="chapter-note">Tissus techniques</div><div class="chapter-stats" id="chap-stats-59">0</div></td>
+                    <td class="chapter-row" data-chapter="60"><div class="chapter-number">60</div><div class="chapter-note">Bonneterie</div><div class="chapter-stats" id="chap-stats-60">0</div></td>
+                    <td class="chapter-row" data-chapter="61"><div class="chapter-number">61</div><div class="chapter-note">Vêtements bonnet.</div><div class="chapter-stats" id="chap-stats-61">0</div></td>
+                    <td class="chapter-row" data-chapter="62"><div class="chapter-number">62</div><div class="chapter-note">Vêtements</div><div class="chapter-stats" id="chap-stats-62">0</div></td>
+                    <td class="chapter-row" data-chapter="63"><div class="chapter-number">63</div><div class="chapter-note">Articles textiles</div><div class="chapter-stats" id="chap-stats-63">0</div></td>
                     
                     <!-- Section XII -->
-                    <td class="chapter-row" data-chapter="64"><div class="chapter-number">64</div><div class="chapter-note">Chaussures</div></td>
-                    <td class="chapter-row" data-chapter="65"><div class="chapter-number">65</div><div class="chapter-note">Coiffures</div></td>
-                    <td class="chapter-row" data-chapter="66"><div class="chapter-number">66</div><div class="chapter-note">Parapluies</div></td>
-                    <td class="chapter-row" data-chapter="67"><div class="chapter-number">67</div><div class="chapter-note">Plumes, fleurs artif.</div></td>
+                    <td class="chapter-row" data-chapter="64"><div class="chapter-number">64</div><div class="chapter-note">Chaussures</div><div class="chapter-stats" id="chap-stats-64">0</div></td>
+                    <td class="chapter-row" data-chapter="65"><div class="chapter-number">65</div><div class="chapter-note">Coiffures</div><div class="chapter-stats" id="chap-stats-65">0</div></td>
+                    <td class="chapter-row" data-chapter="66"><div class="chapter-number">66</div><div class="chapter-note">Parapluies</div><div class="chapter-stats" id="chap-stats-66">0</div></td>
+                    <td class="chapter-row" data-chapter="67"><div class="chapter-number">67</div><div class="chapter-note">Plumes, fleurs artif.</div><div class="chapter-stats" id="chap-stats-67">0</div></td>
                     
                     <!-- Section XIII -->
-                    <td class="chapter-row" data-chapter="68"><div class="chapter-number">68</div><div class="chapter-note">Ouvrages pierres</div></td>
-                    <td class="chapter-row" data-chapter="69"><div class="chapter-number">69</div><div class="chapter-note">Céramiques</div></td>
-                    <td class="chapter-row" data-chapter="70"><div class="chapter-number">70</div><div class="chapter-note">Verre</div></td>
+                    <td class="chapter-row" data-chapter="68"><div class="chapter-number">68</div><div class="chapter-note">Ouvrages pierres</div><div class="chapter-stats" id="chap-stats-68">0</div></td>
+                    <td class="chapter-row" data-chapter="69"><div class="chapter-number">69</div><div class="chapter-note">Céramiques</div><div class="chapter-stats" id="chap-stats-69">0</div></td>
+                    <td class="chapter-row" data-chapter="70"><div class="chapter-number">70</div><div class="chapter-note">Verre</div><div class="chapter-stats" id="chap-stats-70">0</div></td>
                     
                     <!-- Section XIV -->
-                    <td class="chapter-row" data-chapter="71"><div class="chapter-number">71</div><div class="chapter-note">Bijouterie</div></td>
+                    <td class="chapter-row" data-chapter="71"><div class="chapter-number">71</div><div class="chapter-note">Bijouterie</div><div class="chapter-stats" id="chap-stats-71">0</div></td>
                     
                     <!-- Section XV -->
-                    <td class="chapter-row" data-chapter="72"><div class="chapter-number">72</div><div class="chapter-note">Fonte, fer, acier</div></td>
-                    <td class="chapter-row" data-chapter="73"><div class="chapter-number">73</div><div class="chapter-note">Ouvrages fer/acier</div></td>
-                    <td class="chapter-row" data-chapter="74"><div class="chapter-number">74</div><div class="chapter-note">Cuivre</div></td>
-                    <td class="chapter-row" data-chapter="75"><div class="chapter-number">75</div><div class="chapter-note">Nickel</div></td>
-                    <td class="chapter-row" data-chapter="76"><div class="chapter-number">76</div><div class="chapter-note">Aluminium</div></td>
-                    <td class="chapter-row" data-chapter="78"><div class="chapter-number">78</div><div class="chapter-note">Plomb</div></td>
-                    <td class="chapter-row" data-chapter="79"><div class="chapter-number">79</div><div class="chapter-note">Zinc</div></td>
-                    <td class="chapter-row" data-chapter="80"><div class="chapter-number">80</div><div class="chapter-note">Étain</div></td>
-                    <td class="chapter-row" data-chapter="81"><div class="chapter-number">81</div><div class="chapter-note">Autres métaux</div></td>
-                    <td class="chapter-row" data-chapter="82"><div class="chapter-number">82</div><div class="chapter-note">Outils</div></td>
-                    <td class="chapter-row" data-chapter="83"><div class="chapter-number">83</div><div class="chapter-note">Ouvrages métaux</div></td>
+                    <td class="chapter-row" data-chapter="72"><div class="chapter-number">72</div><div class="chapter-note">Fonte, fer, acier</div><div class="chapter-stats" id="chap-stats-72">0</div></td>
+                    <td class="chapter-row" data-chapter="73"><div class="chapter-number">73</div><div class="chapter-note">Ouvrages fer/acier</div><div class="chapter-stats" id="chap-stats-73">0</div></td>
+                    <td class="chapter-row" data-chapter="74"><div class="chapter-number">74</div><div class="chapter-note">Cuivre</div><div class="chapter-stats" id="chap-stats-74">0</div></td>
+                    <td class="chapter-row" data-chapter="75"><div class="chapter-number">75</div><div class="chapter-note">Nickel</div><div class="chapter-stats" id="chap-stats-75">0</div></td>
+                    <td class="chapter-row" data-chapter="76"><div class="chapter-number">76</div><div class="chapter-note">Aluminium</div><div class="chapter-stats" id="chap-stats-76">0</div></td>
+                    <td class="chapter-row" data-chapter="78"><div class="chapter-number">78</div><div class="chapter-note">Plomb</div><div class="chapter-stats" id="chap-stats-78">0</div></td>
+                    <td class="chapter-row" data-chapter="79"><div class="chapter-number">79</div><div class="chapter-note">Zinc</div><div class="chapter-stats" id="chap-stats-79">0</div></td>
+                    <td class="chapter-row" data-chapter="80"><div class="chapter-number">80</div><div class="chapter-note">Étain</div><div class="chapter-stats" id="chap-stats-80">0</div></td>
+                    <td class="chapter-row" data-chapter="81"><div class="chapter-number">81</div><div class="chapter-note">Autres métaux</div><div class="chapter-stats" id="chap-stats-81">0</div></td>
+                    <td class="chapter-row" data-chapter="82"><div class="chapter-number">82</div><div class="chapter-note">Outils</div><div class="chapter-stats" id="chap-stats-82">0</div></td>
+                    <td class="chapter-row" data-chapter="83"><div class="chapter-number">83</div><div class="chapter-note">Ouvrages métaux</div><div class="chapter-stats" id="chap-stats-83">0</div></td>
                     
                     <!-- Section XVI -->
-                    <td class="chapter-row" data-chapter="84"><div class="chapter-number">84</div><div class="chapter-note">Machines mécaniques</div></td>
-                    <td class="chapter-row" data-chapter="85"><div class="chapter-number">85</div><div class="chapter-note">Machines électriques</div></td>
+                    <td class="chapter-row" data-chapter="84"><div class="chapter-number">84</div><div class="chapter-note">Machines mécaniques</div><div class="chapter-stats" id="chap-stats-84">0</div></td>
+                    <td class="chapter-row" data-chapter="85"><div class="chapter-number">85</div><div class="chapter-note">Machines électriques</div><div class="chapter-stats" id="chap-stats-85">0</div></td>
                     
                     <!-- Section XVII -->
-                    <td class="chapter-row" data-chapter="86"><div class="chapter-number">86</div><div class="chapter-note">Matériel ferroviaire</div></td>
-                    <td class="chapter-row" data-chapter="87"><div class="chapter-number">87</div><div class="chapter-note">Véhicules terrestres</div></td>
-                    <td class="chapter-row" data-chapter="88"><div class="chapter-number">88</div><div class="chapter-note">Navigation aérienne</div></td>
-                    <td class="chapter-row" data-chapter="89"><div class="chapter-number">89</div><div class="chapter-note">Navigation maritime</div></td>
+                    <td class="chapter-row" data-chapter="86"><div class="chapter-number">86</div><div class="chapter-note">Matériel ferroviaire</div><div class="chapter-stats" id="chap-stats-86">0</div></td>
+                    <td class="chapter-row" data-chapter="87"><div class="chapter-number">87</div><div class="chapter-note">Véhicules terrestres</div><div class="chapter-stats" id="chap-stats-87">0</div></td>
+                    <td class="chapter-row" data-chapter="88"><div class="chapter-number">88</div><div class="chapter-note">Navigation aérienne</div><div class="chapter-stats" id="chap-stats-88">0</div></td>
+                    <td class="chapter-row" data-chapter="89"><div class="chapter-number">89</div><div class="chapter-note">Navigation maritime</div><div class="chapter-stats" id="chap-stats-89">0</div></td>
                     
                     <!-- Section XVIII -->
-                    <td class="chapter-row" data-chapter="90"><div class="chapter-number">90</div><div class="chapter-note">Instruments précision</div></td>
-                    <td class="chapter-row" data-chapter="91"><div class="chapter-number">91</div><div class="chapter-note">Horlogerie</div></td>
-                    <td class="chapter-row" data-chapter="92"><div class="chapter-number">92</div><div class="chapter-note">Instruments musique</div></td>
+                    <td class="chapter-row" data-chapter="90"><div class="chapter-number">90</div><div class="chapter-note">Instruments précision</div><div class="chapter-stats" id="chap-stats-90">0</div></td>
+                    <td class="chapter-row" data-chapter="91"><div class="chapter-number">91</div><div class="chapter-note">Horlogerie</div><div class="chapter-stats" id="chap-stats-91">0</div></td>
+                    <td class="chapter-row" data-chapter="92"><div class="chapter-number">92</div><div class="chapter-note">Instruments musique</div><div class="chapter-stats" id="chap-stats-92">0</div></td>
                     
                     <!-- Section XIX -->
-                    <td class="chapter-row" data-chapter="93"><div class="chapter-number">93</div><div class="chapter-note">Armes, munitions</div></td>
+                    <td class="chapter-row" data-chapter="93"><div class="chapter-number">93</div><div class="chapter-note">Armes, munitions</div><div class="chapter-stats" id="chap-stats-93">0</div></td>
                     
                     <!-- Section XX -->
-                    <td class="chapter-row" data-chapter="94"><div class="chapter-number">94</div><div class="chapter-note">Meubles</div></td>
-                    <td class="chapter-row" data-chapter="95"><div class="chapter-number">95</div><div class="chapter-note">Jouets, sports</div></td>
-                    <td class="chapter-row" data-chapter="96"><div class="chapter-number">96</div><div class="chapter-note">Ouvrages divers</div></td>
+                    <td class="chapter-row" data-chapter="94"><div class="chapter-number">94</div><div class="chapter-note">Meubles</div><div class="chapter-stats" id="chap-stats-94">0</div></td>
+                    <td class="chapter-row" data-chapter="95"><div class="chapter-number">95</div><div class="chapter-note">Jouets, sports</div><div class="chapter-stats" id="chap-stats-95">0</div></td>
+                    <td class="chapter-row" data-chapter="96"><div class="chapter-number">96</div><div class="chapter-note">Ouvrages divers</div><div class="chapter-stats" id="chap-stats-96">0</div></td>
                     
                     <!-- Section XXI -->
-                    <td class="chapter-row" data-chapter="97"><div class="chapter-number">97</div><div class="chapter-note">Objets d'art</div></td>
+                    <td class="chapter-row" data-chapter="97"><div class="chapter-number">97</div><div class="chapter-note">Objets d'art</div><div class="chapter-stats" id="chap-stats-97">0</div></td>
                 </tr>
                 
                 <!-- Ligne des taux -->
@@ -561,45 +570,49 @@
     </div>
 
     <script>
-        // Configuration des sections et leurs colonnes
+        // ✅ CONFIGURATION AMÉLIORÉE AVEC DÉTECTION AUTOMATIQUE DU CHAPITRE
         const sectionConfig = {
-            'I': { start: 0, count: 5 },
-            'II': { start: 5, count: 9 },
-            'III': { start: 14, count: 1 },
-            'IV': { start: 15, count: 9 },
-            'V': { start: 24, count: 3 },
-            'VI': { start: 27, count: 11 },
-            'VII': { start: 38, count: 2 },
-            'VIII': { start: 40, count: 3 },
-            'IX': { start: 43, count: 3 },
-            'X': { start: 46, count: 3 },
-            'XI': { start: 49, count: 14 },
-            'XII': { start: 63, count: 4 },
-            'XIII': { start: 67, count: 3 },
-            'XIV': { start: 70, count: 1 },
-            'XV': { start: 71, count: 11 },
-            'XVI': { start: 82, count: 2 },
-            'XVII': { start: 84, count: 4 },
-            'XVIII': { start: 88, count: 3 },
-            'XIX': { start: 91, count: 1 },
-            'XX': { start: 92, count: 3 },
-            'XXI': { start: 95, count: 1 }
+            'I': { start: 0, count: 5, chapters: ['01', '02', '03', '04', '05'] },
+            'II': { start: 5, count: 9, chapters: ['06', '07', '08', '09', '10', '11', '12', '13', '14'] },
+            'III': { start: 14, count: 1, chapters: ['15'] },
+            'IV': { start: 15, count: 9, chapters: ['16', '17', '18', '19', '20', '21', '22', '23', '24'] },
+            'V': { start: 24, count: 3, chapters: ['25', '26', '27'] },
+            'VI': { start: 27, count: 11, chapters: ['28', '29', '30', '31', '32', '33', '34', '35', '36', '37', '38'] },
+            'VII': { start: 38, count: 2, chapters: ['39', '40'] },
+            'VIII': { start: 40, count: 3, chapters: ['41', '42', '43'] },
+            'IX': { start: 43, count: 3, chapters: ['44', '45', '46'] },
+            'X': { start: 46, count: 3, chapters: ['47', '48', '49'] },
+            'XI': { start: 49, count: 14, chapters: ['50', '51', '52', '53', '54', '55', '56', '57', '58', '59', '60', '61', '62', '63'] },
+            'XII': { start: 63, count: 4, chapters: ['64', '65', '66', '67'] },
+            'XIII': { start: 67, count: 3, chapters: ['68', '69', '70'] },
+            'XIV': { start: 70, count: 1, chapters: ['71'] },
+            'XV': { start: 71, count: 11, chapters: ['72', '73', '74', '75', '76', '78', '79', '80', '81', '82', '83'] },
+            'XVI': { start: 82, count: 2, chapters: ['84', '85'] },
+            'XVII': { start: 84, count: 4, chapters: ['86', '87', '88', '89'] },
+            'XVIII': { start: 88, count: 3, chapters: ['90', '91', '92'] },
+            'XIX': { start: 91, count: 1, chapters: ['93'] },
+            'XX': { start: 92, count: 3, chapters: ['94', '95', '96'] },
+            'XXI': { start: 95, count: 1, chapters: ['97'] }
         };
 
         let productData = [];
         let rowCounter = 0;
 
-        // Fonction appelée depuis l'interface de classification principale
+        // ✅ FONCTION AMÉLIORÉE QUI DÉTECTE LE CHAPITRE DEPUIS LE CODE TARIFAIRE
         window.addProductToTable = function(productInfo, classificationResult) {
-            console.log('Ajout du produit au tableau:', productInfo, classificationResult);
+            console.log('✅ Ajout du produit au tableau avec détection automatique du chapitre:', productInfo, classificationResult);
             
             const section = classificationResult.section.number;
             const productId = Date.now();
+            
+            // ✅ DÉTECTION AUTOMATIQUE DU CHAPITRE DEPUIS LE CODE TARIFAIRE
+            const chapter = extractChapterFromCode(classificationResult.code);
             
             const product = {
                 id: productId,
                 description: productInfo.description,
                 section: section,
+                chapter: chapter,
                 code: classificationResult.code || 'N/A',
                 confidence: classificationResult.confidence || 0,
                 value: productInfo.value || 0,
@@ -607,26 +620,152 @@
                 timestamp: new Date().toISOString()
             };
 
+            console.log(`🎯 Produit sera placé dans Section ${section}, Chapitre ${chapter}`);
+
             // Ajouter le produit aux données
             productData.push(product);
             
             // Ajouter une ligne au tableau si nécessaire
             addProductRow();
             
-            // Placer le produit dans la bonne section
-            placeProductInSection(product, rowCounter);
+            // ✅ PLACEMENT INTELLIGENT DANS LE BON CHAPITRE
+            const placementResult = placeProductInCorrectChapter(product, rowCounter);
             
-            // Mettre à jour les statistiques
-            updateSectionStats(section);
-            
-            // Sauvegarder en base de données
-            saveProductToDatabase(product);
-            
-            // Afficher notification de succès
-            showNotification(`Produit ajouté avec succès à la Section ${section}`, 'success');
+            if (placementResult.success) {
+                // Mettre à jour les statistiques
+                updateSectionStats(section);
+                updateChapterStats(chapter);
+                
+                // Sauvegarder en base de données
+                saveProductToDatabase(product);
+                
+                // Afficher notification de succès
+                showNotification(`✅ Produit ajouté dans Section ${section}, Chapitre ${chapter}`, 'success');
+            } else {
+                showNotification(`⚠️ ${placementResult.message}`, 'error');
+            }
             
             rowCounter++;
         };
+
+        // ✅ NOUVELLE FONCTION : EXTRAIRE LE CHAPITRE DU CODE TARIFAIRE
+        function extractChapterFromCode(code) {
+            if (!code || typeof code !== 'string') {
+                console.warn('Code tarifaire invalide:', code);
+                return null;
+            }
+            
+            // Nettoyer le code et extraire les 2 premiers chiffres
+            const cleanCode = code.replace(/[^\d]/g, '');
+            
+            if (cleanCode.length >= 2) {
+                const chapter = cleanCode.substring(0, 2);
+                console.log(`📋 Chapitre extrait du code "${code}": ${chapter}`);
+                return chapter;
+            }
+            
+            console.warn('Impossible d\'extraire le chapitre du code:', code);
+            return null;
+        }
+
+        // ✅ NOUVELLE FONCTION : PLACEMENT INTELLIGENT DANS LE BON CHAPITRE
+        function placeProductInCorrectChapter(product, rowIndex) {
+            const sectionInfo = sectionConfig[product.section];
+            if (!sectionInfo) {
+                return { success: false, message: `Section ${product.section} non trouvée` };
+            }
+            
+            // Si on a un chapitre spécifique, essayer de le placer dedans
+            if (product.chapter) {
+                const chapterIndex = sectionInfo.chapters.indexOf(product.chapter);
+                
+                if (chapterIndex !== -1) {
+                    // Chapitre trouvé dans la section - placement ciblé
+                    const targetColumnIndex = sectionInfo.start + chapterIndex;
+                    const cell = document.getElementById(`cell-${rowIndex}-${targetColumnIndex}`);
+                    
+                    if (cell && !cell.classList.contains('has-product')) {
+                        fillProductCell(cell, product, true); // true = placement correct
+                        return { success: true, message: `Placé dans le chapitre ${product.chapter}` };
+                    } else if (cell) {
+                        // La cellule du chapitre correct est occupée, chercher dans les chapitres voisins
+                        const fallbackCell = findNearbyEmptyCell(sectionInfo, rowIndex, chapterIndex);
+                        if (fallbackCell) {
+                            fillProductCell(fallbackCell.cell, product, false); // false = placement de fallback
+                            return { success: true, message: `Placé dans chapitre voisin (${fallbackCell.chapter}) - chapitre ${product.chapter} occupé` };
+                        }
+                    }
+                } else {
+                    console.warn(`Chapitre ${product.chapter} non trouvé dans la section ${product.section}`);
+                }
+            }
+            
+            // Fallback : placement dans le premier chapitre libre de la section
+            for (let i = 0; i < sectionInfo.count; i++) {
+                const cellIndex = sectionInfo.start + i;
+                const cell = document.getElementById(`cell-${rowIndex}-${cellIndex}`);
+                
+                if (cell && !cell.classList.contains('has-product')) {
+                    const fallbackChapter = sectionInfo.chapters[i];
+                    fillProductCell(cell, product, false);
+                    return { success: true, message: `Placé dans premier chapitre disponible (${fallbackChapter})` };
+                }
+            }
+            
+            return { success: false, message: `Aucune place disponible dans la section ${product.section}` };
+        }
+
+        // ✅ NOUVELLE FONCTION : CHERCHER UNE CELLULE VIDE PROCHE
+        function findNearbyEmptyCell(sectionInfo, rowIndex, targetChapterIndex) {
+            // Chercher dans un rayon de ±2 chapitres autour du chapitre cible
+            for (let radius = 1; radius <= 2; radius++) {
+                // Chercher à gauche
+                const leftIndex = targetChapterIndex - radius;
+                if (leftIndex >= 0) {
+                    const cellIndex = sectionInfo.start + leftIndex;
+                    const cell = document.getElementById(`cell-${rowIndex}-${cellIndex}`);
+                    if (cell && !cell.classList.contains('has-product')) {
+                        return { cell: cell, chapter: sectionInfo.chapters[leftIndex] };
+                    }
+                }
+                
+                // Chercher à droite
+                const rightIndex = targetChapterIndex + radius;
+                if (rightIndex < sectionInfo.count) {
+                    const cellIndex = sectionInfo.start + rightIndex;
+                    const cell = document.getElementById(`cell-${rowIndex}-${cellIndex}`);
+                    if (cell && !cell.classList.contains('has-product')) {
+                        return { cell: cell, chapter: sectionInfo.chapters[rightIndex] };
+                    }
+                }
+            }
+            
+            return null;
+        }
+
+        // ✅ NOUVELLE FONCTION : REMPLIR UNE CELLULE AVEC INDICATION VISUELLE
+        function fillProductCell(cell, product, isCorrectPlacement) {
+            cell.classList.add('has-product');
+            
+            // Indication visuelle si le placement n'est pas dans le bon chapitre
+            if (!isCorrectPlacement) {
+                cell.classList.add('wrong-chapter');
+                cell.title += '\n⚠️ Placé dans chapitre différent du code tarifaire';
+            }
+            
+            cell.innerHTML = `
+                <div class="product-info">
+                    <div class="product-code">${product.code}</div>
+                    <div class="product-description" title="${product.description}">
+                        ${product.description.substring(0, 20)}${product.description.length > 20 ? '...' : ''}
+                    </div>
+                    <div class="product-value">${product.value} FCFA</div>
+                </div>
+            `;
+            
+            // Tooltip complet
+            cell.title = `Section: ${product.section}\nChapitre: ${product.chapter || 'Non détecté'}\nDescription: ${product.description}\nCode: ${product.code}\nConfiance: ${product.confidence}%\nOrigine: ${product.origin}`;
+        }
 
         function addProductRow() {
             const tbody = document.getElementById('productRows');
@@ -644,44 +783,22 @@
             tbody.appendChild(row);
         }
 
-        function placeProductInSection(product, rowIndex) {
-            const sectionInfo = sectionConfig[product.section];
-            if (!sectionInfo) {
-                console.error('Section non trouvée:', product.section);
-                return;
-            }
-            
-            // Trouver la première cellule vide dans cette section
-            for (let i = 0; i < sectionInfo.count; i++) {
-                const cellIndex = sectionInfo.start + i;
-                const cell = document.getElementById(`cell-${rowIndex}-${cellIndex}`);
-                
-                if (cell && !cell.classList.contains('has-product')) {
-                    // Remplir la cellule avec les informations du produit
-                    cell.classList.add('has-product');
-                    cell.innerHTML = `
-                        <div class="product-info">
-                            <div class="product-code">${product.code}</div>
-                            <div class="product-description" title="${product.description}">
-                                ${product.description.substring(0, 20)}${product.description.length > 20 ? '...' : ''}
-                            </div>
-                            <div class="product-value">${product.value} FCFA</div>
-                        </div>
-                    `;
-                    
-                    // Ajouter un tooltip
-                    cell.title = `Section: ${product.section}\nDescription: ${product.description}\nCode: ${product.code}\nConfiance: ${product.confidence}%\nOrigine: ${product.origin}`;
-                    
-                    break;
-                }
-            }
-        }
-
         function updateSectionStats(section) {
             const statsElement = document.getElementById(`stats-${section}`);
             if (statsElement) {
                 const currentCount = parseInt(statsElement.textContent) || 0;
                 statsElement.textContent = currentCount + 1;
+            }
+        }
+
+        // ✅ NOUVELLE FONCTION : METTRE À JOUR LES STATS DU CHAPITRE
+        function updateChapterStats(chapter) {
+            if (!chapter) return;
+            
+            const chapterStatsElement = document.getElementById(`chap-stats-${chapter}`);
+            if (chapterStatsElement) {
+                const currentCount = parseInt(chapterStatsElement.textContent) || 0;
+                chapterStatsElement.textContent = currentCount + 1;
             }
         }
 
@@ -730,13 +847,22 @@
                 productData = [];
                 rowCounter = 0;
                 
-                // Réinitialiser les statistiques
+                // Réinitialiser les statistiques des sections
                 Object.keys(sectionConfig).forEach(section => {
                     const statsElement = document.getElementById(`stats-${section}`);
                     if (statsElement) {
                         statsElement.textContent = '0';
                     }
                 });
+                
+                // ✅ RÉINITIALISER LES STATS DES CHAPITRES
+                for (let i = 1; i <= 97; i++) {
+                    const chapterNum = i.toString().padStart(2, '0');
+                    const chapterStatsElement = document.getElementById(`chap-stats-${chapterNum}`);
+                    if (chapterStatsElement) {
+                        chapterStatsElement.textContent = '0';
+                    }
+                }
                 
                 showNotification('Tableau vidé avec succès', 'success');
             }
@@ -754,11 +880,12 @@
         }
 
         function generateCSV(data) {
-            const headers = ['ID', 'Description', 'Section', 'Code', 'Confiance%', 'Valeur', 'Origine', 'Date'];
+            const headers = ['ID', 'Description', 'Section', 'Chapitre', 'Code', 'Confiance%', 'Valeur', 'Origine', 'Date'];
             const rows = data.map(product => [
                 product.id,
                 `"${product.description.replace(/"/g, '""')}"`,
                 product.section,
+                product.chapter || 'N/A',
                 product.code,
                 product.confidence,
                 product.value,
@@ -785,52 +912,118 @@
         }
 
         function viewStatistics() {
-            const stats = {};
+            const sectionStats = {};
+            const chapterStats = {};
+            
+            // Stats par section
             Object.keys(sectionConfig).forEach(section => {
                 const count = parseInt(document.getElementById(`stats-${section}`).textContent) || 0;
-                stats[section] = count;
+                sectionStats[section] = count;
             });
             
-            const total = Object.values(stats).reduce((sum, count) => sum + count, 0);
-            const topSections = Object.entries(stats)
+            // Stats par chapitre
+            for (let i = 1; i <= 97; i++) {
+                const chapterNum = i.toString().padStart(2, '0');
+                const element = document.getElementById(`chap-stats-${chapterNum}`);
+                if (element) {
+                    const count = parseInt(element.textContent) || 0;
+                    if (count > 0) {
+                        chapterStats[chapterNum] = count;
+                    }
+                }
+            }
+            
+            const totalProducts = Object.values(sectionStats).reduce((sum, count) => sum + count, 0);
+            const totalChapters = Object.keys(chapterStats).length;
+            
+            const topSections = Object.entries(sectionStats)
                 .filter(([section, count]) => count > 0)
                 .sort(([,a], [,b]) => b - a)
                 .slice(0, 5);
+                
+            const topChapters = Object.entries(chapterStats)
+                .sort(([,a], [,b]) => b - a)
+                .slice(0, 5);
             
-            let message = `📊 STATISTIQUES DU TABLEAU\n\n`;
-            message += `Total des produits: ${total}\n\n`;
-            message += `Top 5 des sections:\n`;
+            let message = `📊 STATISTIQUES DÉTAILLÉES DU TABLEAU\n\n`;
+            message += `📈 Vue d'ensemble:\n`;
+            message += `• Total des produits: ${totalProducts}\n`;
+            message += `• Chapitres utilisés: ${totalChapters}/97\n\n`;
+            
+            message += `🏆 Top 5 des sections:\n`;
             topSections.forEach(([section, count], index) => {
                 message += `${index + 1}. Section ${section}: ${count} produits\n`;
             });
             
+            if (topChapters.length > 0) {
+                message += `\n📋 Top 5 des chapitres:\n`;
+                topChapters.forEach(([chapter, count], index) => {
+                    message += `${index + 1}. Chapitre ${chapter}: ${count} produits\n`;
+                });
+            }
+            
             alert(message);
         }
 
-        // Test de la fonction (à supprimer en production)
+        // ✅ FONCTION DE TEST AMÉLIORÉE AVEC DIFFÉRENTS CODES
         function testAddProduct() {
-            const testProduct = {
-                description: "Riz blanc long grain",
-                value: 50000,
-                origin: "Côte d'Ivoire"
-            };
+            const testProducts = [
+                {
+                    product: { description: "Riz blanc long grain", value: 50000, origin: "Côte d'Ivoire" },
+                    classification: { section: { number: "II" }, code: "1006.30.00.00", confidence: 85 }
+                },
+                {
+                    product: { description: "Véhicule automobile essence", value: 2500000, origin: "Japon" },
+                    classification: { section: { number: "XVII" }, code: "8703.23.00.00", confidence: 92 }
+                },
+                {
+                    product: { description: "Smartphone Android", value: 150000, origin: "Chine" },
+                    classification: { section: { number: "XVI" }, code: "8517.12.00.00", confidence: 88 }
+                },
+                {
+                    product: { description: "Tissu de coton imprimé", value: 25000, origin: "Inde" },
+                    classification: { section: { number: "XI" }, code: "5208.52.00.00", confidence: 90 }
+                }
+            ];
             
-            const testClassification = {
-                section: { number: "II" },
-                code: "1006.30.00.00",
-                confidence: 85
-            };
+            // Ajouter un produit aléatoire de test
+            const randomProduct = testProducts[Math.floor(Math.random() * testProducts.length)];
+            window.addProductToTable(randomProduct.product, randomProduct.classification);
             
-            window.addProductToTable(testProduct, testClassification);
+            console.log('🧪 Produit de test ajouté:', randomProduct);
         }
 
         // Initialisation
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('Tableau initialisé et prêt à recevoir des produits');
+            console.log('🚀 Tableau amélioré initialisé avec détection automatique des chapitres');
+            console.log('📋 Configuration des sections:', sectionConfig);
             
             // Ajouter une ligne vide par défaut
             addProductRow();
+            
+            // Afficher un message d'aide
+            setTimeout(() => {
+                showNotification('✨ Tableau amélioré : placement automatique dans le bon chapitre selon le code tarifaire !', 'success');
+            }, 1000);
         });
+
+        // ✅ FONCTION DEBUG POUR TESTER L'EXTRACTION DE CHAPITRE
+        window.debugChapterExtraction = function() {
+            const testCodes = [
+                "1006.30.00.00", // Chapitre 10
+                "8703.23.00.00", // Chapitre 87
+                "8517.12.00.00", // Chapitre 85
+                "5208.52.00.00", // Chapitre 52
+                "0101.21.00.00", // Chapitre 01
+                "9999.99.99.99"  // Chapitre 99 (inexistant)
+            ];
+            
+            console.log('🔍 Test d\'extraction de chapitres:');
+            testCodes.forEach(code => {
+                const chapter = extractChapterFromCode(code);
+                console.log(`Code "${code}" → Chapitre "${chapter}"`);
+            });
+        };
     </script>
 </body>
 </html>

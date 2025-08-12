@@ -195,6 +195,8 @@
 
             <div class="bg-white/95 p-8 rounded-2xl shadow-xl mb-8">
                 <h2 class="text-2xl font-bold text-douane-vert mb-6 flex items-center gap-2">🔍 Recherche de Classification</h2>
+                
+                <!-- Description du produit -->
                 <div class="mb-6">
                     <label for="product-description" class="block mb-2 font-semibold text-gray-700">Description du produit :</label>
                     <textarea 
@@ -204,11 +206,126 @@
                         rows="3"
                     ></textarea>
                 </div>
+
+                <!-- Nouvelle grille pour les champs supplémentaires -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                    <!-- Valeur -->
+                    <div>
+                        <label for="product-value" class="block mb-2 font-semibold text-gray-700">Valeur (FCFA) :</label>
+                        <input
+                        type="number"
+                        id="product-value"
+                        class="w-full p-4 border-2 border-gray-200 rounded-xl text-base text-gray-800 bg-white placeholder-gray-500 focus:outline-none focus:border-douane-vert focus:ring-4 focus:ring-douane-vert/20 focus:bg-white transition-all duration-300"
+                        placeholder="ex: 1000000"
+                        min="0"
+                        step="1"
+                        />
+                    </div>
+
+                    <!-- Pays d'origine -->
+                    <div>
+                        <label for="product-country" class="block mb-2 font-semibold text-gray-700">Pays d'origine :</label>
+                        <select
+                        id="product-country"
+                        class="w-full p-4 border-2 border-gray-200 rounded-xl text-base text-gray-800 bg-white focus:outline-none focus:border-douane-vert focus:ring-4 focus:ring-douane-vert/20 focus:bg-white transition-all duration-300"
+                        >
+                            <option value="">Sélectionner un pays</option>
+                            <option value="BJ">Bénin</option>
+                            <option value="BF">Burkina Faso</option>
+                            <option value="CV">Cap-Vert</option>
+                            <option value="CI">Côte d'Ivoire</option>
+                            <option value="GM">Gambie</option>
+                            <option value="GH">Ghana</option>
+                            <option value="GN">Guinée</option>
+                            <option value="GW">Guinée-Bissau</option>
+                            <option value="LR">Liberia</option>
+                            <option value="ML">Mali</option>
+                            <option value="NE">Niger</option>
+                            <option value="NG">Nigeria</option>
+                            <option value="SN">Sénégal</option>
+                            <option value="SL">Sierra Leone</option>
+                            <option value="TG">Togo</option>
+                            <option value="---">---</option>
+                            <option value="FR">France</option>
+                            <option value="CN">Chine</option>
+                            <option value="US">États-Unis</option>
+                            <option value="DE">Allemagne</option>
+                            <option value="IT">Italie</option>
+                            <option value="ES">Espagne</option>
+                            <option value="UK">Royaume-Uni</option>
+                            <option value="JP">Japon</option>
+                            <option value="KR">Corée du Sud</option>
+                            <option value="IN">Inde</option>
+                            <option value="BR">Brésil</option>
+                            <option value="TH">Thaïlande</option>
+                            <option value="VN">Vietnam</option>
+                            <option value="MA">Maroc</option>
+                            <option value="EG">Égypte</option>
+                            <option value="ZA">Afrique du Sud</option>
+                            <option value="OTHER">Autre</option>
+                        </select>
+                    </div>
+
+                    <!-- Poids -->
+                    <div>
+                        <label for="product-weight" class="block mb-2 font-semibold text-gray-700">Poids (kg) :</label>
+                        <input
+                        type="number"
+                        id="product-weight"
+                        class="w-full p-4 border-2 border-gray-200 rounded-xl text-base text-gray-800 bg-white placeholder-gray-500 focus:outline-none focus:border-douane-vert focus:ring-4 focus:ring-douane-vert/20 focus:bg-white transition-all duration-300"
+                        placeholder="ex: 100"
+                        min="0"
+                        step="0.01"
+                        />
+                    </div>
+
+                    <!-- Quantité -->
+                    <div>
+                        <label for="product-quantity" class="block mb-2 font-semibold text-gray-700">Quantité :</label>
+                        <input
+                        type="number"
+                        id="product-quantity"
+                        class="w-full p-4 border-2 border-gray-200 rounded-xl text-base text-gray-800 bg-white placeholder-gray-500 focus:outline-none focus:border-douane-vert focus:ring-4 focus:ring-douane-vert/20 focus:bg-white transition-all duration-300"
+                        placeholder="ex: 50"
+                        min="1"
+                        step="1"
+                        />
+                    </div>
+                </div>
+
+                <!-- NOUVEAU: Déclaration Paquet/Groupe -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    <div>
+                        <label class="block mb-2 font-semibold text-gray-700">Type de saisie :</label>
+                        <select id="product-type" class="w-full p-4 border-2 border-gray-200 rounded-xl text-base text-gray-800 bg-white focus:outline-none focus:border-douane-vert focus:ring-4 focus:ring-douane-vert/20">
+                            <option value="single">Produit unique</option>
+                            <option value="package">Paquet (plusieurs produits)</option>
+                        </select>
+                    </div>
+                    <div id="package-count-wrap" class="hidden">
+                        <label class="block mb-2 font-semibold text-gray-700">Nombre de produits dans le paquet :</label>
+                        <input type="number" id="package-count" min="1" value="1" class="w-full p-4 border-2 border-gray-200 rounded-xl text-base text-gray-800 bg-white focus:outline-none focus:border-douane-vert focus:ring-4 focus:ring-douane-vert/20" />
+                    </div>
+                    <div id="dependency-hint" class="hidden">
+                        <label class="block mb-2 font-semibold text-gray-700">Dépendance d'utilisation :</label>
+                        <select id="dependency-mode" class="w-full p-4 border-2 border-gray-200 rounded-xl text-base text-gray-800 bg-white focus:outline-none focus:border-douane-vert focus:ring-4 focus:ring-douane-vert/20">
+                            <option value="auto">Automatique (détection)</option>
+                            <option value="together">Classer ensemble (dépendants)</option>
+                            <option value="separate">Classer séparément (indépendants)</option>
+                            <option value="mixed">Mixte (certains ensemble, certains séparés)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- NOUVEAU: Saisie détaillée des produits du paquet -->
+                <div id="package-items" class="hidden mb-6 space-y-3"></div>
+
                 <button
                     id="classify-btn"
                     class="inline-flex items-center gap-3 bg-gradient-to-r from-douane-vert to-douane-or text-white px-8 py-4 text-lg font-semibold rounded-xl hover:-translate-y-1 hover:shadow-2xl transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-douane-or/50">
                     🎯 Classifier le produit
                 </button>
+                <button id="classify-package-btn" class="hidden ml-3 inline-flex items-center gap-3 bg-douane-vert/90 text-white px-6 py-4 text-lg font-semibold rounded-xl hover:-translate-y-1 hover:shadow-2xl transition-all duration-300 focus:outline-none">📦 Classifier le paquet</button>
             </div>
 
             <div id="loading" class="hidden text-center bg-white/95 p-12 rounded-2xl shadow-xl mb-8">
@@ -238,6 +355,7 @@
     
     <ol class="list-decimal list-inside space-y-2 mb-8 text-white-700">
         <li>Saisissez une description détaillée de votre produit</li>
+        <li>Complétez les informations complémentaires (valeur, pays, poids, quantité)</li>
         <li>Cliquez sur "Classifier le produit"</li>
         <li>Le système analysera la description et proposera la section appropriée</li>
         <li>Consultez les détails de la section et les codes tarifaires correspondants</li>
@@ -945,8 +1063,243 @@
             }, 1000);
         })();
     </script>
-    <script src="script.js"></script>
-    <script src="script-advanced.js"></script>
+           <script src="script.js"></script>
+       <script src="script-advanced.js"></script>
+       <script src="classification-improved.js"></script>
+       <script src="api-classification-intelligence.js"></script>
+    <script>
+        // Vérification de l'initialisation des fonctions de classification
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                console.log('🔍 Vérification des fonctions de classification:');
+                                   console.log('- sectionsData:', typeof sectionsData !== 'undefined' ? '✅ Disponible' : '❌ Non disponible');
+                   console.log('- classifyProductImproved:', typeof classifyProductImproved === 'function' ? '✅ Disponible' : '❌ Non disponible');
+                   console.log('- classifySimple:', typeof classifySimple === 'function' ? '✅ Disponible' : '❌ Non disponible');
+                   console.log('- specificRules:', typeof specificRules !== 'undefined' ? '✅ Disponible' : '❌ Non disponible');
+                   console.log('- IntelligentTariffClassifier:', typeof window.IntelligentTariffClassifier !== 'undefined' ? '✅ Disponible' : '❌ Non disponible');
+                
+                if (typeof classifyProductImproved !== 'function') {
+                    console.warn('⚠️ classifyProductImproved non disponible, le système utilisera classifySimple');
+                }
+            }, 500);
+        });
+    </script>
+    <script>
+    // Extensions paquet/groupe
+    document.addEventListener('DOMContentLoaded', function() {
+        // Shim pour éviter l'alerte "Système de classification non initialisé"
+        if (!window.startClassification) {
+            window.startClassification = function(formData) {
+                try {
+                    const desc = formData?.description || '';
+                    const el = document.getElementById('product-description');
+                    if (el && desc) el.value = desc;
+                    if (typeof handleClassification === 'function') {
+                        handleClassification();
+                    } else {
+                        document.getElementById('classify-btn')?.click();
+                    }
+                } catch (e) {
+                    console.warn('startClassification shim error:', e);
+                    document.getElementById('classify-btn')?.click();
+                }
+            };
+        }
+        // tenter migration côté serveur (non bloquant)
+        try {
+            fetch('api.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'migrate_package_support' }) });
+        } catch (e) { console.warn('Migration paquets échouée (non bloquant):', e.message); }
+
+        const productType = document.getElementById('product-type');
+        const packageCountWrap = document.getElementById('package-count-wrap');
+        const dependencyHint = document.getElementById('dependency-hint');
+        const classifyBtn = document.getElementById('classify-btn');
+        const classifyPackageBtn = document.getElementById('classify-package-btn');
+        const descEl = document.getElementById('product-description');
+        const packageItems = document.getElementById('package-items');
+        const packageCountInput = document.getElementById('package-count');
+
+        function togglePackageUI() {
+            const isPackage = productType?.value === 'package';
+            if (packageCountWrap) packageCountWrap.classList.toggle('hidden', !isPackage);
+            if (dependencyHint) dependencyHint.classList.toggle('hidden', !isPackage);
+            if (classifyPackageBtn) classifyPackageBtn.classList.toggle('hidden', !isPackage);
+            if (classifyBtn) classifyBtn.classList.toggle('hidden', isPackage);
+            if (packageItems) packageItems.classList.toggle('hidden', !isPackage);
+            if (isPackage) renderPackageInputs(parseInt(packageCountInput?.value || '1', 10));
+        }
+        function renderPackageInputs(count) {
+            if (!packageItems) return;
+            packageItems.innerHTML = '';
+            for (let i = 0; i < Math.max(1, count); i++) {
+                const row = document.createElement('div');
+                row.className = 'grid grid-cols-1 md:grid-cols-12 gap-3';
+                row.innerHTML = `
+                    <div class="md:col-span-8">
+                        <label class="block text-sm font-semibold text-gray-700">Produit #${i+1} - Description</label>
+                        <input type="text" class="package-item-desc text-gray-700 w-full p-3 border-2 border-gray-200 rounded-lg text-sm focus:outline-none focus:border-douane-vert focus:ring-2 focus:ring-douane-vert/20" placeholder="Décrivez le produit #${i+1}">
+                    </div>
+                    <div class="md:col-span-4">
+                        <label class="block text-sm font-semibold text-gray-700">Groupe (optionnel)</label>
+                        <input type="text" class="package-item-group text-gray-700 w-full p-3 border-2 border-gray-200 rounded-lg text-sm focus:outline-none focus:border-douane-vert focus:ring-2 focus:ring-douane-vert/20" placeholder="Ex: A, 1, kitX">
+                        <small class="text-gray-500">Donnez le même identifiant aux produits qui doivent être classés ensemble</small>
+                    </div>
+                `;
+                packageItems.appendChild(row);
+            }
+        }
+
+        packageCountInput?.addEventListener('change', () => {
+            const c = parseInt(packageCountInput.value || '1', 10);
+            renderPackageInputs(c);
+        });
+
+        productType?.addEventListener('change', togglePackageUI);
+        togglePackageUI();
+
+        async function classifyText(text) {
+            if (window.aiClassifier) {
+                try { return await window.aiClassifier.classifyWithAI(text); } catch { /* fallback */ }
+            }
+            // fallback classique via script.js classifySimple si dispo
+            if (typeof window.classifySimple === 'function') {
+                return window.classifySimple(text);
+            }
+            return [{ section: { number: 'XX', title: 'Marchandises et produits divers' }, confidence: 50, code: '9999.00.00.00' }];
+        }
+
+        function getDepMode() {
+            const el = document.getElementById('dependency-mode');
+            return el ? el.value : 'auto';
+        }
+
+        function splitItems(description, expected) {
+            let parts = description.split(/[;\n,]+/).map(s => s.trim()).filter(Boolean);
+            if (parts.length === 0) parts = [description];
+            if (expected && expected > 0) {
+                if (parts.length < expected) { while (parts.length < expected) parts.push(description); }
+                if (parts.length > expected) parts = parts.slice(0, expected);
+            }
+            return parts;
+        }
+
+        function groupDependency(classified, mode) {
+            if (mode === 'separate') return classified.map(x => ({ together: false, items: [x] }));
+            if (mode === 'together') return [{ together: true, items: classified }];
+            if (mode === 'mixed') {
+                const mid = Math.ceil(classified.length/2);
+                return [{ together: true, items: classified.slice(0, mid) }, ...classified.slice(mid).map(x => ({ together: false, items: [x] }))];
+            }
+            const joinWords = ['kit', 'set', 'ensemble', 'paquet', 'chargeur', 'câble', 'vis', 'écrou'];
+            const group = classified.filter(c => joinWords.some(w => (c.text||'').toLowerCase().includes(w)));
+            const rest = classified.filter(c => !group.includes(c));
+            const out = [];
+            if (group.length) out.push({ together: true, items: group });
+            for (const r of rest) out.push({ together: false, items: [r] });
+            return out.length? out : [{ together: false, items: classified }];
+        }
+
+        async function handlePackage() {
+            const description = descEl?.value.trim();
+            const count = parseInt(document.getElementById('package-count')?.value || '1', 10);
+            const itemInputs = Array.from(document.querySelectorAll('.package-item-desc'));
+            const groupInputs = Array.from(document.querySelectorAll('.package-item-group'));
+            const inputItems = itemInputs.map((el, idx) => ({ text: (el.value||'').trim(), group: (groupInputs[idx]?.value||'').trim() }));
+            const anyProvided = inputItems.some(x => x.text.length > 0);
+            if (!anyProvided && !description) { alert('Veuillez saisir la description de chaque produit du paquet ou renseigner la description globale.'); return; }
+
+            const loadingDiv = document.getElementById('loading');
+            const resultsDiv = document.getElementById('results');
+            loadingDiv?.classList.remove('hidden');
+            resultsDiv?.classList.add('hidden');
+            try {
+                const items = anyProvided ? inputItems.map(x => x.text) : splitItems(description, count);
+                const classified = [];
+                for (let i = 0; i < items.length; i++) {
+                    const item = items[i];
+                    const res = await classifyText(item);
+                    const top = Array.isArray(res) ? res[0] : res;
+                    const group = anyProvided ? (inputItems[i].group || null) : null;
+                    classified.push({ text: item, group, result: top });
+                }
+
+                // Grouper par group id si fourni, sinon heuristique/mode
+                let groups;
+                if (anyProvided && classified.some(c => c.group)) {
+                    const map = new Map();
+                    const singles = [];
+                    for (const c of classified) {
+                        if (c.group) {
+                            if (!map.has(c.group)) map.set(c.group, []);
+                            map.get(c.group).push(c);
+                        } else {
+                            singles.push(c);
+                        }
+                    }
+                    groups = [...Array.from(map.values()).map(arr => ({ together: true, items: arr })), ...singles.map(s => ({ together: false, items: [s] }))];
+                } else {
+                    groups = groupDependency(classified, getDepMode());
+                }
+                const packagePayload = {
+                    nom: `Paquet ${new Date().toISOString().slice(0,10)}`,
+                    nombre_produits: classified.length,
+                    created_by: (window.authManager?.getUserInfo()?.user_id) || 5,
+                    products: []
+                };
+
+                for (const g of groups) {
+                    const groupId = g.together ? (g.items[0]?.group || (Date.now() + Math.floor(Math.random()*1000))) : null;
+                    for (const entry of g.items) {
+                        const sNum = entry.result.section?.number || 'XX';
+                        const code = entry.result.code;
+                        const conf = Math.round(entry.result.confidence || 0);
+                        // UI tableau
+                        if (window.tableauFrame?.contentWindow?.addProductToTable) {
+                            window.tableauFrame.contentWindow.addProductToTable({ description: entry.text, origin: 'Non spécifié', value: 0 }, { section: { number: sNum, title: '' }, confidence: conf, code });
+                        }
+                        // DB payload
+                        packagePayload.products.push({
+                            origine_produit: 'Non spécifié',
+                            description_produit: entry.text,
+                            section_produit: sNum,
+                            code_tarifaire: code,
+                            taux_imposition: (typeof getTaxRate === 'function') ? getTaxRate(sNum) : 10.5,
+                            valeur_declaree: 0,
+                            statut_validation: conf > 80 ? 'valide' : 'en_attente',
+                            utilisation_dependante: g.together ? 1 : 0,
+                            groupe_id: groupId
+                        });
+                    }
+                }
+
+                // Sauvegarde serveur
+                try {
+                    if (window.dbManager && typeof window.dbManager.savePackage === 'function') {
+                        const resp = await window.dbManager.savePackage(packagePayload);
+                        if (resp?.success) {
+                            console.log('Paquet sauvegardé', resp);
+                        } else {
+                            console.warn('Paquet non sauvegardé (offline)');
+                        }
+                    } else {
+                        // fallback direct fetch
+                        await fetch('api.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'save_package', package: packagePayload }) });
+                    }
+                } catch (e) { console.warn('Erreur sauvegarde paquet:', e); }
+
+                loadingDiv?.classList.add('hidden');
+                resultsDiv?.classList.remove('hidden');
+                resultsDiv?.scrollIntoView({ behavior: 'smooth' });
+            } catch (e) {
+                console.error(e);
+                loadingDiv?.classList.add('hidden');
+                alert('Erreur lors du traitement du paquet');
+            }
+        }
+
+        classifyPackageBtn?.addEventListener('click', function(e){ e.preventDefault(); handlePackage(); });
+    });
+    </script>
     <script>
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🔧 Initialisation du dropdown sections...');
@@ -1007,6 +1360,115 @@ document.addEventListener('DOMContentLoaded', function() {
             hideDropdown(sectionsDropdown, sectionsArrow);
         }
     });
+    
+    // ✅ INITIALISATION DU FORMULAIRE DE CLASSIFICATION ÉTENDU
+    console.log('🔧 Initialisation du formulaire de classification étendu...');
+    
+    // Éléments du formulaire
+    const productDescription = document.getElementById('product-description');
+    const productValue = document.getElementById('product-value');
+    const productCountry = document.getElementById('product-country');
+    const productWeight = document.getElementById('product-weight');
+    const productQuantity = document.getElementById('product-quantity');
+    const classifyBtn = document.getElementById('classify-btn');
+
+    // Fonction pour collecter toutes les données du formulaire
+    window.getFormData = function() {
+        return {
+            description: productDescription?.value.trim() || '',
+            value: productValue?.value || '',
+            country: productCountry?.value || '',
+            weight: productWeight?.value || '',
+            quantity: productQuantity?.value || ''
+        };
+    };
+
+    // Fonction pour réinitialiser le formulaire
+    window.resetForm = function() {
+        if (productDescription) productDescription.value = '';
+        if (productValue) productValue.value = '';
+        if (productCountry) productCountry.value = '';
+        if (productWeight) productWeight.value = '';
+        if (productQuantity) productQuantity.value = '';
+    };
+
+    // Validation du formulaire
+    function validateForm() {
+        const data = window.getFormData();
+        
+        if (!data.description) {
+            alert('⚠️ Veuillez saisir une description du produit');
+            productDescription?.focus();
+            return false;
+        }
+
+        // Validation optionnelle des champs numériques
+        if (data.value && (isNaN(data.value) || parseFloat(data.value) < 0)) {
+            alert('⚠️ La valeur doit être un nombre positif');
+            productValue?.focus();
+            return false;
+        }
+
+        if (data.weight && (isNaN(data.weight) || parseFloat(data.weight) <= 0)) {
+            alert('⚠️ Le poids doit être un nombre positif');
+            productWeight?.focus();
+            return false;
+        }
+
+        if (data.quantity && (isNaN(data.quantity) || parseInt(data.quantity) <= 0)) {
+            alert('⚠️ La quantité doit être un nombre entier positif');
+            productQuantity?.focus();
+            return false;
+        }
+
+        return true;
+    }
+
+    // Gestionnaire du bouton de classification
+    if (classifyBtn) {
+        classifyBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            if (validateForm()) {
+                const formData = window.getFormData();
+                console.log('📋 Données du formulaire collectées:', formData);
+                
+                // Déclencher la classification avec les données étendues
+                if (window.startClassification) {
+                    window.startClassification(formData);
+                } else {
+                    console.error('❌ Fonction de classification non disponible');
+                    alert('❌ Erreur: Système de classification non initialisé');
+                }
+            }
+        });
+    }
+
+    // Auto-complétion et suggestions pour le pays
+    if (productCountry) {
+        productCountry.addEventListener('change', function() {
+            const selectedCountry = this.value;
+            console.log('🌍 Pays sélectionné:', selectedCountry);
+            
+            // Vous pouvez ajouter ici une logique pour des suggestions basées sur le pays
+            // Par exemple, des droits de douane spécifiques selon les accords commerciaux
+        });
+    }
+
+    // Formatage automatique des valeurs numériques
+    if (productValue) {
+        productValue.addEventListener('input', function() {
+            // Formater la valeur avec des séparateurs de milliers
+            let value = this.value.replace(/\D/g, ''); // Retirer tous les non-chiffres
+            if (value) {
+                // Ajouter les séparateurs de milliers
+                value = parseInt(value).toLocaleString('fr-FR');
+                this.value = value.replace(/\s/g, ''); // Retirer les espaces pour la validation
+            }
+        });
+    }
+
+    console.log('✅ Formulaire de classification étendu initialisé');
 });
 </script>
 </body>

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Classification Améliorée - TEC CEDEAO</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'douane-vert': '#2E7D32',
+                        'douane-or': '#FF6F00'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold text-center text-douane-vert mb-8">
+            🧪 Test Classification Améliorée - TEC CEDEAO
+        </h1>
+        
+        <div class="max-w-4xl mx-auto">
+            <!-- Formulaire de test -->
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Test de Classification</h2>
+                <div class="flex gap-4">
+                    <input type="text" id="test-input" placeholder="Entrez une description de produit..." 
+                           class="flex-1 p-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-douane-vert">
+                    <button onclick="testSingleClassification()" 
+                            class="px-6 py-3 bg-douane-vert text-white rounded-lg hover:bg-green-700 transition-colors">
+                        Tester
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Résultats -->
+            <div id="results" class="space-y-4"></div>
+            
+            <!-- Tests automatiques -->
+            <div class="bg-white rounded-xl shadow-lg p-6 mt-8">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Tests Automatiques</h2>
+                <button onclick="runAllTests()" 
+                        class="px-6 py-3 bg-douane-or text-white rounded-lg hover:bg-orange-700 transition-colors">
+                    Lancer tous les tests
+                </button>
+                <div id="auto-test-results" class="mt-4 space-y-2"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="classification-improved.js"></script>
+    <script>
+        // Test d'une classification unique
+        function testSingleClassification() {
+            const input = document.getElementById('test-input').value.trim();
+            if (!input) {
+                alert('Veuillez entrer une description');
+                return;
+            }
+            
+            const results = classifyProductImproved(input);
+            displayResults(input, results);
+        }
+        
+        // Affichage des résultats
+        function displayResults(description, results) {
+            const container = document.getElementById('results');
+            
+            let html = `
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">
+                        📦 Résultats pour: "${description}"
+                    </h3>
+            `;
+            
+            if (results && results.length > 0) {
+                results.forEach((result, index) => {
+                    const confidenceColor = result.confidence >= 70 ? 'text-green-600' : 
+                                          result.confidence >= 40 ? 'text-yellow-600' : 'text-red-600';
+                    
+                    html += `
+                        <div class="border border-gray-200 rounded-lg p-4 mb-4 ${index === 0 ? 'bg-green-50 border-green-200' : 'bg-gray-50'}">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="font-semibold text-lg">${index + 1}. Section ${result.section.number}</span>
+                                <span class="px-3 py-1 rounded-full text-sm font-semibold ${confidenceColor}">
+                                    ${result.confidence}% de confiance
+                                </span>
+                            </div>
+                            <h4 class="text-lg font-medium text-douane-vert mb-2">${result.section.title}</h4>
+                            <p class="text-gray-600 mb-2">${result.section.description}</p>
+                            <p class="text-sm text-gray-500 mb-2">
+                                <strong>Chapitres:</strong> ${result.section.chapters.join(', ')}
+                            </p>
+                            ${result.specificRule ? `
+                                <div class="bg-blue-50 border border-blue-200 rounded p-2 mb-2">
+                                    <span class="text-blue-800 font-semibold">🎯 Règle spécifique appliquée</span>
+                                    <br><span class="text-blue-700">Chapitre: ${result.chapter}</span>
+                                    ${result.code ? `<br><span class="text-blue-700">Code: ${result.code}</span>` : ''}
+                                </div>
+                            ` : ''}
+                            <p class="text-sm text-gray-600">
+                                <strong>Mots-clés correspondants:</strong> ${result.matchedKeywords.join(', ')}
+                            </p>
+                        </div>
+                    `;
+                });
+            } else {
+                html += `
+                    <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                        <p class="text-red-700">❌ Aucune classification trouvée</p>
+                    </div>
+                `;
+            }
+            
+            html += '</div>';
+            container.innerHTML = html;
+        }
+        
+        // Tests automatiques
+        function runAllTests() {
+            const testCases = [
+                "jouet en plastique",
+                "poisson frais",
+                "meuble de salon",
+                "viande de bœuf",
+                "chaussure en cuir",
+                "ordinateur portable",
+                "montre en or",
+                "guitare électrique",
+                "voiture automobile",
+                "bijou en diamant",
+                "téléphone mobile",
+                "lampe de bureau",
+                "poupée en tissu",
+                "saumon fumé",
+                "table de cuisine"
+            ];
+            
+            const container = document.getElementById('auto-test-results');
+            let html = '<h3 class="font-semibold text-gray-800 mb-4">Résultats des tests automatiques:</h3>';
+            
+            testCases.forEach((test, index) => {
+                const results = classifyProductImproved(test);
+                const best = results[0];
+                
+                if (best) {
+                    const isCorrect = best.specificRule && best.confidence >= 90;
+                    const statusColor = isCorrect ? 'text-green-600' : 'text-yellow-600';
+                    const statusIcon = isCorrect ? '✅' : '⚠️';
+                    
+                    html += `
+                        <div class="border border-gray-200 rounded p-3 ${isCorrect ? 'bg-green-50' : 'bg-yellow-50'}">
+                            <div class="flex justify-between items-center">
+                                <span class="font-medium">${index + 1}. "${test}"</span>
+                                <span class="${statusColor} font-semibold">${statusIcon} ${best.confidence}%</span>
+                            </div>
+                            <p class="text-sm text-gray-600 mt-1">
+                                Section ${best.section.number} - ${best.section.title}
+                                ${best.specificRule ? ` (Règle spécifique)` : ''}
+                            </p>
+                        </div>
+                    `;
+                } else {
+                    html += `
+                        <div class="border border-red-200 rounded p-3 bg-red-50">
+                            <div class="flex justify-between items-center">
+                                <span class="font-medium">${index + 1}. "${test}"</span>
+                                <span class="text-red-600 font-semibold">❌ Non classé</span>
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+            
+            container.innerHTML = html;
+        }
+        
+        // Test au chargement
+        window.addEventListener('load', () => {
+            console.log('🧪 Page de test chargée');
+            console.log('📋 Utilisez testSingleClassification() ou runAllTests()');
+        });
+    </script>
+</body>
+</html>

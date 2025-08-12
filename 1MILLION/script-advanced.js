@@ -461,7 +461,31 @@ async function handleClassification() {
         if (isAIReady) {
             results = await aiClassifier.classifyWithAI(description);
         } else {
-            results = classifySimple(description);
+            // Utiliser le nouveau système de classification intelligente
+            if (typeof window.IntelligentTariffClassifier !== 'undefined') {
+                try {
+                    const intelligentClassifier = new window.IntelligentTariffClassifier();
+                    results = await intelligentClassifier.classifyProduct(description);
+                    console.log('🧠 Classification intelligente utilisée');
+                } catch (error) {
+                    console.warn('Erreur avec IntelligentTariffClassifier, fallback vers classifyProductImproved:', error);
+                    if (typeof classifyProductImproved === 'function') {
+                        results = classifyProductImproved(description);
+                    } else {
+                        results = classifySimple(description);
+                    }
+                }
+            } else if (typeof classifyProductImproved === 'function') {
+                try {
+                    results = classifyProductImproved(description);
+                } catch (error) {
+                    console.warn('Erreur avec classifyProductImproved, fallback vers classifySimple:', error);
+                    results = classifySimple(description);
+                }
+            } else {
+                console.warn('classifyProductImproved non disponible, utilisation de classifySimple');
+                results = classifySimple(description);
+            }
         }
         
         displayResults(results);
