@@ -601,7 +601,7 @@ function displayResults(results) {
     
     let html = `
         <div class="bg-gradient-to-r from-douane-vert/10 to-douane-or/10 rounded-xl p-6 mb-6 border border-douane-or/20">
-            <h4 class="text-2xl font-bold text-douane-vert mb-3">📊 Analyse complète - ${results.length} résultat(s)</h4>
+            <h4 class="text-2xl font-bold text-douane-vert mb-3">📊 Analyse complète - 1 résultat</h4>
             <div class="flex flex-wrap gap-4 text-sm">
                 <span class="bg-white/80 px-3 py-1 rounded-full text-gray-700 border border-gray-300">🕒 ${new Date().toLocaleTimeString()}</span>
                 <span class="bg-douane-vert/20 px-3 py-1 rounded-full text-douane-vert border border-douane-vert/30">📈 Confiance globale: ${Math.round(results[0]?.confidence || 0)}%</span>
@@ -610,14 +610,13 @@ function displayResults(results) {
         </div>
     `;
     
-    results.forEach((result, index) => {
-        const isMainResult = index === 0;
-        
-        const itemClass = isMainResult 
-            ? 'bg-gradient-to-r from-douane-vert/5 to-douane-or/5 border-2 border-douane-or rounded-2xl p-6 mb-6 shadow-lg relative'
-            : 'bg-white/95 border border-gray-200 rounded-xl p-6 mb-4 shadow-md hover:shadow-lg transition-shadow duration-300';
-        
-        html += `
+    // Afficher seulement le premier résultat (le plus pertinent)
+    const result = results[0];
+    const isMainResult = true;
+    
+    const itemClass = 'bg-gradient-to-r from-douane-vert/5 to-douane-or/5 border-2 border-douane-or rounded-2xl p-6 mb-6 shadow-lg relative';
+    
+    html += `
             <div class="${itemClass}" data-section="${result.section.number}">
                 <div class="flex justify-between items-start mb-4">
                     <div class="flex items-center gap-4">
@@ -626,7 +625,7 @@ function displayResults(results) {
                             ${Math.round(result.confidence)}% - ${getCertaintyLevel(result.confidence)}
                         </div>
                     </div>
-                    ${isMainResult ? '<div class="bg-douane-or text-douane-vert px-4 py-2 rounded-full font-bold text-sm">RECOMMANDÉ</div>' : ''}
+                    <div class="bg-douane-or text-douane-vert px-4 py-2 rounded-full font-bold text-sm">RECOMMANDÉ</div>
                 </div>
                 
                 <h4 class="text-2xl font-bold text-douane-vert mb-6">${result.section.title}</h4>
@@ -679,7 +678,6 @@ function displayResults(results) {
                 </div>
             </div>
         `;
-    });
     
     resultsContainer.innerHTML = html;
 }

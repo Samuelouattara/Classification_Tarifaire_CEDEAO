@@ -1,7 +1,7 @@
-// Système de Classification Tarifaire CEDEAO
+// Système de Classification Tarifaire CEDEAO - DONNÉES DE BASE SEULEMENT
 // Base de données des sections tarifaires basée sur le TEC CEDEAO SH 2022
+// NOTE: Les fonctions de classification ont été déplacées vers script-advanced.js pour éviter les doublons
 
-// Structure complète basée sur le document officiel TEC CEDEAO avec règles précises
 const sectionsData = {
     "Section I": {
         number: "I",
@@ -9,7 +9,6 @@ const sectionsData = {
         chapters: ["01", "02", "03", "04", "05"],
         description: "Animaux vivants, viandes et abats comestibles, poissons et crustacés, mollusques et autres invertébrés aquatiques, laits et produits de la laiterie, œufs d'oiseaux, miel naturel, autres produits d'origine animale",
         keywords: ["animal", "vivant", "cheval", "âne", "mulet", "bovin", "porcin", "ovin", "caprin", "volaille", "coq", "poule", "canard", "oie", "dindon", "pintade", "viande", "abat", "comestible", "poisson", "crustacé", "mollusque", "invertébré", "aquatique", "lait", "crème", "yoghourt", "fromage", "beurre", "œuf", "miel", "crin", "laine", "poil", "plume", "duvet", "peau", "cuir", "boyau"],
-        // Règles spécifiques pour éviter les confusions
         exclusions: ["jouet", "jeu", "divertissement", "sport", "meuble", "mobilier", "luminaire", "éclairage"],
         priority: 1
     },
@@ -181,7 +180,6 @@ const sectionsData = {
         chapters: ["94", "95", "96"],
         description: "Meubles; mobilier médico-chirurgical; articles de literie et similaires; luminaires et appareils d'éclairage non dénommés ni compris ailleurs; lampes-réclames, enseignes lumineuses, plaques indicatrices lumineuses et articles similaires; constructions préfabriquées, jouets, jeux, articles pour divertissements ou pour sports; leurs parties et accessoires, ouvrages divers",
         keywords: ["marchandise", "produit", "divers", "meuble", "mobilier", "médico", "chirurgical", "literie", "similaire", "luminaire", "éclairage", "dénommé", "compris", "ailleurs", "lampe", "réclame", "enseigne", "lumineuse", "plaque", "indicatrice", "construction", "préfabriquée", "jouet", "jeu", "divertissement", "sport", "partie", "accessoire", "ouvrage", "siège", "table", "armoire", "lit", "matelas", "oreiller", "ampoule", "lustre", "applique", "maison", "bâtiment", "poupée", "peluche", "puzzle", "carte", "ballon", "raquette", "ski", "patin", "brosse", "peigne", "stylo", "crayon", "bouton", "fermeture", "éclair"],
-        // Section XX a une priorité plus basse car elle est générique
         priority: 2
     },
     "Section XXI": {
@@ -265,307 +263,20 @@ const specificRules = {
     "sandale": { section: "XII", chapter: "64", priority: 10 },
     "espadrille": { section: "XII", chapter: "64", priority: 10 }
 };
-function classifyProduct(description) {
-    const results = [];
-    const descriptionLower = description.toLowerCase();
-    
-    // Nettoyer et tokeniser la description
-    const words = descriptionLower
-        .replace(/[^\w\s]/g, ' ')
-        .split(/\s+/)
-        .filter(word => word.length > 2);
-    
-    // Vérifier d'abord les règles spécifiques
-    let specificMatch = null;
-    let highestPriority = 0;
-    
-    for (const [keyword, rule] of Object.entries(specificRules)) {
-        if (descriptionLower.includes(keyword)) {
-            if (rule.priority > highestPriority) {
-                highestPriority = rule.priority;
-                specificMatch = rule;
-            }
-        }
-    }
-    
-    // Si on a une règle spécifique, l'appliquer en priorité
-    if (specificMatch) {
-        const section = Object.values(sectionsData).find(s => s.number === specificMatch.section);
-        if (section) {
-            results.push({
-                section: section,
-                score: 100,
-                confidence: 95,
-                matchedKeywords: [Object.keys(specificRules).find(k => specificRules[k] === specificMatch)],
-                specificRule: true,
-                chapter: specificMatch.chapter
-            });
-        }
-    }
-    
-    // Calculer les scores pour chaque section (sans les exclusions)
-    Object.values(sectionsData).forEach(section => {
-        // Vérifier les exclusions
-        let hasExclusion = false;
-        section.exclusions.forEach(exclusion => {
-            if (descriptionLower.includes(exclusion)) {
-                hasExclusion = true;
-            }
-        });
-        
-        if (hasExclusion) {
-            return; // Ignorer cette section si elle contient des mots exclus
-        }
-        
-        let score = 0;
-        let matchedKeywords = [];
-        
-        section.keywords.forEach(keyword => {
-            if (descriptionLower.includes(keyword)) {
-                score += keyword.length; // Mots plus longs = score plus élevé
-                matchedKeywords.push(keyword);
-            }
-        });
-        
-        // Bonus pour les mots exacts
-        words.forEach(word => {
-            if (section.keywords.includes(word)) {
-                score += 5;
-            }
-        });
-        
-        // Ajuster le score selon la priorité de la section
-        score = score / section.priority;
-        
-        if (score > 0) {
-            results.push({
-                section: section,
-                score: score,
-                confidence: Math.min(Math.round((score / words.length) * 20), 100),
-                matchedKeywords: matchedKeywords,
-                specificRule: false
-            });
-        }
-    });
-    
-    // Trier par score décroissant
-    results.sort((a, b) => b.score - a.score);
-    
-    return results.slice(0, 3); // Retourner les 3 meilleurs résultats
-}
-
-// Fonction pour afficher les résultats de classification
-function displayResults(results) {
-    const resultsContainer = document.getElementById('classification-result');
-    const specificCodesContainer = document.getElementById('specific-codes');
-    
-    if (results.length === 0) {
-        resultsContainer.innerHTML = `
-            <div class="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
-                <h4 class="text-xl font-bold text-red-600 mb-3">❌ Aucune classification trouvée</h4>
-                <p class="text-red-700">Essayez avec une description plus détaillée ou consultez manuellement les sections ci-dessous.</p>
-            </div>
-        `;
-        specificCodesContainer.classList.add('hidden');
-        return;
-    }
-    
-    resultsContainer.innerHTML = '';
-    
-    results.forEach((result, index) => {
-        const item = document.createElement('div');
-        // Transformé : classification-item fade-in -> Tailwind avec animation
-        item.className = 'bg-white/95 border border-douane-or/30 rounded-xl p-6 mb-4 shadow-lg hover:shadow-xl transition-all duration-300 opacity-0 translate-y-4 animate-fade-in text-gray-800';
-        item.style.animationDelay = `${index * 0.1}s`;
-        item.style.animation = `fadeInUp 0.6s ease-out ${index * 0.1}s forwards`;
-        
-        // Transformé : high-confidence, medium-confidence, low-confidence -> Tailwind
-        let confidenceClass;
-        if (result.confidence >= 70) {
-            confidenceClass = 'bg-green-100 text-green-800 border-green-300';
-        } else if (result.confidence >= 40) {
-            confidenceClass = 'bg-yellow-100 text-yellow-800 border-yellow-300';
-        } else {
-            confidenceClass = 'bg-red-100 text-red-800 border-red-300';
-        }
-        
-        item.innerHTML = `
-            <div class="flex justify-between items-center mb-4">
-                <span class="px-4 py-2 rounded-full text-sm font-semibold border ${confidenceClass}">${result.confidence}% de confiance</span>
-                <span class="bg-douane-vert text-white px-4 py-2 rounded-full font-bold text-lg">Section ${result.section.number}</span>
-            </div>
-            <h4 class="text-2xl font-bold text-douane-vert mb-3">${result.section.title}</h4>
-            <p class="mb-3"><strong class="text-douane-or">Chapitres concernés:</strong> <span class="text-gray-700">${result.section.chapters.join(', ')}</span></p>
-            <p class="mb-3"><strong class="text-douane-or">Description:</strong> <span class="text-gray-700">${result.section.description}</span></p>
-            <p><strong class="text-douane-or">Mots-clés correspondants:</strong> 
-                <span class="inline-flex flex-wrap gap-2 mt-1">
-                    ${result.matchedKeywords.map(keyword => 
-                        `<span class="bg-douane-vert/20 text-douane-vert px-3 py-1 rounded-full text-sm font-medium border border-douane-vert/30">${keyword}</span>`
-                    ).join('')}
-                </span>
-            </p>
-        `;
-        
-        resultsContainer.appendChild(item);
-    });
-    
-    // Rechercher des codes tarifaires spécifiques
-    if (typeof rechercherCodesSpecifiques === 'function') {
-        const codesSpecifiques = rechercherCodesSpecifiques(document.getElementById('product-description').value);
-        displaySpecificCodes(codesSpecifiques);
-    }
-}
-
-// Fonction pour afficher les codes tarifaires spécifiques
-function displaySpecificCodes(codes) {
-    const specificCodesContainer = document.getElementById('specific-codes');
-    const codesListContainer = document.getElementById('codes-list');
-    
-    if (codes.length === 0) {
-        specificCodesContainer.classList.add('hidden');
-        return;
-    }
-    
-    specificCodesContainer.classList.remove('hidden');
-    codesListContainer.innerHTML = '';
-    
-    codes.forEach(code => {
-        const item = document.createElement('div');
-        // Transformé : code-item fade-in -> Tailwind
-        item.className = 'flex items-start gap-4 p-4 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 hover:border-douane-or/50 transition-all duration-300 opacity-0 translate-y-2 animate-fade-in';
-        
-        let typeLabel = '';
-        let typeBadgeClass = '';
-        switch(code.type) {
-            case 'code_principal': 
-                typeLabel = '📂 Code principal';
-                typeBadgeClass = 'bg-douane-vert text-white';
-                break;
-            case 'sous_code': 
-                typeLabel = '🎯 Code spécifique';
-                typeBadgeClass = 'bg-douane-or text-douane-vert';
-                break;
-            case 'mot_cle': 
-                typeLabel = '🔍 Trouvé par mot-clé';
-                typeBadgeClass = 'bg-vert-ci text-white';
-                break;
-        }
-        
-        item.innerHTML = `
-            <div class="bg-douane-vert/10 border border-douane-vert/30 rounded-lg px-4 py-2 min-w-fit">
-                <span class="font-mono text-lg font-bold text-douane-vert">${code.code}</span>
-            </div>
-            <div class="flex-1 space-y-2">
-                <div class="flex items-center gap-2">
-                    <span class="px-3 py-1 rounded-full text-sm font-medium ${typeBadgeClass}">${typeLabel}</span>
-                </div>
-                <p class="text-gray-800 leading-relaxed">${code.description}</p>
-                ${code.motCle ? `<p class="text-sm text-gray-600 italic">Mot-clé: "${code.motCle}"</p>` : ''}
-                ${code.codeParent ? `<p class="text-sm text-gray-600 italic">Code parent: ${code.codeParent}</p>` : ''}
-            </div>
-        `;
-        
-        codesListContainer.appendChild(item);
-    });
-}
-
-// Fonction pour afficher les détails d'une section
+// Fonctions utilitaires conservées pour compatibilité
 function showSectionDetails(section) {
     alert(`Section ${section.number}: ${section.title}\n\nChapitres: ${section.chapters.join(', ')}\n\nDescription: ${section.description}\n\nMots-clés: ${section.keywords.join(', ')}`);
 }
 
-// Événements
+// Initialisation simplifiée - les fonctions de classification sont dans script-advanced.js
 document.addEventListener('DOMContentLoaded', function() {
-    // Ajouter les animations CSS avec Tailwind
-    const style = document.createElement('style');
-    style.textContent = `
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(1rem);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        .animate-fade-in {
-            animation: fadeInUp 0.6s ease-out forwards;
-        }
-    `;
-    document.head.appendChild(style);
-    
-    // Charger les sections
-    loadSections();
-    
-    // Gestionnaire pour le bouton de classification
-    const classifyBtn = document.getElementById('classify-btn');
-    const productDescription = document.getElementById('product-description');
-    const loadingDiv = document.getElementById('loading');
-    const resultsDiv = document.getElementById('results');
-    
-    classifyBtn.addEventListener('click', function() {
-        const description = productDescription.value.trim();
-        
-        if (!description) {
-            alert('Veuillez saisir une description du produit.');
-            return;
-        }
-        
-        // Afficher le loading
-        loadingDiv.classList.remove('hidden');
-        resultsDiv.classList.add('hidden');
-        
-        // Simuler un délai de traitement
-        setTimeout(() => {
-            const results = classifyProduct(description);
-            displayResults(results);
-            
-            // Masquer le loading et afficher les résultats
-            loadingDiv.classList.add('hidden');
-            resultsDiv.classList.remove('hidden');
-            
-            // Faire défiler vers les résultats
-            resultsDiv.scrollIntoView({ behavior: 'smooth' });
-        }, 1500);
-    });
-    
-    // Permettre la classification avec la touche Entrée
-    productDescription.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter' && e.ctrlKey) {
-            classifyBtn.click();
-        }
-    });
+    console.log('✅ Données de base TEC CEDEAO chargées');
+    console.log('🚀 Système de classification avancé disponible dans script-advanced.js');
 });
-
-// Fonction pour ajouter de nouvelles données tarifaires
-function addTariffData(sectionNumber, newData) {
-    if (sectionsData[`Section ${sectionNumber}`]) {
-        // Ajouter des mots-clés supplémentaires
-        if (newData.keywords) {
-            sectionsData[`Section ${sectionNumber}`].keywords.push(...newData.keywords);
-        }
-        
-        // Mettre à jour la description si fournie
-        if (newData.description) {
-            sectionsData[`Section ${sectionNumber}`].description = newData.description;
-        }
-        
-        console.log(`Section ${sectionNumber} mise à jour`);
-    }
-}
 
 // Fonction d'export pour debugging
 function exportClassificationData() {
     console.log('Données de classification:', JSON.stringify(sectionsData, null, 2));
 }
 
-// Rendre les fonctions disponibles globalement pour tests
-window.classifyProductCorrected = classifyProductCorrected;
-window.generateCorrectTariffCode = generateCorrectTariffCode;
-window.testCorrectedClassification = testCorrectedClassification;
-
-console.log('✅ Système de classification corrigé chargé!');
-console.log('🧪 Utilisez testCorrectedClassification() pour tester');
-console.log('🔄 Utilisez addProductToTableCorrected() au lieu de addProductToTable()');
 window.exportClassificationData = exportClassificationData;
