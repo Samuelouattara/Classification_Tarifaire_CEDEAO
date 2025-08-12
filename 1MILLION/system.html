@@ -1063,10 +1063,11 @@
             }, 1000);
         })();
     </script>
-           <script src="script.js"></script>
-       <script src="script-advanced.js"></script>
-       <script src="classification-improved.js"></script>
-       <script src="api-classification-intelligence.js"></script>
+    <script src="script.js"></script>
+    <script src="script-advanced.js"></script>
+           <script src="classification-improved.js"></script>
+           <script src="api-classification-intelligence.js"></script>
+           <script src="custom-ai-classifier.js"></script>
     <script>
         // Vérification de l'initialisation des fonctions de classification
         document.addEventListener('DOMContentLoaded', function() {
@@ -1077,6 +1078,7 @@
                    console.log('- classifySimple:', typeof classifySimple === 'function' ? '✅ Disponible' : '❌ Non disponible');
                    console.log('- specificRules:', typeof specificRules !== 'undefined' ? '✅ Disponible' : '❌ Non disponible');
                    console.log('- IntelligentTariffClassifier:', typeof window.IntelligentTariffClassifier !== 'undefined' ? '✅ Disponible' : '❌ Non disponible');
+                   console.log('- CustomCedeoAI:', typeof window.CustomCedeoAI !== 'undefined' ? '✅ Disponible' : '❌ Non disponible');
                 
                 if (typeof classifyProductImproved !== 'function') {
                     console.warn('⚠️ classifyProductImproved non disponible, le système utilisera classifySimple');
