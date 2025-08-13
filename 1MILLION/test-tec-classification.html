@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧪 Test Classification TEC CEDEAO</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .test-section {
+            padding: 30px;
+        }
+
+        .test-input {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            align-items: center;
+        }
+
+        .test-input input {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .test-input input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .test-input button {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .test-input button:hover {
+            transform: translateY(-2px);
+        }
+
+        .result-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 5px solid #667eea;
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .result-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .confidence-badge {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .confidence-high {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .confidence-medium {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .confidence-low {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .result-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .detail-item {
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .detail-label {
+            font-weight: bold;
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .detail-value {
+            color: #2c3e50;
+            font-size: 1.1em;
+        }
+
+        .keywords {
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .keyword-tag {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            margin: 2px;
+        }
+
+        .test-cases {
+            margin-top: 30px;
+        }
+
+        .test-cases h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .test-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .test-btn {
+            padding: 8px 15px;
+            background: #ecf0f1;
+            border: 1px solid #bdc3c7;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9em;
+        }
+
+        .test-btn:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .run-all-tests {
+            margin-top: 20px;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .run-all-tests:hover {
+            transform: translateY(-2px);
+        }
+
+        .console-output {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            max-height: 400px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+
+        .success { color: #2ecc71; }
+        .error { color: #e74c3c; }
+        .info { color: #3498db; }
+        .warning { color: #f39c12; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧪 Test Classification TEC CEDEAO</h1>
+            <p>Testez votre système de classification avec le fichier officiel TEC CEDEAO</p>
+        </div>
+
+        <div class="test-section">
+            <div class="test-input">
+                <input type="text" id="productInput" placeholder="Entrez une description de produit (ex: avion, poisson saumon, jouet poupée...)" />
+                <button onclick="testProduct()">🔍 Tester</button>
+            </div>
+
+            <div id="resultContainer"></div>
+
+            <div class="test-cases">
+                <h3>🎯 Tests rapides</h3>
+                <div class="test-buttons">
+                    <button class="test-btn" onclick="quickTest('avion')">Avion</button>
+                    <button class="test-btn" onclick="quickTest('avion jouet')">Avion jouet</button>
+                    <button class="test-btn" onclick="quickTest('poisson saumon')">Poisson saumon</button>
+                    <button class="test-btn" onclick="quickTest('viande bœuf')">Viande bœuf</button>
+                    <button class="test-btn" onclick="quickTest('légume tomate')">Légume tomate</button>
+                    <button class="test-btn" onclick="quickTest('fruit pomme')">Fruit pomme</button>
+                    <button class="test-btn" onclick="quickTest('jouet poupée')">Jouet poupée</button>
+                    <button class="test-btn" onclick="quickTest('textile coton')">Textile coton</button>
+                    <button class="test-btn" onclick="quickTest('métal fer')">Métal fer</button>
+                    <button class="test-btn" onclick="quickTest('machine ordinateur')">Machine ordinateur</button>
+                </div>
+                <button class="run-all-tests" onclick="runAllTests()">🧪 Lancer tous les tests</button>
+            </div>
+
+            <div class="console-output" id="consoleOutput">
+                <div class="info">Console de test prête...</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="test-classification-tec.js"></script>
+    <script>
+        let tester = null;
+
+        // Initialisation
+        window.addEventListener('load', async () => {
+            tester = new TECClassificationTester();
+            await tester.loadTECFile();
+            log('✅ Système de test TEC CEDEAO initialisé', 'success');
+        });
+
+        function testProduct() {
+            const input = document.getElementById('productInput').value.trim();
+            if (!input) {
+                alert('Veuillez entrer une description de produit');
+                return;
+            }
+            
+            if (!tester) {
+                log('❌ Système de test non initialisé', 'error');
+                return;
+            }
+
+            const result = tester.classifyProduct(input);
+            displayResult(result);
+            log(`🔍 Test: "${input}"`, 'info');
+        }
+
+        function quickTest(input) {
+            document.getElementById('productInput').value = input;
+            testProduct();
+        }
+
+        async function runAllTests() {
+            if (!tester) {
+                log('❌ Système de test non initialisé', 'error');
+                return;
+            }
+
+            log('🧪 Démarrage de tous les tests...', 'info');
+            await tester.runTests();
+        }
+
+        function displayResult(result) {
+            const container = document.getElementById('resultContainer');
+            
+            const confidenceClass = result.confidence >= 90 ? 'confidence-high' : 
+                                  result.confidence >= 70 ? 'confidence-medium' : 'confidence-low';
+
+            const html = `
+                <div class="result-card">
+                    <div class="result-header">
+                        <div class="result-title">Résultat de classification</div>
+                        <div class="confidence-badge ${confidenceClass}">${result.confidence}%</div>
+                    </div>
+                    
+                    <div class="result-details">
+                        <div class="detail-item">
+                            <div class="detail-label">Section</div>
+                            <div class="detail-value">${result.section.number} - ${result.section.title}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Chapitre</div>
+                            <div class="detail-value">${result.chapter}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Code tarifaire</div>
+                            <div class="detail-value">${result.code}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Taux d'imposition</div>
+                            <div class="detail-value">${result.taxRate}%</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Méthode</div>
+                            <div class="detail-value">${result.method}</div>
+                        </div>
+                    </div>
+                    
+                    ${result.matchedKeywords.length > 0 ? `
+                        <div class="keywords">
+                            <div class="detail-label">Mots-clés trouvés:</div>
+                            ${result.matchedKeywords.map(keyword => `<span class="keyword-tag">${keyword}</span>`).join('')}
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+            
+            container.innerHTML = html;
+        }
+
+        function log(message, type = 'info') {
+            const console = document.getElementById('consoleOutput');
+            const timestamp = new Date().toLocaleTimeString();
+            const div = document.createElement('div');
+            div.className = type;
+            div.innerHTML = `[${timestamp}] ${message}`;
+            console.appendChild(div);
+            console.scrollTop = console.scrollHeight;
+        }
+
+        // Capture des logs de la console
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            log(args.join(' '), 'info');
+        };
+
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            log(args.join(' '), 'error');
+        };
+
+        console.warn = function(...args) {
+            originalWarn.apply(console, args);
+            log(args.join(' '), 'warning');
+        };
+    </script>
+</body>
+</html>

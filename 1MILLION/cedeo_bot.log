@@ -1,0 +1,60 @@
+2025-08-12 23:43:53,162 - __main__ - INFO - Starting CEDEO Classification Bot on 0.0.0.0:5000
+2025-08-12 23:43:53,284 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.11:5000
+2025-08-12 23:43:53,284 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-08-12 23:43:53,286 - werkzeug - INFO -  * Restarting with stat
+2025-08-12 23:43:53,899 - __main__ - INFO - Starting CEDEO Classification Bot on 0.0.0.0:5000
+2025-08-12 23:43:53,935 - werkzeug - WARNING -  * Debugger is active!
+2025-08-12 23:43:53,949 - werkzeug - INFO -  * Debugger PIN: 289-338-748
+2025-08-12 23:54:21,936 - __main__ - INFO - Starting CEDEO Classification Bot on 0.0.0.0:5000
+2025-08-12 23:54:21,994 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.11:5000
+2025-08-12 23:54:21,996 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-08-12 23:54:22,001 - werkzeug - INFO -  * Restarting with stat
+2025-08-12 23:54:22,427 - __main__ - INFO - Starting CEDEO Classification Bot on 0.0.0.0:5000
+2025-08-12 23:54:22,438 - werkzeug - WARNING -  * Debugger is active!
+2025-08-12 23:54:22,445 - werkzeug - INFO -  * Debugger PIN: 289-338-748
+2025-08-12 23:57:33,657 - __main__ - INFO - Starting CEDEO Classification Bot on 0.0.0.0:5000
+2025-08-12 23:57:33,714 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.11:5000
+2025-08-12 23:57:33,714 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-08-12 23:57:33,720 - werkzeug - INFO -  * Restarting with stat
+2025-08-12 23:57:34,158 - __main__ - INFO - Starting CEDEO Classification Bot on 0.0.0.0:5000
+2025-08-12 23:57:34,170 - werkzeug - WARNING -  * Debugger is active!
+2025-08-12 23:57:34,178 - werkzeug - INFO -  * Debugger PIN: 289-338-748
+2025-08-12 23:58:20,182 - __main__ - INFO - Starting CEDEO Classification Bot on 0.0.0.0:5000
+2025-08-12 23:58:20,211 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.11:5000
+2025-08-12 23:58:20,212 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-08-12 23:58:20,214 - werkzeug - INFO -  * Restarting with stat
+2025-08-12 23:58:20,634 - __main__ - INFO - Starting CEDEO Classification Bot on 0.0.0.0:5000
+2025-08-12 23:58:20,643 - werkzeug - WARNING -  * Debugger is active!
+2025-08-12 23:58:20,647 - werkzeug - INFO -  * Debugger PIN: 289-338-748
+2025-08-13 00:03:33,336 - __main__ - INFO - Starting CEDEO Classification Bot on 0.0.0.0:5000
+2025-08-13 00:03:33,389 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.11:5000
+2025-08-13 00:03:33,389 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-08-13 00:03:33,391 - werkzeug - INFO -  * Restarting with stat
+2025-08-13 00:03:33,847 - __main__ - INFO - Starting CEDEO Classification Bot on 0.0.0.0:5000
+2025-08-13 00:03:33,862 - werkzeug - WARNING -  * Debugger is active!
+2025-08-13 00:03:33,867 - werkzeug - INFO -  * Debugger PIN: 289-338-748
+2025-08-13 08:46:28,648 - __main__ - INFO - Starting CEDEO Classification Bot on 0.0.0.0:5000
+2025-08-13 08:46:28,878 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.137.221:5000
+2025-08-13 08:46:28,879 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-08-13 08:46:28,892 - werkzeug - INFO -  * Restarting with stat
+2025-08-13 08:46:29,453 - __main__ - INFO - Starting CEDEO Classification Bot on 0.0.0.0:5000
+2025-08-13 08:46:29,470 - werkzeug - WARNING -  * Debugger is active!
+2025-08-13 08:46:29,496 - werkzeug - INFO -  * Debugger PIN: 191-642-491

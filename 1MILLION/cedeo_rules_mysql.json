@@ -1,0 +1,1136 @@
+[
+  {
+    "code_tarifaire": "1401.10.00.00",
+    "description_produit": "Bambous",
+    "taux_imposition": 15.0,
+    "code_chapitre": "14.01",
+    "titre_chapitre": "Matières végétales des espèces principalement utilisées en",
+    "code_section": "II",
+    "titre_section": "Chapitre 14"
+  },
+  {
+    "code_tarifaire": "1401.20.00.00",
+    "description_produit": "Rotins",
+    "taux_imposition": 15.0,
+    "code_chapitre": "14.01",
+    "titre_chapitre": "Matières végétales des espèces principalement utilisées en",
+    "code_section": "II",
+    "titre_section": "Chapitre 14"
+  },
+  {
+    "code_tarifaire": "1401.90.00.00",
+    "description_produit": "Autres",
+    "taux_imposition": 15.0,
+    "code_chapitre": "14.01",
+    "titre_chapitre": "Matières végétales des espèces principalement utilisées en",
+    "code_section": "II",
+    "titre_section": "Chapitre 14"
+  },
+  {
+    "code_tarifaire": "1404.20.00.00",
+    "description_produit": "Linters de coton",
+    "taux_imposition": 15.0,
+    "code_chapitre": "14.04",
+    "titre_chapitre": "Produits végétaux non dénommés ni compris ailleurs.",
+    "code_section": "II",
+    "titre_section": "Chapitre 14"
+  },
+  {
+    "code_tarifaire": "1404.90.10.00",
+    "description_produit": "- Grains durs, pépins, coques et noix à tailler",
+    "taux_imposition": 15.0,
+    "code_chapitre": "14.04",
+    "titre_chapitre": "Produits végétaux non dénommés ni compris ailleurs.",
+    "code_section": "II",
+    "titre_section": "Chapitre 14"
+  },
+  {
+    "code_tarifaire": "1404.90.90.00",
+    "description_produit": "- Autres",
+    "taux_imposition": 15.0,
+    "code_chapitre": "14.04",
+    "titre_chapitre": "Produits végétaux non dénommés ni compris ailleurs.",
+    "code_section": "II",
+    "titre_section": "Chapitre 14"
+  },
+  {
+    "code_tarifaire": "1521.10.00.00",
+    "description_produit": "Cires végétales",
+    "taux_imposition": 15.0,
+    "code_chapitre": "15.21",
+    "titre_chapitre": "Cires végétales (autres que les triglycérides), cires",
+    "code_section": "III",
+    "titre_section": "Chapitre 15"
+  },
+  {
+    "code_tarifaire": "1521.90.10.00",
+    "description_produit": "- Cires d'abeilles et d'autres insectes",
+    "taux_imposition": 15.0,
+    "code_chapitre": "15.21",
+    "titre_chapitre": "Cires végétales (autres que les triglycérides), cires",
+    "code_section": "III",
+    "titre_section": "Chapitre 15"
+  },
+  {
+    "code_tarifaire": "1521.90.90.00",
+    "description_produit": "- Autres",
+    "taux_imposition": 15.0,
+    "code_chapitre": "15.21",
+    "titre_chapitre": "Cires végétales (autres que les triglycérides), cires",
+    "code_section": "III",
+    "titre_section": "Chapitre 15"
+  },
+  {
+    "code_tarifaire": "2620.11.00.00",
+    "description_produit": "- Mattes de galvanisation",
+    "taux_imposition": 15.0,
+    "code_chapitre": "26.20",
+    "titre_chapitre": "Scories, cendres et résidus (autres que ceux provenant de",
+    "code_section": "IV",
+    "titre_section": "Chapitre 24"
+  },
+  {
+    "code_tarifaire": "2620.19.00.00",
+    "description_produit": "- Autres",
+    "taux_imposition": 15.0,
+    "code_chapitre": "26.20",
+    "titre_chapitre": "Scories, cendres et résidus (autres que ceux provenant de",
+    "code_section": "IV",
+    "titre_section": "Chapitre 24"
+  },
+  {
+    "code_tarifaire": "2620.21.00.00",
+    "description_produit": "- Boues d'essence au plomb et boues de composés",
+    "taux_imposition": 15.0,
+    "code_chapitre": "26.20",
+    "titre_chapitre": "Scories, cendres et résidus (autres que ceux provenant de",
+    "code_section": "IV",
+    "titre_section": "Chapitre 24"
+  },
+  {
+    "code_tarifaire": "2620.29.00.00",
+    "description_produit": "- Autres",
+    "taux_imposition": 15.0,
+    "code_chapitre": "26.20",
+    "titre_chapitre": "Scories, cendres et résidus (autres que ceux provenant de",
+    "code_section": "IV",
+    "titre_section": "Chapitre 24"
+  },
+  {
+    "code_tarifaire": "2620.30.00.00",
+    "description_produit": "Contenant principalement du cuivre",
+    "taux_imposition": 15.0,
+    "code_chapitre": "26.20",
+    "titre_chapitre": "Scories, cendres et résidus (autres que ceux provenant de",
+    "code_section": "IV",
+    "titre_section": "Chapitre 24"
+  },
+  {
+    "code_tarifaire": "2620.40.00.00",
+    "description_produit": "Contenant principalement de l'aluminium",
+    "taux_imposition": 15.0,
+    "code_chapitre": "26.20",
+    "titre_chapitre": "Scories, cendres et résidus (autres que ceux provenant de",
+    "code_section": "IV",
+    "titre_section": "Chapitre 24"
+  },
+  {
+    "code_tarifaire": "2620.60.00.00",
+    "description_produit": "Contenant de l'arsenic, du mercure, du thallium ou",
+    "taux_imposition": 15.0,
+    "code_chapitre": "26.20",
+    "titre_chapitre": "Scories, cendres et résidus (autres que ceux provenant de",
+    "code_section": "IV",
+    "titre_section": "Chapitre 24"
+  },
+  {
+    "code_tarifaire": "2620.91.00.00",
+    "description_produit": "- Contenant de l'antimoine, du béryllium, du cadmium,",
+    "taux_imposition": 15.0,
+    "code_chapitre": "26.20",
+    "titre_chapitre": "Scories, cendres et résidus (autres que ceux provenant de",
+    "code_section": "IV",
+    "titre_section": "Chapitre 24"
+  },
+  {
+    "code_tarifaire": "2620.99.00.00",
+    "description_produit": "- Autres",
+    "taux_imposition": 15.0,
+    "code_chapitre": "26.20",
+    "titre_chapitre": "Scories, cendres et résidus (autres que ceux provenant de",
+    "code_section": "IV",
+    "titre_section": "Chapitre 24"
+  },
+  {
+    "code_tarifaire": "2621.10.00.00",
+    "description_produit": "Cendres et résidus provenant de l'incinération des",
+    "taux_imposition": 15.0,
+    "code_chapitre": "26.21",
+    "titre_chapitre": "Autres scories et cendres, y compris les cendres de",
+    "code_section": "IV",
+    "titre_section": "Chapitre 24"
+  },
+  {
+    "code_tarifaire": "2621.90.00.00",
+    "description_produit": "Autres",
+    "taux_imposition": 15.0,
+    "code_chapitre": "26.21",
+    "titre_chapitre": "Autres scories et cendres, y compris les cendres de",
+    "code_section": "IV",
+    "titre_section": "Chapitre 24"
+  },
+  {
+    "code_tarifaire": "4014.10.00.00",
+    "description_produit": "Préservatifs",
+    "taux_imposition": 15.0,
+    "code_chapitre": "40.14",
+    "titre_chapitre": "Articles d'hygiène ou de pharmacie (y compris les tétines),",
+    "code_section": "VII",
+    "titre_section": "Chapitre 40"
+  },
+  {
+    "code_tarifaire": "4014.90.10.00",
+    "description_produit": "- Tétines et articles similaires",
+    "taux_imposition": 15.0,
+    "code_chapitre": "40.14",
+    "titre_chapitre": "Articles d'hygiène ou de pharmacie (y compris les tétines),",
+    "code_section": "VII",
+    "titre_section": "Chapitre 40"
+  },
+  {
+    "code_tarifaire": "4014.90.20.00",
+    "description_produit": "- Poires à injections, poires compte-gouttes et articles",
+    "taux_imposition": 15.0,
+    "code_chapitre": "40.14",
+    "titre_chapitre": "Articles d'hygiène ou de pharmacie (y compris les tétines),",
+    "code_section": "VII",
+    "titre_section": "Chapitre 40"
+  },
+  {
+    "code_tarifaire": "4014.90.90.00",
+    "description_produit": "- Autres",
+    "taux_imposition": 15.0,
+    "code_chapitre": "40.14",
+    "titre_chapitre": "Articles d'hygiène ou de pharmacie (y compris les tétines),",
+    "code_section": "VII",
+    "titre_section": "Chapitre 40"
+  },
+  {
+    "code_tarifaire": "4015.12.00.00",
+    "description_produit": "- Des types utilisés pour la médecine, la chirurgie, l’art",
+    "taux_imposition": 15.0,
+    "code_chapitre": "40.15",
+    "titre_chapitre": "Vêtements et accessoires du vêtement (y compris les gants,",
+    "code_section": "VII",
+    "titre_section": "Chapitre 40"
+  },
+  {
+    "code_tarifaire": "4015.19.00.00",
+    "description_produit": "- Autres",
+    "taux_imposition": 15.0,
+    "code_chapitre": "40.15",
+    "titre_chapitre": "Vêtements et accessoires du vêtement (y compris les gants,",
+    "code_section": "VII",
+    "titre_section": "Chapitre 40"
+  },
+  {
+    "code_tarifaire": "4015.90.00.00",
+    "description_produit": "Autres",
+    "taux_imposition": 15.0,
+    "code_chapitre": "40.15",
+    "titre_chapitre": "Vêtements et accessoires du vêtement (y compris les gants,",
+    "code_section": "VII",
+    "titre_section": "Chapitre 40"
+  },
+  {
+    "code_tarifaire": "4016.10.00.00",
+    "description_produit": "En caoutchouc alvéolaire",
+    "taux_imposition": 15.0,
+    "code_chapitre": "40.16",
+    "titre_chapitre": "Autres ouvrages en caoutchouc vulcanisé non durci.",
+    "code_section": "VII",
+    "titre_section": "Chapitre 40"
+  },
+  {
+    "code_tarifaire": "4016.91.00.00",
+    "description_produit": "- Revêtements de sol et tapis de pied",
+    "taux_imposition": 15.0,
+    "code_chapitre": "40.16",
+    "titre_chapitre": "Autres ouvrages en caoutchouc vulcanisé non durci.",
+    "code_section": "VII",
+    "titre_section": "Chapitre 40"
+  },
+  {
+    "code_tarifaire": "4016.92.00.00",
+    "description_produit": "- Gommes à effacer",
+    "taux_imposition": 15.0,
+    "code_chapitre": "40.16",
+    "titre_chapitre": "Autres ouvrages en caoutchouc vulcanisé non durci.",
+    "code_section": "VII",
+    "titre_section": "Chapitre 40"
+  },
+  {
+    "code_tarifaire": "4016.93.00.00",
+    "description_produit": "- Joints",
+    "taux_imposition": 15.0,
+    "code_chapitre": "40.16",
+    "titre_chapitre": "Autres ouvrages en caoutchouc vulcanisé non durci.",
+    "code_section": "VII",
+    "titre_section": "Chapitre 40"
+  },
+  {
+    "code_tarifaire": "4016.94.00.00",
+    "description_produit": "- Pare-chocs, même gonflables, pour accostage des",
+    "taux_imposition": 15.0,
+    "code_chapitre": "40.16",
+    "titre_chapitre": "Autres ouvrages en caoutchouc vulcanisé non durci.",
+    "code_section": "VII",
+    "titre_section": "Chapitre 40"
+  },
+  {
+    "code_tarifaire": "4016.95.10.00",
+    "description_produit": "-- Des types utlisées dans l’industrie pneumatique",
+    "taux_imposition": 15.0,
+    "code_chapitre": "40.16",
+    "titre_chapitre": "Autres ouvrages en caoutchouc vulcanisé non durci.",
+    "code_section": "VII",
+    "titre_section": "Chapitre 40"
+  },
+  {
+    "code_tarifaire": "4016.95.90.00",
+    "description_produit": "-- Autres",
+    "taux_imposition": 15.0,
+    "code_chapitre": "40.16",
+    "titre_chapitre": "Autres ouvrages en caoutchouc vulcanisé non durci.",
+    "code_section": "VII",
+    "titre_section": "Chapitre 40"
+  },
+  {
+    "code_tarifaire": "4016.99.00.00",
+    "description_produit": "- Autres",
+    "taux_imposition": 15.0,
+    "code_chapitre": "40.16",
+    "titre_chapitre": "Autres ouvrages en caoutchouc vulcanisé non durci.",
+    "code_section": "VII",
+    "titre_section": "Chapitre 40"
+  },
+  {
+    "code_tarifaire": "4418.11.00.00",
+    "description_produit": "- En bois tropicaux",
+    "taux_imposition": 15.0,
+    "code_chapitre": "44.18",
+    "titre_chapitre": "Ouvrages de menuiserie et pièces de charpente pour",
+    "code_section": "VIII",
+    "titre_section": "Chapitre 43"
+  },
+  {
+    "code_tarifaire": "4418.19.00.00",
+    "description_produit": "- Autres",
+    "taux_imposition": 15.0,
+    "code_chapitre": "44.18",
+    "titre_chapitre": "Ouvrages de menuiserie et pièces de charpente pour",
+    "code_section": "VIII",
+    "titre_section": "Chapitre 43"
+  },
+  {
+    "code_tarifaire": "4418.21.00.00",
+    "description_produit": "- En bois tropicaux",
+    "taux_imposition": 15.0,
+    "code_chapitre": "44.18",
+    "titre_chapitre": "Ouvrages de menuiserie et pièces de charpente pour",
+    "code_section": "VIII",
+    "titre_section": "Chapitre 43"
+  },
+  {
+    "code_tarifaire": "4418.29.00.00",
+    "description_produit": "- Autres",
+    "taux_imposition": 15.0,
+    "code_chapitre": "44.18",
+    "titre_chapitre": "Ouvrages de menuiserie et pièces de charpente pour",
+    "code_section": "VIII",
+    "titre_section": "Chapitre 43"
+  },
+  {
+    "code_tarifaire": "4418.30.00.00",
+    "description_produit": "Poteaux et poutres autres que les produits des n°s",
+    "taux_imposition": 15.0,
+    "code_chapitre": "44.18",
+    "titre_chapitre": "Ouvrages de menuiserie et pièces de charpente pour",
+    "code_section": "VIII",
+    "titre_section": "Chapitre 43"
+  },
+  {
+    "code_tarifaire": "4418.40.00.00",
+    "description_produit": "Coffrages pour le bétonnage",
+    "taux_imposition": 15.0,
+    "code_chapitre": "44.18",
+    "titre_chapitre": "Ouvrages de menuiserie et pièces de charpente pour",
+    "code_section": "VIII",
+    "titre_section": "Chapitre 43"
+  },
+  {
+    "code_tarifaire": "4418.50.00.00",
+    "description_produit": "Bardeaux («shingles» et «shakes»)",
+    "taux_imposition": 15.0,
+    "code_chapitre": "44.18",
+    "titre_chapitre": "Ouvrages de menuiserie et pièces de charpente pour",
+    "code_section": "VIII",
+    "titre_section": "Chapitre 43"
+  },
+  {
+    "code_tarifaire": "4418.73.00.00",
+    "description_produit": "- En bambou ou ayant au moins la couche supérieure",
+    "taux_imposition": 15.0,
+    "code_chapitre": "44.18",
+    "titre_chapitre": "Ouvrages de menuiserie et pièces de charpente pour",
+    "code_section": "VIII",
+    "titre_section": "Chapitre 43"
+  },
+  {
+    "code_tarifaire": "4418.74.00.00",
+    "description_produit": "- Autres, pour sols mosaïques",
+    "taux_imposition": 15.0,
+    "code_chapitre": "44.18",
+    "titre_chapitre": "Ouvrages de menuiserie et pièces de charpente pour",
+    "code_section": "VIII",
+    "titre_section": "Chapitre 43"
+  },
+  {
+    "code_tarifaire": "4418.75.00.00",
+    "description_produit": "- Autres, multicouches",
+    "taux_imposition": 15.0,
+    "code_chapitre": "44.18",
+    "titre_chapitre": "Ouvrages de menuiserie et pièces de charpente pour",
+    "code_section": "VIII",
+    "titre_section": "Chapitre 43"
+  },
+  {
+    "code_tarifaire": "4418.79.00.00",
+    "description_produit": "- Autres",
+    "taux_imposition": 15.0,
+    "code_chapitre": "44.18",
+    "titre_chapitre": "Ouvrages de menuiserie et pièces de charpente pour",
+    "code_section": "VIII",
+    "titre_section": "Chapitre 43"
+  },
+  {
+    "code_tarifaire": "4418.81.00.00",
+    "description_produit": "- Bois lamellé-collé (BLC)",
+    "taux_imposition": 15.0,
+    "code_chapitre": "44.18",
+    "titre_chapitre": "Ouvrages de menuiserie et pièces de charpente pour",
+    "code_section": "VIII",
+    "titre_section": "Chapitre 43"
+  },
+  {
+    "code_tarifaire": "4418.82.00.00",
+    "description_produit": "- Bois lamellé croisé (CLT ou X-lam)",
+    "taux_imposition": 15.0,
+    "code_chapitre": "44.18",
+    "titre_chapitre": "Ouvrages de menuiserie et pièces de charpente pour",
+    "code_section": "VIII",
+    "titre_section": "Chapitre 43"
+  },
+  {
+    "code_tarifaire": "4418.83.00.00",
+    "description_produit": "- Poutres en I",
+    "taux_imposition": 15.0,
+    "code_chapitre": "44.18",
+    "titre_chapitre": "Ouvrages de menuiserie et pièces de charpente pour",
+    "code_section": "VIII",
+    "titre_section": "Chapitre 43"
+  },
+  {
+    "code_tarifaire": "4418.89.00.00",
+    "description_produit": "- Autres",
+    "taux_imposition": 15.0,
+    "code_chapitre": "44.18",
+    "titre_chapitre": "Ouvrages de menuiserie et pièces de charpente pour",
+    "code_section": "VIII",
+    "titre_section": "Chapitre 43"
+  },
+  {
+    "code_tarifaire": "4418.91.00.00",
+    "description_produit": "- En bambou",
+    "taux_imposition": 15.0,
+    "code_chapitre": "44.18",
+    "titre_chapitre": "Ouvrages de menuiserie et pièces de charpente pour",
+    "code_section": "VIII",
+    "titre_section": "Chapitre 43"
+  },
+  {
+    "code_tarifaire": "4418.92.00.00",
+    "description_produit": "- Panneaux cellulaires en bois",
+    "taux_imposition": 15.0,
+    "code_chapitre": "44.18",
+    "titre_chapitre": "Ouvrages de menuiserie et pièces de charpente pour",
+    "code_section": "VIII",
+    "titre_section": "Chapitre 43"
+  },
+  {
+    "code_tarifaire": "4418.99.00.00",
+    "description_produit": "- Autres",
+    "taux_imposition": 15.0,
+    "code_chapitre": "44.18",
+    "titre_chapitre": "Ouvrages de menuiserie et pièces de charpente pour",
+    "code_section": "VIII",
+    "titre_section": "Chapitre 43"
+  },
+  {
+    "code_tarifaire": "4419.11.00.00",
+    "description_produit": "- Planches à pain, planches à hacher et articles",
+    "taux_imposition": 15.0,
+    "code_chapitre": "44.19",
+    "titre_chapitre": "Articles en bois pour la table ou la cuisine.",
+    "code_section": "VIII",
+    "titre_section": "Chapitre 43"
+  },
+  {
+    "code_tarifaire": "6704.11.00.00",
+    "description_produit": "- Perruques complètes",
+    "taux_imposition": 15.0,
+    "code_chapitre": "67.04",
+    "titre_chapitre": "Perruques, barbes, sourcils, cils, mèches et articles ana-",
+    "code_section": "XII",
+    "titre_section": "Chapitre 67"
+  },
+  {
+    "code_tarifaire": "6704.19.00.00",
+    "description_produit": "- Autres",
+    "taux_imposition": 15.0,
+    "code_chapitre": "67.04",
+    "titre_chapitre": "Perruques, barbes, sourcils, cils, mèches et articles ana-",
+    "code_section": "XII",
+    "titre_section": "Chapitre 67"
+  },
+  {
+    "code_tarifaire": "6704.20.00.00",
+    "description_produit": "En cheveux",
+    "taux_imposition": 15.0,
+    "code_chapitre": "67.04",
+    "titre_chapitre": "Perruques, barbes, sourcils, cils, mèches et articles ana-",
+    "code_section": "XII",
+    "titre_section": "Chapitre 67"
+  },
+  {
+    "code_tarifaire": "6704.90.00.00",
+    "description_produit": "En autres matières",
+    "taux_imposition": 15.0,
+    "code_chapitre": "67.04",
+    "titre_chapitre": "Perruques, barbes, sourcils, cils, mèches et articles ana-",
+    "code_section": "XII",
+    "titre_section": "Chapitre 67"
+  },
+  {
+    "code_tarifaire": "7020.00.10.00",
+    "description_produit": "Flotteurs pour filets de pêche",
+    "taux_imposition": 15.0,
+    "code_chapitre": "70.20",
+    "titre_chapitre": "Autres ouvrages en verre.",
+    "code_section": "XIII",
+    "titre_section": "Chapitre 70"
+  },
+  {
+    "code_tarifaire": "7020.00.90.00",
+    "description_produit": "Autres",
+    "taux_imposition": 15.0,
+    "code_chapitre": "70.20",
+    "titre_chapitre": "Autres ouvrages en verre.",
+    "code_section": "XIII",
+    "titre_section": "Chapitre 70"
+  },
+  {
+    "code_tarifaire": "7116.10.00.00",
+    "description_produit": "En perles fines ou de culture",
+    "taux_imposition": 15.0,
+    "code_chapitre": "71.16",
+    "titre_chapitre": "Ouvrages en perles fines ou de culture, en pierres",
+    "code_section": "XIV",
+    "titre_section": "Chapitre 71"
+  },
+  {
+    "code_tarifaire": "7116.20.00.00",
+    "description_produit": "En pierres gemmes ou en pierres synthétiques",
+    "taux_imposition": 15.0,
+    "code_chapitre": "71.16",
+    "titre_chapitre": "Ouvrages en perles fines ou de culture, en pierres",
+    "code_section": "XIV",
+    "titre_section": "Chapitre 71"
+  },
+  {
+    "code_tarifaire": "7117.11.00.00",
+    "description_produit": "- Boutons de manchettes et boutons similaires",
+    "taux_imposition": 15.0,
+    "code_chapitre": "71.17",
+    "titre_chapitre": "Bijouterie de fantaisie.",
+    "code_section": "XIV",
+    "titre_section": "Chapitre 71"
+  },
+  {
+    "code_tarifaire": "7117.19.00.00",
+    "description_produit": "- Autres",
+    "taux_imposition": 15.0,
+    "code_chapitre": "71.17",
+    "titre_chapitre": "Bijouterie de fantaisie.",
+    "code_section": "XIV",
+    "titre_section": "Chapitre 71"
+  },
+  {
+    "code_tarifaire": "7117.90.00.00",
+    "description_produit": "Autres",
+    "taux_imposition": 15.0,
+    "code_chapitre": "71.17",
+    "titre_chapitre": "Bijouterie de fantaisie.",
+    "code_section": "XIV",
+    "titre_section": "Chapitre 71"
+  },
+  {
+    "code_tarifaire": "7118.10.00.00",
+    "description_produit": "Monnaies n'ayant pas cours légal, autres que",
+    "taux_imposition": 15.0,
+    "code_chapitre": "71.18",
+    "titre_chapitre": "Monnaies.",
+    "code_section": "XIV",
+    "titre_section": "Chapitre 71"
+  },
+  {
+    "code_tarifaire": "7118.90.00.00",
+    "description_produit": "Autres",
+    "taux_imposition": 15.0,
+    "code_chapitre": "71.18",
+    "titre_chapitre": "Monnaies.",
+    "code_section": "XIV",
+    "titre_section": "Chapitre 71"
+  },
+  {
+    "code_tarifaire": "8309.10.10.00",
+    "description_produit": "-    Destinés à l’industrie pharmaceutique",
+    "taux_imposition": 15.0,
+    "code_chapitre": "83.09",
+    "titre_chapitre": "Bouchons (y compris les bouchons-couronnes, les",
+    "code_section": "XV",
+    "titre_section": "Chapitre 83"
+  },
+  {
+    "code_tarifaire": "8309.10.90.00",
+    "description_produit": "-    Autres",
+    "taux_imposition": 15.0,
+    "code_chapitre": "83.09",
+    "titre_chapitre": "Bouchons (y compris les bouchons-couronnes, les",
+    "code_section": "XV",
+    "titre_section": "Chapitre 83"
+  },
+  {
+    "code_tarifaire": "8309.90.10.00",
+    "description_produit": "-    Destinés à l’industrie pharmaceutique",
+    "taux_imposition": 15.0,
+    "code_chapitre": "83.09",
+    "titre_chapitre": "Bouchons (y compris les bouchons-couronnes, les",
+    "code_section": "XV",
+    "titre_section": "Chapitre 83"
+  },
+  {
+    "code_tarifaire": "8309.90.90.00",
+    "description_produit": "-    Autres",
+    "taux_imposition": 15.0,
+    "code_chapitre": "83.09",
+    "titre_chapitre": "Bouchons (y compris les bouchons-couronnes, les",
+    "code_section": "XV",
+    "titre_section": "Chapitre 83"
+  },
+  {
+    "code_tarifaire": "8311.10.00.00",
+    "description_produit": "Electrodes enrobées pour le soudage à l'arc, en",
+    "taux_imposition": 15.0,
+    "code_chapitre": "83.11",
+    "titre_chapitre": "Fils, baguettes, tubes, plaques, électrodes et articles",
+    "code_section": "XV",
+    "titre_section": "Chapitre 83"
+  },
+  {
+    "code_tarifaire": "8311.20.00.00",
+    "description_produit": "Fils fourrés pour le soudage à l'arc, en métaux",
+    "taux_imposition": 15.0,
+    "code_chapitre": "83.11",
+    "titre_chapitre": "Fils, baguettes, tubes, plaques, électrodes et articles",
+    "code_section": "XV",
+    "titre_section": "Chapitre 83"
+  },
+  {
+    "code_tarifaire": "8311.30.00.00",
+    "description_produit": "Baguettes enrobées et fils fourrés pour le brasage",
+    "taux_imposition": 15.0,
+    "code_chapitre": "83.11",
+    "titre_chapitre": "Fils, baguettes, tubes, plaques, électrodes et articles",
+    "code_section": "XV",
+    "titre_section": "Chapitre 83"
+  },
+  {
+    "code_tarifaire": "8311.90.00.00",
+    "description_produit": "Autres",
+    "taux_imposition": 15.0,
+    "code_chapitre": "83.11",
+    "titre_chapitre": "Fils, baguettes, tubes, plaques, électrodes et articles",
+    "code_section": "XV",
+    "titre_section": "Chapitre 83"
+  },
+  {
+    "code_tarifaire": "8903.11.00.00",
+    "description_produit": "- Comportant un moteur ou conçus pour comporter un",
+    "taux_imposition": 15.0,
+    "code_chapitre": "89.03",
+    "titre_chapitre": "Yachts et autres bateaux et embarcations de plaisance ou",
+    "code_section": "XVII",
+    "titre_section": "Chapitre 89"
+  },
+  {
+    "code_tarifaire": "8903.12.00.00",
+    "description_produit": "- Non conçus pour être utilisés avec un moteur et d'un",
+    "taux_imposition": 15.0,
+    "code_chapitre": "89.03",
+    "titre_chapitre": "Yachts et autres bateaux et embarcations de plaisance ou",
+    "code_section": "XVII",
+    "titre_section": "Chapitre 89"
+  },
+  {
+    "code_tarifaire": "8903.19.00.00",
+    "description_produit": "- Autres                                                  u",
+    "taux_imposition": 15.0,
+    "code_chapitre": "89.03",
+    "titre_chapitre": "Yachts et autres bateaux et embarcations de plaisance ou",
+    "code_section": "XVII",
+    "titre_section": "Chapitre 89"
+  },
+  {
+    "code_tarifaire": "8903.21.00.00",
+    "description_produit": "- D'une longueur n'excédant pas 7,5 m                     u",
+    "taux_imposition": 15.0,
+    "code_chapitre": "89.03",
+    "titre_chapitre": "Yachts et autres bateaux et embarcations de plaisance ou",
+    "code_section": "XVII",
+    "titre_section": "Chapitre 89"
+  },
+  {
+    "code_tarifaire": "8903.22.00.00",
+    "description_produit": "- D'une longueur excédant 7,5 m mais n'excédant pas",
+    "taux_imposition": 15.0,
+    "code_chapitre": "89.03",
+    "titre_chapitre": "Yachts et autres bateaux et embarcations de plaisance ou",
+    "code_section": "XVII",
+    "titre_section": "Chapitre 89"
+  },
+  {
+    "code_tarifaire": "8903.23.00.00",
+    "description_produit": "- D'une longueur excédant 24 m                            u",
+    "taux_imposition": 15.0,
+    "code_chapitre": "89.03",
+    "titre_chapitre": "Yachts et autres bateaux et embarcations de plaisance ou",
+    "code_section": "XVII",
+    "titre_section": "Chapitre 89"
+  },
+  {
+    "code_tarifaire": "8903.31.00.00",
+    "description_produit": "- D'une longueur n'excédant pas 7,5 m                     u",
+    "taux_imposition": 15.0,
+    "code_chapitre": "89.03",
+    "titre_chapitre": "Yachts et autres bateaux et embarcations de plaisance ou",
+    "code_section": "XVII",
+    "titre_section": "Chapitre 89"
+  },
+  {
+    "code_tarifaire": "8903.32.00.00",
+    "description_produit": "- D'une longueur excédant 7,5 m mais n'excédant pas",
+    "taux_imposition": 15.0,
+    "code_chapitre": "89.03",
+    "titre_chapitre": "Yachts et autres bateaux et embarcations de plaisance ou",
+    "code_section": "XVII",
+    "titre_section": "Chapitre 89"
+  },
+  {
+    "code_tarifaire": "8903.33.00.00",
+    "description_produit": "- D'une longueur excédant 24 m                            u",
+    "taux_imposition": 15.0,
+    "code_chapitre": "89.03",
+    "titre_chapitre": "Yachts et autres bateaux et embarcations de plaisance ou",
+    "code_section": "XVII",
+    "titre_section": "Chapitre 89"
+  },
+  {
+    "code_tarifaire": "8903.93.00.00",
+    "description_produit": "- D'une longueur n'excédant pas 7,5 m                     u",
+    "taux_imposition": 15.0,
+    "code_chapitre": "89.03",
+    "titre_chapitre": "Yachts et autres bateaux et embarcations de plaisance ou",
+    "code_section": "XVII",
+    "titre_section": "Chapitre 89"
+  },
+  {
+    "code_tarifaire": "8903.99.00.00",
+    "description_produit": "- Autres                                                  u",
+    "taux_imposition": 15.0,
+    "code_chapitre": "89.03",
+    "titre_chapitre": "Yachts et autres bateaux et embarcations de plaisance ou",
+    "code_section": "XVII",
+    "titre_section": "Chapitre 89"
+  },
+  {
+    "code_tarifaire": "8905.10.00.00",
+    "description_produit": "Bateaux-dragueurs                                      u",
+    "taux_imposition": 15.0,
+    "code_chapitre": "89.05",
+    "titre_chapitre": "Bateaux-phares, bateaux-pompes, bateaux-dragueurs,",
+    "code_section": "XVII",
+    "titre_section": "Chapitre 89"
+  },
+  {
+    "code_tarifaire": "8905.20.00.00",
+    "description_produit": "Plates-formes de forage ou d'exploitation, flottantes",
+    "taux_imposition": 15.0,
+    "code_chapitre": "89.05",
+    "titre_chapitre": "Bateaux-phares, bateaux-pompes, bateaux-dragueurs,",
+    "code_section": "XVII",
+    "titre_section": "Chapitre 89"
+  },
+  {
+    "code_tarifaire": "8905.90.00.00",
+    "description_produit": "Autres                                                 u",
+    "taux_imposition": 15.0,
+    "code_chapitre": "89.05",
+    "titre_chapitre": "Bateaux-phares, bateaux-pompes, bateaux-dragueurs,",
+    "code_section": "XVII",
+    "titre_section": "Chapitre 89"
+  },
+  {
+    "code_tarifaire": "8906.10.00.00",
+    "description_produit": "Navires de guerre                                        u",
+    "taux_imposition": 15.0,
+    "code_chapitre": "89.06",
+    "titre_chapitre": "Autres bateaux, y compris les navires de guerre et les",
+    "code_section": "XVII",
+    "titre_section": "Chapitre 89"
+  },
+  {
+    "code_tarifaire": "8906.90.00.00",
+    "description_produit": "Autres                                                   u",
+    "taux_imposition": 15.0,
+    "code_chapitre": "89.06",
+    "titre_chapitre": "Autres bateaux, y compris les navires de guerre et les",
+    "code_section": "XVII",
+    "titre_section": "Chapitre 89"
+  },
+  {
+    "code_tarifaire": "8907.10.00.00",
+    "description_produit": "Radeaux gonflables                                    u",
+    "taux_imposition": 15.0,
+    "code_chapitre": "89.07",
+    "titre_chapitre": "Autres engins flottants (radeaux, réservoirs, caissons,",
+    "code_section": "XVII",
+    "titre_section": "Chapitre 89"
+  },
+  {
+    "code_tarifaire": "8907.90.00.00",
+    "description_produit": "Autres                                                u",
+    "taux_imposition": 15.0,
+    "code_chapitre": "89.07",
+    "titre_chapitre": "Autres engins flottants (radeaux, réservoirs, caissons,",
+    "code_section": "XVII",
+    "titre_section": "Chapitre 89"
+  },
+  {
+    "code_tarifaire": "9207.10.00.00",
+    "description_produit": "Instruments à clavier, autres que les accordéons     u",
+    "taux_imposition": 15.0,
+    "code_chapitre": "92.07",
+    "titre_chapitre": "Instruments de musique dont le son est produit ou doit",
+    "code_section": "XVIII",
+    "titre_section": "Chapitre 92"
+  },
+  {
+    "code_tarifaire": "9207.90.00.00",
+    "description_produit": "Autres                                               u",
+    "taux_imposition": 15.0,
+    "code_chapitre": "92.07",
+    "titre_chapitre": "Instruments de musique dont le son est produit ou doit",
+    "code_section": "XVIII",
+    "titre_section": "Chapitre 92"
+  },
+  {
+    "code_tarifaire": "9208.10.00.00",
+    "description_produit": "Boîtes à musique                                        u",
+    "taux_imposition": 15.0,
+    "code_chapitre": "92.08",
+    "titre_chapitre": "Boîtes à musique, orchestrions, orgues de Barbarie,",
+    "code_section": "XVIII",
+    "titre_section": "Chapitre 92"
+  },
+  {
+    "code_tarifaire": "9208.90.00.00",
+    "description_produit": "Autres                                                  u",
+    "taux_imposition": 15.0,
+    "code_chapitre": "92.08",
+    "titre_chapitre": "Boîtes à musique, orchestrions, orgues de Barbarie,",
+    "code_section": "XVIII",
+    "titre_section": "Chapitre 92"
+  },
+  {
+    "code_tarifaire": "9209.30.00.00",
+    "description_produit": "Cordes harmoniques",
+    "taux_imposition": 15.0,
+    "code_chapitre": "92.09",
+    "titre_chapitre": "Parties (mécanismes de boîtes à musique, par exemple)",
+    "code_section": "XVIII",
+    "titre_section": "Chapitre 92"
+  },
+  {
+    "code_tarifaire": "9209.91.00.00",
+    "description_produit": "- Parties et accessoires de pianos",
+    "taux_imposition": 15.0,
+    "code_chapitre": "92.09",
+    "titre_chapitre": "Parties (mécanismes de boîtes à musique, par exemple)",
+    "code_section": "XVIII",
+    "titre_section": "Chapitre 92"
+  },
+  {
+    "code_tarifaire": "9209.92.00.00",
+    "description_produit": "- Parties et accessoires des instruments de musique",
+    "taux_imposition": 15.0,
+    "code_chapitre": "92.09",
+    "titre_chapitre": "Parties (mécanismes de boîtes à musique, par exemple)",
+    "code_section": "XVIII",
+    "titre_section": "Chapitre 92"
+  },
+  {
+    "code_tarifaire": "9209.94.00.00",
+    "description_produit": "- Parties et accessoires des instruments de musique",
+    "taux_imposition": 15.0,
+    "code_chapitre": "92.09",
+    "titre_chapitre": "Parties (mécanismes de boîtes à musique, par exemple)",
+    "code_section": "XVIII",
+    "titre_section": "Chapitre 92"
+  },
+  {
+    "code_tarifaire": "9209.99.00.00",
+    "description_produit": "- Autres",
+    "taux_imposition": 15.0,
+    "code_chapitre": "92.09",
+    "titre_chapitre": "Parties (mécanismes de boîtes à musique, par exemple)",
+    "code_section": "XVIII",
+    "titre_section": "Chapitre 92"
+  },
+  {
+    "code_tarifaire": "9306.21.00.00",
+    "description_produit": "- Cartouches",
+    "taux_imposition": 15.0,
+    "code_chapitre": "93.06",
+    "titre_chapitre": "Bombes, grenades, torpilles, mines, missiles, cartouches",
+    "code_section": "XIX",
+    "titre_section": "Chapitre 93"
+  },
+  {
+    "code_tarifaire": "9306.29.10.00",
+    "description_produit": "-- Parties de cartouche",
+    "taux_imposition": 15.0,
+    "code_chapitre": "93.06",
+    "titre_chapitre": "Bombes, grenades, torpilles, mines, missiles, cartouches",
+    "code_section": "XIX",
+    "titre_section": "Chapitre 93"
+  },
+  {
+    "code_tarifaire": "9306.29.90.00",
+    "description_produit": "-- Autres",
+    "taux_imposition": 15.0,
+    "code_chapitre": "93.06",
+    "titre_chapitre": "Bombes, grenades, torpilles, mines, missiles, cartouches",
+    "code_section": "XIX",
+    "titre_section": "Chapitre 93"
+  },
+  {
+    "code_tarifaire": "9306.30.10.00",
+    "description_produit": "- Cartouches",
+    "taux_imposition": 15.0,
+    "code_chapitre": "93.06",
+    "titre_chapitre": "Bombes, grenades, torpilles, mines, missiles, cartouches",
+    "code_section": "XIX",
+    "titre_section": "Chapitre 93"
+  },
+  {
+    "code_tarifaire": "9306.30.90.00",
+    "description_produit": "- Autres",
+    "taux_imposition": 15.0,
+    "code_chapitre": "93.06",
+    "titre_chapitre": "Bombes, grenades, torpilles, mines, missiles, cartouches",
+    "code_section": "XIX",
+    "titre_section": "Chapitre 93"
+  },
+  {
+    "code_tarifaire": "9306.90.00.00",
+    "description_produit": "Autres",
+    "taux_imposition": 15.0,
+    "code_chapitre": "93.06",
+    "titre_chapitre": "Bombes, grenades, torpilles, mines, missiles, cartouches",
+    "code_section": "XIX",
+    "titre_section": "Chapitre 93"
+  },
+  {
+    "code_tarifaire": "9701.21.00.00",
+    "description_produit": "- Tableaux, peintures et dessins                             u",
+    "taux_imposition": 15.0,
+    "code_chapitre": "97.01",
+    "titre_chapitre": "Tableaux, peintures et dessins, faits entièrement à la",
+    "code_section": "XXI",
+    "titre_section": "Chapitre 97"
+  },
+  {
+    "code_tarifaire": "9701.22.00.00",
+    "description_produit": "-    Mosaïques                                               u",
+    "taux_imposition": 15.0,
+    "code_chapitre": "97.01",
+    "titre_chapitre": "Tableaux, peintures et dessins, faits entièrement à la",
+    "code_section": "XXI",
+    "titre_section": "Chapitre 97"
+  },
+  {
+    "code_tarifaire": "9701.29.00.00",
+    "description_produit": "-    Autres                                                  u",
+    "taux_imposition": 15.0,
+    "code_chapitre": "97.01",
+    "titre_chapitre": "Tableaux, peintures et dessins, faits entièrement à la",
+    "code_section": "XXI",
+    "titre_section": "Chapitre 97"
+  },
+  {
+    "code_tarifaire": "9701.91.00.00",
+    "description_produit": "-    Tableaux, peintures et dessins                          u",
+    "taux_imposition": 15.0,
+    "code_chapitre": "97.01",
+    "titre_chapitre": "Tableaux, peintures et dessins, faits entièrement à la",
+    "code_section": "XXI",
+    "titre_section": "Chapitre 97"
+  },
+  {
+    "code_tarifaire": "9701.92.00.00",
+    "description_produit": "-    Mosaïques                                               u",
+    "taux_imposition": 15.0,
+    "code_chapitre": "97.01",
+    "titre_chapitre": "Tableaux, peintures et dessins, faits entièrement à la",
+    "code_section": "XXI",
+    "titre_section": "Chapitre 97"
+  },
+  {
+    "code_tarifaire": "9701.99.00.00",
+    "description_produit": "-    Autres",
+    "taux_imposition": 15.0,
+    "code_chapitre": "97.01",
+    "titre_chapitre": "Tableaux, peintures et dessins, faits entièrement à la",
+    "code_section": "XXI",
+    "titre_section": "Chapitre 97"
+  },
+  {
+    "code_tarifaire": "9702.10.00.00",
+    "description_produit": "Ayant plus de 100 ans d’âge                                   u",
+    "taux_imposition": 15.0,
+    "code_chapitre": "97.02",
+    "titre_chapitre": "Gravures, estampes et lithographies originales.",
+    "code_section": "XXI",
+    "titre_section": "Chapitre 97"
+  },
+  {
+    "code_tarifaire": "9702.90.00.00",
+    "description_produit": "Autres                                                        u",
+    "taux_imposition": 15.0,
+    "code_chapitre": "97.02",
+    "titre_chapitre": "Gravures, estampes et lithographies originales.",
+    "code_section": "XXI",
+    "titre_section": "Chapitre 97"
+  },
+  {
+    "code_tarifaire": "9703.10.00.00",
+    "description_produit": "Ayant plus de 100 ans d’âge                                 u",
+    "taux_imposition": 15.0,
+    "code_chapitre": "97.03",
+    "titre_chapitre": "Productions originales de l'art statuaire ou de la sculpture,",
+    "code_section": "XXI",
+    "titre_section": "Chapitre 97"
+  },
+  {
+    "code_tarifaire": "9703.90.00.00",
+    "description_produit": "Autres                                                      u",
+    "taux_imposition": 15.0,
+    "code_chapitre": "97.03",
+    "titre_chapitre": "Productions originales de l'art statuaire ou de la sculpture,",
+    "code_section": "XXI",
+    "titre_section": "Chapitre 97"
+  },
+  {
+    "code_tarifaire": "9705.10.00.00",
+    "description_produit": "Collections et pièces de collection présentant un intérêt",
+    "taux_imposition": 15.0,
+    "code_chapitre": "97.05",
+    "titre_chapitre": "Collections et pièces de collection présentant un intérêt",
+    "code_section": "XXI",
+    "titre_section": "Chapitre 97"
+  },
+  {
+    "code_tarifaire": "9705.21.00.00",
+    "description_produit": "- Spécimens humains et leurs parties",
+    "taux_imposition": 15.0,
+    "code_chapitre": "97.05",
+    "titre_chapitre": "Collections et pièces de collection présentant un intérêt",
+    "code_section": "XXI",
+    "titre_section": "Chapitre 97"
+  },
+  {
+    "code_tarifaire": "9705.22.00.00",
+    "description_produit": "- Espèces éteintes ou menacées d’extinction, et leurs",
+    "taux_imposition": 15.0,
+    "code_chapitre": "97.05",
+    "titre_chapitre": "Collections et pièces de collection présentant un intérêt",
+    "code_section": "XXI",
+    "titre_section": "Chapitre 97"
+  },
+  {
+    "code_tarifaire": "9705.29.00.00",
+    "description_produit": "- Autres",
+    "taux_imposition": 15.0,
+    "code_chapitre": "97.05",
+    "titre_chapitre": "Collections et pièces de collection présentant un intérêt",
+    "code_section": "XXI",
+    "titre_section": "Chapitre 97"
+  },
+  {
+    "code_tarifaire": "9705.31.00.00",
+    "description_produit": "- Ayant plus de 100 ans d’âge",
+    "taux_imposition": 15.0,
+    "code_chapitre": "97.05",
+    "titre_chapitre": "Collections et pièces de collection présentant un intérêt",
+    "code_section": "XXI",
+    "titre_section": "Chapitre 97"
+  },
+  {
+    "code_tarifaire": "9705.39.00.00",
+    "description_produit": "- Autres",
+    "taux_imposition": 15.0,
+    "code_chapitre": "97.05",
+    "titre_chapitre": "Collections et pièces de collection présentant un intérêt",
+    "code_section": "XXI",
+    "titre_section": "Chapitre 97"
+  },
+  {
+    "code_tarifaire": "9706.10.00.00",
+    "description_produit": "Ayant plus de 250 ans d’âge",
+    "taux_imposition": 15.0,
+    "code_chapitre": "97.06",
+    "titre_chapitre": "Objets d'antiquité ayant plus de 100 ans d’âge.",
+    "code_section": "XXI",
+    "titre_section": "Chapitre 97"
+  },
+  {
+    "code_tarifaire": "9706.90.00.00",
+    "description_produit": "Autres",
+    "taux_imposition": 15.0,
+    "code_chapitre": "97.06",
+    "titre_chapitre": "Objets d'antiquité ayant plus de 100 ans d’âge.",
+    "code_section": "XXI",
+    "titre_section": "Chapitre 97"
+  }
+]

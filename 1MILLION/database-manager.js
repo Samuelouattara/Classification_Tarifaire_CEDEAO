@@ -158,7 +158,7 @@ class DatabaseManager {
                 numero_serie: productData.numero_serie,
                 is_groupe: productData.is_groupe || false,
                 nombre_produits: productData.nombre_produits || 1,
-                taux_imposition: this.getTaxRateForSection(classificationResult.section?.number || 'I'),
+                taux_imposition: this.getTaxRateForSection(classificationResult.section?.number || 'I', classificationResult.code),
                 section_produit: classificationResult.section?.number || 'I',
                 sous_section_produit: productData.sous_section_produit,
                 code_tarifaire: classificationResult.code || null,
@@ -315,17 +315,88 @@ class DatabaseManager {
         return Promise.resolve({ success: true });
     }
 
-    // Méthode utilitaire pour obtenir le taux d'imposition d'une section
-    getTaxRateForSection(section) {
-        const taxRates = {
-            'I': 10.50, 'II': 8.75, 'III': 12.00, 'IV': 15.25, 'V': 5.50,
-            'VI': 18.75, 'VII': 14.50, 'VIII': 16.25, 'IX': 11.75, 'X': 13.50,
-            'XI': 17.25, 'XII': 19.50, 'XIII': 9.25, 'XIV': 25.00, 'XV': 12.75,
-            'XVI': 22.50, 'XVII': 20.75, 'XVIII': 16.50, 'XIX': 35.00, 'XX': 15.75,
-            'XXI': 30.00
+    // Méthode utilitaire pour obtenir le taux d'imposition d'une section (CORRIGÉE selon codes tarifaires spécifiques)
+    getTaxRateForSection(section, tariffCode = null) {
+        // Si on a un code tarifaire spécifique, l'utiliser en priorité
+        if (tariffCode) {
+            const specificRate = this.getSpecificTariffRate(tariffCode);
+            if (specificRate !== null) {
+                return specificRate;
+            }
+        }
+        
+        // Sinon, utiliser les taux par section (moyenne des codes de la section)
+        const sectionAverageRates = {
+            'I': 19,   // Moyenne des codes 0201-0210, 0301-0307, etc.
+            'II': 17,  // Moyenne des codes 0601-0614, 0701-0714, etc.
+            'III': 20, // Code 1501-1522
+            'IV': 23,  // Moyenne des codes 1601-1624, 1701-1724, etc.
+            'V': 8,    // Moyenne des codes 2501-2529, 2601-2621, 2701-2716
+            'VI': 11,  // Moyenne des codes 2801-2853, 2901-2942, etc.
+            'VII': 15, // Codes 3901-3926, 4001-4017
+            'VIII': 20, 'IX': 15, 'X': 15, 'XI': 20, 'XII': 25, 'XIII': 15,
+            'XIV': 10, 'XV': 15, 'XVI': 15, 'XVII': 20, 'XVIII': 15, 'XIX': 10,
+            'XX': 20, 'XXI': 5
         };
         
-        return taxRates[section] || 10.50;
+        return sectionAverageRates[section] || 15;
+    }
+
+    // Fonction pour obtenir le taux spécifique d'un code tarifaire
+    getSpecificTariffRate(tariffCode) {
+        // Taux spécifiques extraits du fichier MON-TEC-CEDEAO-SH-2022-FREN-09-04-2024.txt
+        const specificRates = {
+            // Section I - Chapitre 02 (Viandes)
+            '0201.10.00.00': 35, '0201.20.00.00': 35, '0201.30.00.00': 35,
+            '0202.10.00.00': 35, '0202.20.00.00': 35, '0202.30.00.00': 35,
+            '0203.11.00.00': 35, '0203.12.00.00': 35, '0203.19.00.00': 35,
+            '0203.21.00.00': 35, '0203.22.00.00': 35, '0203.29.00.00': 35,
+            '0204.10.00.00': 35, '0204.21.00.00': 35, '0204.22.00.00': 35,
+            '0204.23.00.00': 35, '0204.30.00.00': 35, '0204.41.00.00': 35,
+            '0204.42.00.00': 35, '0204.43.00.00': 35, '0204.50.00.00': 35,
+            '0205.00.00.00': 20, // Viandes chevalines - taux différent !
+            '0206.10.00.00': 35, '0206.21.00.00': 35, '0206.22.00.00': 35,
+            '0206.29.00.00': 35, '0206.30.00.00': 35, '0206.41.00.00': 35,
+            '0206.49.00.00': 35, '0206.80.00.00': 35, '0206.90.00.00': 35,
+            '0207.11.00.00': 35, '0207.12.00.00': 35, '0207.13.00.00': 35,
+            '0207.14.00.00': 35, '0207.24.00.00': 35, '0207.25.00.00': 35,
+            '0207.26.00.00': 35, '0207.27.00.00': 35, '0207.41.00.00': 35,
+            '0207.42.00.00': 35, '0207.43.00.00': 35, '0207.44.00.00': 35,
+            '0207.45.00.00': 35, '0207.51.00.00': 35, '0207.52.00.00': 35,
+            '0207.53.00.00': 35, '0207.54.00.00': 35, '0207.55.00.00': 35,
+            '0207.60.00.00': 35, '0208.10.00.00': 20, '0208.30.00.00': 20,
+            '0208.40.00.00': 20, '0208.50.00.00': 20, '0208.60.00.00': 20,
+            '0208.90.00.00': 20, '0209.10.00.00': 20, '0209.90.00.00': 20,
+            '0210.11.00.00': 20, '0210.12.00.00': 20, '0210.19.00.00': 20,
+            '0210.20.00.00': 35, '0210.91.00.00': 20, '0210.92.00.00': 20,
+            '0210.93.00.00': 20, '0210.99.00.00': 20,
+            
+            // Section I - Chapitre 03 (Poissons)
+            '0301.11.00.00': 10, '0301.19.00.00': 10, '0301.91.10.00': 5,
+            '0301.91.90.00': 10, '0301.92.10.00': 5, '0301.92.90.00': 10,
+            '0301.93.10.00': 5, '0301.93.90.00': 10, '0301.94.10.00': 5,
+            '0301.94.90.00': 10, '0301.95.10.00': 5, '0301.95.90.00': 10,
+            '0301.99.10.00': 5, '0301.99.90.00': 10,
+            '0302.11.00.00': 10, '0302.13.00.00': 10, '0302.14.00.00': 10,
+            '0302.19.00.00': 10, '0302.21.00.00': 10, '0302.22.00.00': 10,
+            '0302.23.00.00': 10, '0302.24.00.00': 10, '0302.29.00.00': 10,
+            '0302.31.00.00': 10, '0302.32.00.00': 10, '0302.33.00.00': 10,
+            '0302.34.00.00': 10, '0302.35.00.00': 10, '0302.36.00.00': 10,
+            '0302.39.00.00': 10, '0302.41.00.00': 10, '0302.42.00.00': 10,
+            
+            // Section VI - Chapitre 28 (Produits chimiques)
+            '2843.10.00.00': 5, '2843.21.00.00': 5, '2843.29.00.00': 5,
+            '2843.30.00.00': 5, '2843.90.00.00': 5, '2844.10.00.00': 5,
+            '2844.20.00.00': 5, '2844.30.00.00': 5, '2844.41.00.00': 5,
+            '2844.42.00.00': 5, '2844.43.00.00': 5, '2844.44.00.00': 5,
+            '2844.50.00.00': 5, '2845.10.00.00': 5, '2845.20.00.00': 5,
+            '2845.30.00.00': 5, '2845.40.00.00': 5, '2845.90.00.00': 5,
+            '2846.10.00.00': 5, '2846.90.00.00': 5, '2847.00.00.00': 5,
+            '2849.10.00.00': 5, '2849.20.00.00': 5, '2849.90.00.00': 5,
+            '2850.00.00.00': 5
+        };
+        
+        return specificRates[tariffCode] || null;
     }
 
     // Méthode pour générer un code tarifaire générique
@@ -412,7 +483,7 @@ class DatabaseManager {
                         description_produit: entry.description,
                         section_produit: entry.section,
                         code_tarifaire: entry.code,
-                        taux_imposition: this.getTaxRateForSection(entry.section),
+                        taux_imposition: this.getTaxRateForSection(entry.section, entry.code),
                         valeur_declaree: 0,
                         statut_validation: 'valide',
                         commentaires: `Synchronisation depuis historique local - ${entry.timestamp}`
@@ -549,7 +620,7 @@ class DatabaseManager {
                 item.description,
                 item.section,
                 item.code,
-                this.getTaxRateForSection(item.section) + '%',
+                this.getTaxRateForSection(item.section, item.code) + '%',
                 item.confidence + '%',
                 item.synced ? 'Synchronisé' : 'Local',
                 item.timestamp,

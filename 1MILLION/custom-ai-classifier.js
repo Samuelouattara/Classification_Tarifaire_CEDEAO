@@ -129,23 +129,24 @@ class CustomCedeoAI {
                 // SECTION XVI - VEHICULES
                 ['vehicules', { section: 'XVI', chapter: '87', keywords: ['véhicule', 'voiture', 'automobile', 'camion', 'bus', 'autocar', 'moto', 'scooter', 'vélo', 'bicyclette', 'tracteur', 'remorque', 'caravane', 'chariot'], exclusions: ['bateau', 'avion', 'train'] }],
 
-                // SECTION XVII - INSTRUMENTS ET APPAREILS
-                ['instruments_appareils', { section: 'XVII', chapter: '90', keywords: ['instrument', 'appareil', 'microscope', 'télescope', 'thermomètre', 'baromètre', 'balance', 'pèse-personne', 'montre', 'horloge', 'réveil', 'chronomètre', 'compteur', 'mètre'], exclusions: ['médical', 'musical'] }],
+                // SECTION XVII - MATERIEL DE TRANSPORT (CORRIGÉ)
+                ['materiel_transport', { section: 'XVII', chapter: '88', keywords: ['avion', 'aéronef', 'hélicoptère', 'bateau', 'navire', 'paquebot', 'cargo', 'yacht', 'train', 'locomotive', 'wagon', 'métro', 'tramway'], exclusions: ['jouet', 'maquette', 'miniature'] }],
+                ['instruments_appareils', { section: 'XVIII', chapter: '90', keywords: ['instrument', 'appareil', 'microscope', 'télescope', 'thermomètre', 'baromètre', 'balance', 'pèse-personne', 'montre', 'horloge', 'réveil', 'chronomètre', 'compteur', 'mètre'], exclusions: ['médical', 'musical'] }],
 
                 // SECTION XVIII - ARMES ET MUNITIONS
-                ['armes_munitions', { section: 'XVIII', chapter: '93', keywords: ['arme', 'pistolet', 'revolver', 'fusil', 'carabine', 'mitrailleuse', 'canon', 'bombe', 'explosif', 'munition', 'cartouche', 'balle', 'obus', 'grenade'], exclusions: ['jouet', 'sport'] }],
+                ['armes_munitions', { section: 'XIX', chapter: '93', keywords: ['arme', 'pistolet', 'revolver', 'fusil', 'carabine', 'mitrailleuse', 'canon', 'bombe', 'explosif', 'munition', 'cartouche', 'balle', 'obus', 'grenade'], exclusions: ['jouet', 'sport'] }],
 
                 // SECTION XIX - OEUVRES D'ART
-                ['oeuvres_art', { section: 'XIX', chapter: '97', keywords: ['œuvre_art', 'peinture', 'sculpture', 'gravure', 'lithographie', 'tapisserie', 'céramique', 'porcelaine', 'verrerie', 'joaillerie', 'collection', 'antiquité'], exclusions: ['industriel', 'commercial'] }],
+                ['oeuvres_art', { section: 'XX', chapter: '97', keywords: ['œuvre_art', 'peinture', 'sculpture', 'gravure', 'lithographie', 'tapisserie', 'céramique', 'porcelaine', 'verrerie', 'joaillerie', 'collection', 'antiquité'], exclusions: ['industriel', 'commercial'] }],
 
                 // SECTION XX - JOUETS ET JEUX
-                ['jouets_jeux', { section: 'XX', chapter: '95', keywords: ['jouet', 'jeu', 'poupée', 'peluche', 'ours', 'chat', 'chien', 'voiture_jouet', 'train_jouet', 'avion_jouet', 'construction', 'légo', 'puzzle', 'jeu_société', 'monopoly', 'échecs', 'dames', 'cartes', 'ballon', 'cerf-volant', 'toboggan', 'balançoire'], exclusions: ['sport', 'professionnel'] }],
+                ['jouets_jeux', { section: 'XXI', chapter: '95', keywords: ['jouet', 'jeu', 'poupée', 'peluche', 'ours', 'chat', 'chien', 'voiture_jouet', 'train_jouet', 'avion_jouet', 'construction', 'légo', 'puzzle', 'jeu_société', 'monopoly', 'échecs', 'dames', 'cartes', 'ballon', 'cerf-volant', 'toboggan', 'balançoire'], exclusions: ['sport', 'professionnel'] }],
 
                 // SECTION XXI - INSTRUMENTS DE MUSIQUE
-                ['instruments_musique', { section: 'XXI', chapter: '92', keywords: ['instrument_musique', 'piano', 'guitare', 'violon', 'violoncelle', 'flûte', 'clarinette', 'saxophone', 'trompette', 'trombone', 'tambour', 'batterie', 'accordéon', 'harmonica', 'harpe'], exclusions: ['jouet', 'électrique'] }]
+                ['instruments_musique', { section: 'XXII', chapter: '92', keywords: ['instrument_musique', 'piano', 'guitare', 'violon', 'violoncelle', 'flûte', 'clarinette', 'saxophone', 'trompette', 'trombone', 'tambour', 'batterie', 'accordéon', 'harmonica', 'harpe'], exclusions: ['jouet', 'électrique'] }]
             ]);
 
-            // Mappings des sections
+            // Mappings des sections (CORRIGÉ selon TEC CEDEAO officiel)
             this.sectionMappings = new Map([
                 ['I', 'ANIMAUX VIVANTS ET PRODUITS DU REGNE ANIMAL'],
                 ['II', 'PRODUITS DU REGNE VEGETAL'],
@@ -159,15 +160,15 @@ class CustomCedeoAI {
                 ['X', 'PAPIERS ET CARTONS'],
                 ['XI', 'TEXTILES'],
                 ['XII', 'CHAUSSURES ET ACCESSOIRES'],
-                ['XIII', 'PIERRES PRECIEUSES ET METAUX PRECIEUX'],
-                ['XIV', 'METAUX COMMUNS'],
-                ['XV', 'MACHINES ET APPAREILS'],
-                ['XVI', 'VEHICULES'],
-                ['XVII', 'INSTRUMENTS ET APPAREILS'],
-                ['XVIII', 'ARMES ET MUNITIONS'],
-                ['XIX', 'OEUVRES D\'ART'],
-                ['XX', 'JOUETS ET JEUX'],
-                ['XXI', 'INSTRUMENTS DE MUSIQUE']
+                ['XIII', 'OUVRAGES EN PIERRE, PLATRE, CIMENT'],
+                ['XIV', 'PERLES, PIERRES PRECIEUSES, METAUX PRECIEUX'],
+                ['XV', 'METAUX COMMUNS ET OUVRAGES EN CES METAUX'],
+                ['XVI', 'MACHINES ET APPAREILS, MATERIEL ELECTRIQUE'],
+                ['XVII', 'MATERIEL DE TRANSPORT'],
+                ['XVIII', 'INSTRUMENTS ET APPAREILS D\'OPTIQUE, HORLOGERIE'],
+                ['XIX', 'ARMES ET MUNITIONS'],
+                ['XX', 'MARCHANDISES ET PRODUITS DIVERS'],
+                ['XXI', 'OBJETS D\'ART, DE COLLECTION OU D\'ANTIQUITE']
             ]);
 
             console.log('✅ Règles TEC CEDEAO chargées:', this.tecCedeoRules.size, 'catégories');
@@ -181,6 +182,7 @@ class CustomCedeoAI {
             // Règles absolues (priorité maximale) - Basées sur TEC CEDEAO
             absolute: {
                 'jouet': { section: 'XX', chapter: '95', confidence: 99.9, keywords: ['jouet', 'toy', 'jeu', 'poupée', 'peluche', 'construction', 'éducatif'] },
+                'avion': { section: 'XVII', chapter: '88', confidence: 99.9, keywords: ['avion', 'aéronef', 'hélicoptère', 'aviation', 'aéronautique'] },
                 'poisson': { section: 'I', chapter: '03', confidence: 99.9, keywords: ['poisson', 'fish', 'saumon', 'thon', 'crevette', 'crabe', 'mollusque'] },
                 'viande': { section: 'I', chapter: '02', confidence: 99.9, keywords: ['viande', 'meat', 'bœuf', 'porc', 'poulet', 'agneau', 'veau'] },
                 'légume': { section: 'II', chapter: '07', confidence: 99.9, keywords: ['légume', 'vegetable', 'tomate', 'carotte', 'oignon', 'pomme de terre'] },

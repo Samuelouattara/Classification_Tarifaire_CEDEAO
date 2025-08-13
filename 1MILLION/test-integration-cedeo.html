@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Intégration CEDEAO - Système Existant</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .input-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            background: #f8f9fa;
+            border-left: 4px solid #007bff;
+        }
+        .success {
+            border-left-color: #28a745;
+            background: #d4edda;
+        }
+        .error {
+            border-left-color: #dc3545;
+            background: #f8d7da;
+        }
+        .test-cases {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .test-case {
+            background: #e9ecef;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+        }
+        .test-case:hover {
+            background: #dee2e6;
+        }
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .comparison-item {
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .cedeo-result {
+            background: #e8f5e8;
+            border-color: #28a745;
+        }
+        .existing-result {
+            background: #f0f8ff;
+            border-color: #007bff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Test Intégration CEDEAO - Système Existant</h1>
+        <p>Cette page teste l'intégration des règles CEDEAO dans votre système de classification existant.</p>
+        
+        <div class="test-section">
+            <h2>🔍 Test de Classification</h2>
+            <div class="input-group">
+                <label for="productName">Nom du produit :</label>
+                <input type="text" id="productName" placeholder="Ex: avion, voiture, ordinateur...">
+            </div>
+            <button onclick="testClassification()">🔍 Classifier avec CEDEAO</button>
+            <button onclick="testExistingSystem()">🔍 Classifier avec Système Existant</button>
+            <button onclick="testBoth()">🔍 Comparer les deux</button>
+            
+            <div id="result" class="result" style="display: none;"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>🧪 Cas de Test Rapides</h2>
+            <div class="test-cases">
+                <div class="test-case" onclick="testProduct('avion')">✈️ avion</div>
+                <div class="test-case" onclick="testProduct('avion jouet')">✈️ avion jouet</div>
+                <div class="test-case" onclick="testProduct('voiture')">🚗 voiture</div>
+                <div class="test-case" onclick="testProduct('ordinateur')">💻 ordinateur</div>
+                <div class="test-case" onclick="testProduct('médicament')">💊 médicament</div>
+                <div class="test-case" onclick="testProduct('café')">☕ café</div>
+                <div class="test-case" onclick="testProduct('coton')">🧵 coton</div>
+                <div class="test-case" onclick="testProduct('pétrole')">⛽ pétrole</div>
+                <div class="test-case" onclick="testProduct('or')">💎 or</div>
+                <div class="test-case" onclick="testProduct('produit inconnu')">❓ produit inconnu</div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>📊 Comparaison des Systèmes</h2>
+            <div id="comparison" class="comparison" style="display: none;">
+                <div class="comparison-item cedeo-result">
+                    <h3>🎯 CEDEAO</h3>
+                    <div id="cedeo-comparison"></div>
+                </div>
+                <div class="comparison-item existing-result">
+                    <h3>🔧 Système Existant</h3>
+                    <div id="existing-comparison"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Inclure les scripts -->
+    <script src="cedeo-bot-rules.js"></script>
+    <script src="script-advanced.js"></script>
+    
+    <script>
+        function testProduct(productName) {
+            document.getElementById('productName').value = productName;
+            testBoth();
+        }
+        
+        function testClassification() {
+            const productName = document.getElementById('productName').value.trim();
+            const resultDiv = document.getElementById('result');
+            
+            if (!productName) {
+                resultDiv.innerHTML = '<div class="error">⚠️ Veuillez entrer un nom de produit</div>';
+                resultDiv.style.display = 'block';
+                return;
+            }
+            
+            try {
+                if (typeof classifyProductWithCEDEO === 'function') {
+                    const result = classifyProductWithCEDEO(productName);
+                    displayCEDEOResult(result);
+                } else {
+                    resultDiv.innerHTML = '<div class="error">❌ Fonction CEDEAO non disponible</div>';
+                    resultDiv.style.display = 'block';
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ Erreur: ${error.message}</div>`;
+                resultDiv.style.display = 'block';
+            }
+        }
+        
+        function testExistingSystem() {
+            const productName = document.getElementById('productName').value.trim();
+            const resultDiv = document.getElementById('result');
+            
+            if (!productName) {
+                resultDiv.innerHTML = '<div class="error">⚠️ Veuillez entrer un nom de produit</div>';
+                resultDiv.style.display = 'block';
+                return;
+            }
+            
+            try {
+                if (typeof classifySimple === 'function') {
+                    const result = classifySimple(productName);
+                    displayExistingResult(result);
+                } else {
+                    resultDiv.innerHTML = '<div class="error">❌ Fonction système existant non disponible</div>';
+                    resultDiv.style.display = 'block';
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ Erreur: ${error.message}</div>`;
+                resultDiv.style.display = 'block';
+            }
+        }
+        
+        function testBoth() {
+            const productName = document.getElementById('productName').value.trim();
+            const resultDiv = document.getElementById('result');
+            const comparisonDiv = document.getElementById('comparison');
+            
+            if (!productName) {
+                resultDiv.innerHTML = '<div class="error">⚠️ Veuillez entrer un nom de produit</div>';
+                resultDiv.style.display = 'block';
+                return;
+            }
+            
+            // Test CEDEAO
+            let cedeoResult = null;
+            if (typeof classifyProductWithCEDEO === 'function') {
+                try {
+                    cedeoResult = classifyProductWithCEDEO(productName);
+                } catch (error) {
+                    console.error('Erreur CEDEAO:', error);
+                }
+            }
+            
+            // Test système existant
+            let existingResult = null;
+            if (typeof classifySimple === 'function') {
+                try {
+                    existingResult = classifySimple(productName);
+                } catch (error) {
+                    console.error('Erreur système existant:', error);
+                }
+            }
+            
+            // Afficher la comparaison
+            displayComparison(cedeoResult, existingResult);
+            comparisonDiv.style.display = 'grid';
+        }
+        
+        function displayCEDEOResult(result) {
+            const resultDiv = document.getElementById('result');
+            const classification = result.classification;
+            
+            const html = `
+                <div class="success">
+                    <h3>✅ Classification CEDEAO</h3>
+                    <p><strong>Produit:</strong> ${result.product}</p>
+                    <p><strong>Section:</strong> ${classification.section} - ${classification.description}</p>
+                    <p><strong>Chapitre:</strong> ${classification.chapter}</p>
+                    <p><strong>Méthode:</strong> ${classification.method}</p>
+                    <p><strong>Confiance:</strong> ${(classification.confidence * 100).toFixed(1)}%</p>
+                    <p><strong>Traçabilité:</strong></p>
+                    <ul>
+                        ${result.audit_trail.map(trail => `<li>${trail}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
+            
+            resultDiv.innerHTML = html;
+            resultDiv.style.display = 'block';
+        }
+        
+        function displayExistingResult(result) {
+            const resultDiv = document.getElementById('result');
+            const classification = result[0];
+            
+            const html = `
+                <div class="success">
+                    <h3>✅ Classification Système Existant</h3>
+                    <p><strong>Section:</strong> ${classification.section.number} - ${classification.section.title}</p>
+                    <p><strong>Code:</strong> ${classification.code}</p>
+                    <p><strong>Confiance:</strong> ${classification.confidence}%</p>
+                </div>
+            `;
+            
+            resultDiv.innerHTML = html;
+            resultDiv.style.display = 'block';
+        }
+        
+        function displayComparison(cedeoResult, existingResult) {
+            const cedeoDiv = document.getElementById('cedeo-comparison');
+            const existingDiv = document.getElementById('existing-comparison');
+            
+            // Afficher résultat CEDEAO
+            if (cedeoResult && cedeoResult.success) {
+                const classification = cedeoResult.classification;
+                cedeoDiv.innerHTML = `
+                    <p><strong>Produit:</strong> ${cedeoResult.product}</p>
+                    <p><strong>Section:</strong> ${classification.section}</p>
+                    <p><strong>Chapitre:</strong> ${classification.chapter}</p>
+                    <p><strong>Description:</strong> ${classification.description}</p>
+                    <p><strong>Confiance:</strong> ${(classification.confidence * 100).toFixed(1)}%</p>
+                    <p><strong>Méthode:</strong> ${classification.method}</p>
+                `;
+            } else {
+                cedeoDiv.innerHTML = '<p class="error">❌ CEDEAO non disponible ou échec</p>';
+            }
+            
+            // Afficher résultat système existant
+            if (existingResult && existingResult.length > 0) {
+                const classification = existingResult[0];
+                existingDiv.innerHTML = `
+                    <p><strong>Section:</strong> ${classification.section.number}</p>
+                    <p><strong>Titre:</strong> ${classification.section.title}</p>
+                    <p><strong>Code:</strong> ${classification.code}</p>
+                    <p><strong>Confiance:</strong> ${classification.confidence}%</p>
+                `;
+            } else {
+                existingDiv.innerHTML = '<p class="error">❌ Système existant non disponible ou échec</p>';
+            }
+        }
+        
+        // Permettre l'utilisation de la touche Entrée
+        document.getElementById('productName').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                testBoth();
+            }
+        });
+    </script>
+</body>
+</html>

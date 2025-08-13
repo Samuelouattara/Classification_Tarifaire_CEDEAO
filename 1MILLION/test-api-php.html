@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test API PHP CEDEAO</title>
+    <meta charset="utf-8">
+</head>
+<body>
+    <h1>Test API PHP CEDEAO</h1>
+    
+    <div>
+        <label>Produit:</label>
+        <input type="text" id="product" value="bambou">
+        <button onclick="testAPI()">Tester</button>
+    </div>
+    
+    <div id="result" style="margin-top: 20px; padding: 10px; border: 1px solid #ccc;"></div>
+    
+    <script>
+        async function testAPI() {
+            const product = document.getElementById('product').value;
+            const resultDiv = document.getElementById('result');
+            
+            resultDiv.innerHTML = 'Test en cours...';
+            
+            try {
+                const formData = new FormData();
+                formData.append('action', 'classify_cedeo');
+                formData.append('product', product);
+                
+                const response = await fetch('api.php', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    resultDiv.innerHTML = '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+                } else {
+                    resultDiv.innerHTML = 'Erreur HTTP: ' + response.status + ' ' + response.statusText;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = 'Erreur: ' + error.message;
+            }
+        }
+    </script>
+</body>
+</html>

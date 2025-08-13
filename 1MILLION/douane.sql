@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:4240
--- Generation Time: Aug 07, 2025 at 11:52 AM
+-- Generation Time: Aug 13, 2025 at 12:06 PM
 -- Server version: 5.7.24
 -- PHP Version: 8.3.1
 
@@ -42,6 +42,12 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `GetUserStatistics` (IN `p_user_id` 
     GROUP BY u.user_id, u.nom_user, u.identifiant_user, u.nombre_produits_classes;
 END$$
 
+CREATE DEFINER=`root`@`localhost` PROCEDURE `NettoyerCacheCEDEO` ()   BEGIN
+    DELETE FROM cedeo_cache_classifications 
+    WHERE date_derniere_utilisation < DATE_SUB(NOW(), INTERVAL 30 DAY)
+    AND nombre_utilisations < 5;
+END$$
+
 CREATE DEFINER=`root`@`localhost` PROCEDURE `ValidateProduct` (IN `p_product_id` INT, IN `p_validator_id` INT)   BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
@@ -67,6 +73,89 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `ValidateProduct` (IN `p_product_id`
 END$$
 
 DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `cedeo_cache_classifications`
+--
+
+CREATE TABLE `cedeo_cache_classifications` (
+  `id_cache` int(11) NOT NULL,
+  `produit_recherche` varchar(255) NOT NULL,
+  `produit_normalise` varchar(255) NOT NULL,
+  `code_tarifaire_trouve` varchar(20) NOT NULL,
+  `description_trouvee` text,
+  `taux_imposition` decimal(5,2) NOT NULL,
+  `score_confiance` decimal(5,2) DEFAULT NULL,
+  `methode_recherche` enum('exact','keyword','fuzzy') NOT NULL,
+  `nombre_utilisations` int(11) DEFAULT '1',
+  `date_derniere_utilisation` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `date_creation` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `cedeo_chapitres`
+--
+
+CREATE TABLE `cedeo_chapitres` (
+  `id_chapitre` int(11) NOT NULL,
+  `code_chapitre` varchar(5) NOT NULL,
+  `titre_chapitre` text NOT NULL,
+  `description_chapitre` text,
+  `code_section` varchar(5) NOT NULL,
+  `taux_chapitre` decimal(5,2) DEFAULT NULL,
+  `date_creation` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `cedeo_codes_tarifaires`
+--
+
+CREATE TABLE `cedeo_codes_tarifaires` (
+  `id_code` int(11) NOT NULL,
+  `code_tarifaire` varchar(20) NOT NULL,
+  `description_produit` text NOT NULL,
+  `code_chapitre` varchar(5) NOT NULL,
+  `code_section` varchar(5) NOT NULL,
+  `taux_imposition` decimal(5,2) NOT NULL,
+  `unite_mesure` varchar(20) DEFAULT 'unité',
+  `notes_specifiques` text,
+  `date_creation` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `cedeo_mots_cles`
+--
+
+CREATE TABLE `cedeo_mots_cles` (
+  `id_mot_cle` int(11) NOT NULL,
+  `mot_cle` varchar(100) NOT NULL,
+  `code_tarifaire` varchar(20) NOT NULL,
+  `poids_recherche` int(11) DEFAULT '1',
+  `date_creation` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `cedeo_sections`
+--
+
+CREATE TABLE `cedeo_sections` (
+  `id_section` int(11) NOT NULL,
+  `code_section` varchar(5) NOT NULL,
+  `titre_section` text NOT NULL,
+  `description_section` text,
+  `taux_moyen` decimal(5,2) DEFAULT NULL,
+  `date_creation` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -124,7 +213,165 @@ INSERT INTO `produits` (`id_produit`, `origine_produit`, `description_produit`, 
 (1, 'Test', 'Riz blanc test', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', '1006.30.00.00', '0.00', '0.00', 'unité', 'Produit de test initial', '95.00', 'ai', '2025-08-07 11:51:01', '2025-08-07 11:51:01'),
 (2, 'Test', 'Viande de bœuf test', NULL, 0, 1, '10.50', 'I', NULL, 5, 'valide', '0201.20.00.00', '0.00', '0.00', 'unité', 'Produit de test initial', '88.50', 'automatique', '2025-08-07 11:51:01', '2025-08-07 11:51:01'),
 (3, 'Non spécifié', 'riz', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', '1006.30.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 85%', NULL, 'automatique', '2025-08-07 11:51:39', '2025-08-07 11:51:39'),
-(4, 'Non spécifié', 'riz', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', '1006.30.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 85%', NULL, 'automatique', '2025-08-07 11:51:39', '2025-08-07 11:51:39');
+(4, 'Non spécifié', 'riz', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', '1006.30.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 85%', NULL, 'automatique', '2025-08-07 11:51:39', '2025-08-07 11:51:39'),
+(5, 'Non spécifié', 'cacao', NULL, 0, 1, '15.75', 'XX', NULL, 5, 'en_attente', '9999.00.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 60%', NULL, 'automatique', '2025-08-07 14:22:50', '2025-08-07 14:22:50'),
+(6, 'Non spécifié', 'cacao', NULL, 0, 1, '15.75', 'XX', NULL, 5, 'en_attente', '9999.00.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 60%', NULL, 'automatique', '2025-08-07 14:22:50', '2025-08-07 14:22:50'),
+(7, 'Non spécifié', 'riz', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', '1006.30.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 85%', NULL, 'automatique', '2025-08-07 14:46:35', '2025-08-07 14:46:35'),
+(8, 'Non spécifié', 'riz', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', '1006.30.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 85%', NULL, 'automatique', '2025-08-07 14:46:35', '2025-08-07 14:46:35'),
+(9, 'Non spécifié', 'voiture', NULL, 0, 1, '20.75', 'XVII', NULL, 5, 'valide', '8703.23.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 85%', NULL, 'automatique', '2025-08-07 15:41:28', '2025-08-07 15:41:28'),
+(10, 'Non spécifié', 'voiture', NULL, 0, 1, '20.75', 'XVII', NULL, 5, 'valide', '8703.23.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 85%', NULL, 'automatique', '2025-08-07 15:41:28', '2025-08-07 15:41:28'),
+(11, 'Non spécifié', 'riz', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', '1006.30.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 85%', NULL, 'automatique', '2025-08-07 18:39:02', '2025-08-07 18:39:02'),
+(12, 'Non spécifié', 'riz', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', '1006.30.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 85%', NULL, 'automatique', '2025-08-07 18:39:02', '2025-08-07 18:39:02'),
+(13, 'Non spécifié', 'riz\n', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', '1006.30.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 85%', NULL, 'automatique', '2025-08-07 18:57:51', '2025-08-07 18:57:51'),
+(15, 'Non spécifié', 'riz', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', '1006.30.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 85%', NULL, 'automatique', '2025-08-07 18:58:46', '2025-08-07 18:58:46'),
+(16, 'Non spécifié', 'riz', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', '1006.30.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 85%', NULL, 'automatique', '2025-08-07 18:58:46', '2025-08-07 18:58:46'),
+(17, 'Non spécifié', 'voitures', NULL, 0, 1, '20.75', 'XVII', NULL, 5, 'valide', '8703.23.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 85%', NULL, 'automatique', '2025-08-07 18:59:21', '2025-08-07 18:59:21'),
+(18, 'Non spécifié', 'voitures', NULL, 0, 1, '20.75', 'XVII', NULL, 5, 'valide', '8703.23.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 85%', NULL, 'automatique', '2025-08-07 18:59:22', '2025-08-07 18:59:22'),
+(19, 'Non spécifié', 'riz', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', '1006.30.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 85%', NULL, 'automatique', '2025-08-07 19:07:44', '2025-08-07 19:07:44'),
+(20, 'Non spécifié', 'riz', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', '1006.30.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 85%', NULL, 'automatique', '2025-08-07 19:07:44', '2025-08-07 19:07:44'),
+(21, 'Non spécifié', 'riz', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', '1006.30.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 85%', NULL, 'automatique', '2025-08-07 19:08:32', '2025-08-07 19:08:32'),
+(22, 'Non spécifié', 'riz', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', '1006.30.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 85%', NULL, 'automatique', '2025-08-07 19:08:32', '2025-08-07 19:08:32'),
+(23, 'Non spécifié', 'riz', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', '1006.30.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 85%', NULL, 'automatique', '2025-08-07 19:08:33', '2025-08-07 19:08:33'),
+(24, 'Non spécifié', 'riz', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', '1006.30.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 85%', NULL, 'automatique', '2025-08-07 19:08:33', '2025-08-07 19:08:33'),
+(25, 'Non spécifié', 'riz', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', '1006.30.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 85%', NULL, 'automatique', '2025-08-07 19:08:33', '2025-08-07 19:08:33'),
+(26, 'Non spécifié', 'riz', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', '1006.30.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 85%', NULL, 'automatique', '2025-08-07 19:08:33', '2025-08-07 19:08:33'),
+(27, 'Non spécifié', 'riz', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', '1006.30.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 85%', NULL, 'automatique', '2025-08-07 19:08:33', '2025-08-07 19:08:33'),
+(28, 'Non spécifié', 'riz', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', '1006.30.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 85%', NULL, 'automatique', '2025-08-07 19:08:33', '2025-08-07 19:08:33'),
+(29, 'Non spécifié', 'riz', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', '1006.30.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 85%', NULL, 'automatique', '2025-08-07 19:08:53', '2025-08-07 19:08:53'),
+(30, 'Non spécifié', 'riz', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', '1006.30.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 85%', NULL, 'automatique', '2025-08-07 19:08:53', '2025-08-07 19:08:53'),
+(31, 'Non spécifié', 'riz', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', '1006.30.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 85%', NULL, 'automatique', '2025-08-07 19:10:24', '2025-08-07 19:10:24'),
+(32, 'Non spécifié', 'riz', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', '1006.30.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 85%', NULL, 'automatique', '2025-08-07 19:10:24', '2025-08-07 19:10:24'),
+(33, 'Non spécifié', 'riz', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', '1006.30.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 85%', NULL, 'automatique', '2025-08-07 19:10:52', '2025-08-07 19:10:52'),
+(35, 'Non spécifié', 'riz', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', '1006.30.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 85%', NULL, 'automatique', '2025-08-07 19:12:36', '2025-08-07 19:12:36'),
+(36, 'Non spécifié', 'riz', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', '1006.30.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 85%', NULL, 'automatique', '2025-08-07 19:12:36', '2025-08-07 19:12:36'),
+(37, 'Non spécifié', 'riz', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', '1006.30.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 85%', NULL, 'automatique', '2025-08-07 19:13:38', '2025-08-07 19:13:38'),
+(38, 'Non spécifié', 'riz', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', '1006.30.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 85%', NULL, 'automatique', '2025-08-07 19:13:38', '2025-08-07 19:13:38'),
+(39, 'Non spécifié', 'riz', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', '1006.30.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 85%', NULL, 'automatique', '2025-08-07 19:22:39', '2025-08-07 19:22:39'),
+(40, 'Non spécifié', 'riz', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', '1006.30.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 85%', NULL, 'automatique', '2025-08-07 19:22:39', '2025-08-07 19:22:39'),
+(41, 'Non spécifié', 'riz', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', '1006.30.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 85%', NULL, 'automatique', '2025-08-07 19:27:28', '2025-08-07 19:27:28'),
+(42, 'Non spécifié', 'riz', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', '1006.30.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 85%', NULL, 'automatique', '2025-08-07 19:27:28', '2025-08-07 19:27:28'),
+(43, 'Non spécifié', 'riz', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', '1006.30.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 85%', NULL, 'automatique', '2025-08-07 19:31:47', '2025-08-07 19:31:47'),
+(44, 'Non spécifié', 'riz', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', '1006.30.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 85%', NULL, 'automatique', '2025-08-07 19:31:47', '2025-08-07 19:31:47'),
+(45, 'Non spécifié', 'riz', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', '1006.30.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 85%', NULL, 'automatique', '2025-08-07 19:35:38', '2025-08-07 19:35:38'),
+(46, 'Non spécifié', 'riz', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', '1006.30.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 85%', NULL, 'automatique', '2025-08-07 19:35:38', '2025-08-07 19:35:38'),
+(47, 'Non spécifié', 'riz', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', '1006.30.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 85%', NULL, 'automatique', '2025-08-08 12:12:24', '2025-08-08 12:12:24'),
+(48, 'Non spécifié', 'riz', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', '1006.30.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 85%', NULL, 'automatique', '2025-08-08 12:12:24', '2025-08-08 12:12:24'),
+(49, 'Non spécifié', 'viande', NULL, 0, 1, '10.50', 'I', NULL, 5, 'en_attente', '0201.10.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 80%', NULL, 'automatique', '2025-08-08 12:12:51', '2025-08-08 12:12:51'),
+(50, 'Non spécifié', 'viande', NULL, 0, 1, '10.50', 'I', NULL, 5, 'en_attente', '0201.10.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 80%', NULL, 'automatique', '2025-08-08 12:12:51', '2025-08-08 12:12:51'),
+(51, 'Non spécifié', 'poissons', NULL, 0, 1, '10.50', 'I', NULL, 5, 'en_attente', '0201.10.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 80%', NULL, 'automatique', '2025-08-08 14:09:33', '2025-08-08 14:09:33'),
+(52, 'Non spécifié', 'poissons', NULL, 0, 1, '10.50', 'I', NULL, 5, 'en_attente', '0201.10.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 80%', NULL, 'automatique', '2025-08-08 14:09:33', '2025-08-08 14:09:33'),
+(53, 'Non spécifié', 'lait', NULL, 0, 1, '15.75', 'XX', NULL, 5, 'en_attente', '9999.00.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 60%', NULL, 'automatique', '2025-08-08 14:09:53', '2025-08-08 14:09:53'),
+(54, 'Non spécifié', 'lait', NULL, 0, 1, '15.75', 'XX', NULL, 5, 'en_attente', '9999.00.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 60%', NULL, 'automatique', '2025-08-08 14:09:53', '2025-08-08 14:09:53'),
+(55, 'Non spécifié', 'riz', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', '1006.30.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 85%', NULL, 'automatique', '2025-08-08 14:10:54', '2025-08-08 14:10:54'),
+(57, 'Chine', 'Smartphone Android', NULL, 0, 1, '22.50', 'XVI', NULL, 5, 'valide', '8517.12.00.00', '150000.00', '0.00', 'unité', 'Classification automatique - Confiance: 88%', NULL, 'automatique', '2025-08-08 14:13:44', '2025-08-08 14:13:44'),
+(58, 'Japon', 'Véhicule automobile essence', NULL, 0, 1, '20.75', 'XVII', NULL, 5, 'valide', '8703.23.00.00', '2500000.00', '0.00', 'unité', 'Classification automatique - Confiance: 92%', NULL, 'automatique', '2025-08-08 14:13:54', '2025-08-08 14:13:54'),
+(59, 'Non spécifié', 'voitures', NULL, 0, 1, '20.75', 'XVII', NULL, 5, 'valide', '8703.23.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 85%', NULL, 'automatique', '2025-08-08 14:14:26', '2025-08-08 14:14:26'),
+(60, 'Non spécifié', 'voitures', NULL, 0, 1, '20.75', 'XVII', NULL, 5, 'valide', '8703.23.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 85%', NULL, 'automatique', '2025-08-08 14:14:26', '2025-08-08 14:14:26'),
+(61, 'Non spécifié', 'riz', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', '1006.30.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 85%', NULL, 'automatique', '2025-08-09 01:37:16', '2025-08-09 01:37:16'),
+(62, 'Non spécifié', 'riz', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', '1006.30.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 85%', NULL, 'automatique', '2025-08-09 01:37:16', '2025-08-09 01:37:16'),
+(63, 'Japon', 'Véhicule automobile essence', NULL, 0, 1, '20.75', 'XVII', NULL, 5, 'valide', '8703.23.00.00', '2500000.00', '0.00', 'unité', 'Classification automatique - Confiance: 92%', NULL, 'automatique', '2025-08-09 15:52:03', '2025-08-09 15:52:03'),
+(64, 'Côte d\'Ivoire', 'Riz blanc long grain', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', '1006.30.00.00', '50000.00', '0.00', 'unité', 'Classification automatique - Confiance: 85%', NULL, 'automatique', '2025-08-09 15:52:05', '2025-08-09 15:52:05'),
+(65, 'Non spécifié', 'graines', NULL, 0, 1, '15.75', 'XX', NULL, 5, 'en_attente', '9999.00.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 60%', NULL, 'automatique', '2025-08-09 15:52:24', '2025-08-09 15:52:24'),
+(66, 'Non spécifié', 'graines', NULL, 0, 1, '15.75', 'XX', NULL, 5, 'en_attente', '9999.00.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 60%', NULL, 'automatique', '2025-08-09 15:52:24', '2025-08-09 15:52:24'),
+(67, 'Non spécifié', 'riz', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', '1006.30.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 85%', NULL, 'automatique', '2025-08-11 20:45:02', '2025-08-11 20:45:02'),
+(68, 'Non spécifié', 'riz', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', '1006.30.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 85%', NULL, 'automatique', '2025-08-11 20:45:02', '2025-08-11 20:45:02'),
+(69, 'Non spécifié', 'riz', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', '1006.30.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 85%', NULL, 'automatique', '2025-08-12 08:23:41', '2025-08-12 08:23:41'),
+(70, 'Non spécifié', 'riz', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', '1006.30.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 85%', NULL, 'automatique', '2025-08-12 08:23:41', '2025-08-12 08:23:41'),
+(71, 'Non spécifié', 'riz et meubles', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', '1006.30.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 85%', NULL, 'automatique', '2025-08-12 09:53:47', '2025-08-12 09:53:47'),
+(72, 'Non spécifié', 'riz', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', '1006.30.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 85%', NULL, 'automatique', '2025-08-12 09:56:29', '2025-08-12 09:56:29'),
+(73, 'Non spécifié', 'riz', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', '1006.30.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 85%', NULL, 'automatique', '2025-08-12 09:56:59', '2025-08-12 09:56:59'),
+(74, 'Non spécifié', 'meubles', NULL, 0, 1, '15.75', 'XX', NULL, 5, 'en_attente', '9999.00.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 60%', NULL, 'automatique', '2025-08-12 10:38:06', '2025-08-12 10:38:06'),
+(75, 'Non spécifié', 'jouets', NULL, 0, 1, '15.75', 'XX', NULL, 5, 'en_attente', '9999.00.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 60%', NULL, 'automatique', '2025-08-12 10:38:23', '2025-08-12 10:38:23'),
+(76, 'Non spécifié', 'poisson', NULL, 0, 1, '10.50', 'I', NULL, 5, 'en_attente', '0201.10.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 80%', NULL, 'automatique', '2025-08-12 10:40:11', '2025-08-12 10:40:11'),
+(77, 'Inde', 'Tissu de coton imprimé', NULL, 0, 1, '17.25', 'XI', NULL, 5, 'valide', '5208.52.00.00', '25000.00', '0.00', 'unité', 'Classification automatique - Confiance: 90%', NULL, 'automatique', '2025-08-12 11:23:15', '2025-08-12 11:23:15'),
+(78, 'Japon', 'Véhicule automobile essence', NULL, 0, 1, '20.75', 'XVII', NULL, 5, 'valide', '8703.23.00.00', '2500000.00', '0.00', 'unité', 'Classification automatique - Confiance: 92%', NULL, 'automatique', '2025-08-12 11:23:21', '2025-08-12 11:23:21'),
+(79, 'Japon', 'Véhicule automobile essence', NULL, 0, 1, '20.75', 'XVII', NULL, 5, 'valide', '8703.23.00.00', '2500000.00', '0.00', 'unité', 'Classification automatique - Confiance: 92%', NULL, 'automatique', '2025-08-12 11:23:31', '2025-08-12 11:23:31'),
+(80, 'Japon', 'Véhicule automobile essence', NULL, 0, 1, '20.75', 'XVII', NULL, 5, 'valide', '8703.23.00.00', '2500000.00', '0.00', 'unité', 'Classification automatique - Confiance: 92%', NULL, 'automatique', '2025-08-12 11:23:33', '2025-08-12 11:23:33'),
+(81, 'Japon', 'Véhicule automobile essence', NULL, 0, 1, '20.75', 'XVII', NULL, 5, 'valide', '8703.23.00.00', '2500000.00', '0.00', 'unité', 'Classification automatique - Confiance: 92%', NULL, 'automatique', '2025-08-12 11:23:37', '2025-08-12 11:23:37'),
+(82, 'Inde', 'Tissu de coton imprimé', NULL, 0, 1, '17.25', 'XI', NULL, 5, 'valide', '5208.52.00.00', '25000.00', '0.00', 'unité', 'Classification automatique - Confiance: 90%', NULL, 'automatique', '2025-08-12 11:23:43', '2025-08-12 11:23:43'),
+(83, 'Côte d\'Ivoire', 'Riz blanc long grain', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', '1006.30.00.00', '50000.00', '0.00', 'unité', 'Classification automatique - Confiance: 85%', NULL, 'automatique', '2025-08-12 11:23:54', '2025-08-12 11:23:54'),
+(84, 'Chine', 'Smartphone Android', NULL, 0, 1, '22.50', 'XVI', NULL, 5, 'valide', '8517.12.00.00', '150000.00', '0.00', 'unité', 'Classification automatique - Confiance: 88%', NULL, 'automatique', '2025-08-12 11:23:56', '2025-08-12 11:23:56'),
+(85, 'Non spécifié', 'riz', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', '1006.30.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 85%', NULL, 'automatique', '2025-08-12 11:29:51', '2025-08-12 11:29:51'),
+(86, 'Non spécifié', 'poisson', NULL, 0, 1, '10.50', 'I', NULL, 5, 'en_attente', '0201.10.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 80%', NULL, 'automatique', '2025-08-12 11:30:13', '2025-08-12 11:30:13'),
+(87, 'Non spécifié', 'graines', NULL, 0, 1, '15.75', 'XX', NULL, 5, 'en_attente', '9999.00.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 60%', NULL, 'automatique', '2025-08-12 11:30:33', '2025-08-12 11:30:33'),
+(88, 'Non spécifié', 'poissons', NULL, 0, 1, '10.50', 'I', NULL, 5, 'en_attente', '0201.10.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 80%', NULL, 'automatique', '2025-08-12 11:31:09', '2025-08-12 11:31:09'),
+(89, 'Non spécifié', 'telephone', NULL, 0, 1, '15.75', 'XX', NULL, 5, 'en_attente', '9999.00.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 60%', NULL, 'automatique', '2025-08-12 11:32:02', '2025-08-12 11:32:02'),
+(90, 'Non spécifié', 'voiture', NULL, 0, 1, '20.75', 'XVII', NULL, 5, 'valide', '8703.23.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 85%', NULL, 'automatique', '2025-08-12 11:32:51', '2025-08-12 11:32:51'),
+(91, 'Non spécifié', 'riz', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', '1006.30.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 85%', NULL, 'automatique', '2025-08-12 12:01:02', '2025-08-12 12:01:02'),
+(92, 'Non spécifié', 'poissons', NULL, 0, 1, '10.50', 'I', NULL, 5, 'valide', '0302', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 98%', NULL, 'automatique', '2025-08-12 12:01:15', '2025-08-12 12:01:15'),
+(93, 'Non spécifié', 'meubles', NULL, 0, 1, '15.75', 'XX', NULL, 5, 'valide', '9401', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 96%', NULL, 'automatique', '2025-08-12 12:01:45', '2025-08-12 12:01:45'),
+(94, 'Non spécifié', 'jouets', NULL, 0, 1, '15.75', 'XX', NULL, 5, 'valide', '9503', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 98%', NULL, 'automatique', '2025-08-12 12:02:00', '2025-08-12 12:02:00'),
+(95, 'Non spécifié', 'armes', NULL, 0, 1, '15.75', 'XX', NULL, 5, 'en_attente', '9999.00.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 60%', NULL, 'automatique', '2025-08-12 12:02:21', '2025-08-12 12:02:21'),
+(96, 'Non spécifié', 'riz', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', 'II10.00.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 99.9%', NULL, 'automatique', '2025-08-12 12:49:16', '2025-08-12 12:49:16'),
+(97, 'Non spécifié', 'riz', NULL, 0, 1, '15.75', 'XX', NULL, 5, 'valide', '9999.00.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 96.513724503369%', NULL, 'automatique', '2025-08-12 12:49:28', '2025-08-12 12:49:28'),
+(98, 'Non spécifié', 'GRAINES', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', 'II10.00.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 99.9%', NULL, 'automatique', '2025-08-12 13:11:53', '2025-08-12 13:11:53'),
+(99, 'Non spécifié', 'graines', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', 'II10.00.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 99.9%', NULL, 'automatique', '2025-08-12 13:12:51', '2025-08-12 13:12:51'),
+(100, 'Non spécifié', 'Graines oléagineuses', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', 'II10.00.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 99.9%', NULL, 'automatique', '2025-08-12 13:13:13', '2025-08-12 13:13:13'),
+(101, 'Non spécifié', 'mangue', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', 'II08.00.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 99.9%', NULL, 'automatique', '2025-08-12 13:13:34', '2025-08-12 13:13:34'),
+(102, 'Non spécifié', 'fraise', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', 'II08.00.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 99.9%', NULL, 'automatique', '2025-08-12 13:19:41', '2025-08-12 13:19:41'),
+(103, 'Non spécifié', 'banane', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', 'II08.00.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 99.9%', NULL, 'automatique', '2025-08-12 13:21:48', '2025-08-12 13:21:48'),
+(104, 'Non spécifié', 'tomates', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', 'II07.00.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 99.9%', NULL, 'automatique', '2025-08-12 13:22:09', '2025-08-12 13:22:09'),
+(105, 'Non spécifié', 'canne a sucre', NULL, 0, 1, '15.25', 'IV', NULL, 5, 'valide', 'IV17.00.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 99.9%', NULL, 'automatique', '2025-08-12 13:22:37', '2025-08-12 13:22:37'),
+(106, 'Non spécifié', 'kiwi', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', 'II08.00.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 99.9%', NULL, 'automatique', '2025-08-12 13:24:29', '2025-08-12 13:24:29'),
+(107, 'Non spécifié', 'apple', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', 'II08.00.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 99.9%', NULL, 'automatique', '2025-08-12 13:26:24', '2025-08-12 13:26:24'),
+(108, 'Non spécifié', 'tablette', NULL, 0, 1, '15.25', 'IV', NULL, 5, 'valide', 'IV18.00.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 99.9%', NULL, 'automatique', '2025-08-12 13:28:28', '2025-08-12 13:28:28'),
+(109, 'Non spécifié', 'tablette electronique', NULL, 0, 1, '15.25', 'IV', NULL, 5, 'valide', 'IV18.00.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 99.9%', NULL, 'automatique', '2025-08-12 13:28:52', '2025-08-12 13:28:52'),
+(110, 'Non spécifié', 'riz', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', 'II10.00.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 99.9%', NULL, 'automatique', '2025-08-12 13:35:57', '2025-08-12 13:35:57'),
+(111, 'Non spécifié', 'tablette', NULL, 0, 1, '15.25', 'IV', NULL, 5, 'valide', 'IV18.00.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 99.9%', NULL, 'automatique', '2025-08-12 13:36:45', '2025-08-12 13:36:45'),
+(112, 'Non spécifié', 'riz', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', 'II10.00.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 99.9%', NULL, 'automatique', '2025-08-12 14:16:12', '2025-08-12 14:16:12'),
+(113, 'Non spécifié', 'textile cotoon', NULL, 0, 1, '17.25', 'XI', NULL, 5, 'valide', 'XI50.00.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 99.9%', NULL, 'automatique', '2025-08-12 14:16:35', '2025-08-12 14:16:35'),
+(114, 'Non spécifié', 'textile cotoon', NULL, 0, 1, '17.25', 'XI', NULL, 5, 'valide', 'XI50.00.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 99.9%', NULL, 'automatique', '2025-08-12 14:16:38', '2025-08-12 14:16:38'),
+(115, 'Non spécifié', 'textile cotoon', NULL, 0, 1, '17.25', 'XI', NULL, 5, 'valide', 'XI50.00.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 99.9%', NULL, 'automatique', '2025-08-12 14:16:44', '2025-08-12 14:16:44'),
+(116, 'Non spécifié', 'coton', NULL, 0, 1, '17.25', 'XI', NULL, 5, 'valide', 'XI50.00.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 99.9%', NULL, 'automatique', '2025-08-12 14:17:23', '2025-08-12 14:17:23'),
+(117, 'Non spécifié', 'coton', NULL, 0, 1, '17.25', 'XI', NULL, 5, 'valide', 'XI50.00.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 99.9%', NULL, 'automatique', '2025-08-12 14:19:39', '2025-08-12 14:19:39'),
+(118, 'Non spécifié', 'coton', NULL, 0, 1, '17.25', 'XI', NULL, 5, 'valide', 'XI50.00.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 99.9%', NULL, 'automatique', '2025-08-12 14:19:53', '2025-08-12 14:19:53'),
+(119, 'Non spécifié', 'coton', NULL, 0, 1, '17.25', 'XI', NULL, 5, 'valide', 'undefined', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 100%', NULL, 'automatique', '2025-08-12 14:26:31', '2025-08-12 14:26:31'),
+(120, 'Non spécifié', 'coton', NULL, 0, 1, '17.25', 'XI', NULL, 5, 'valide', 'undefined', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 100%', NULL, 'automatique', '2025-08-12 14:30:19', '2025-08-12 14:30:19'),
+(121, 'Non spécifié', 'ble', NULL, 0, 1, '5.50', 'V', NULL, 5, 'valide', 'undefined', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 100%', NULL, 'automatique', '2025-08-12 15:06:08', '2025-08-12 15:06:08'),
+(122, 'Non spécifié', 'riz', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', 'undefined', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 100%', NULL, 'automatique', '2025-08-12 15:07:13', '2025-08-12 15:07:13'),
+(123, 'Non spécifié', 'café', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', 'undefined', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 100%', NULL, 'automatique', '2025-08-12 15:07:46', '2025-08-12 15:07:46'),
+(124, 'Non spécifié', 'riz', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', 'undefined', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 100%', NULL, 'automatique', '2025-08-12 15:37:36', '2025-08-12 15:37:36'),
+(125, 'Non spécifié', 'coton', NULL, 0, 1, '17.25', 'XI', NULL, 5, 'valide', 'undefined', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 100%', NULL, 'automatique', '2025-08-12 15:40:36', '2025-08-12 15:40:36'),
+(126, 'Non spécifié', 'coton', NULL, 0, 1, '17.25', 'XI', NULL, 5, 'valide', 'XI50.00.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 99.9%', NULL, 'automatique', '2025-08-12 15:41:09', '2025-08-12 15:41:09'),
+(127, 'Non spécifié', 'mangue', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', 'II08.00.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 99.9%', NULL, 'automatique', '2025-08-12 15:41:29', '2025-08-12 15:41:29'),
+(128, 'Non spécifié', 'tablette', NULL, 0, 1, '15.25', 'IV', NULL, 5, 'valide', 'IV18.00.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 99.9%', NULL, 'automatique', '2025-08-12 15:41:44', '2025-08-12 15:41:44'),
+(129, 'Non spécifié', 'coton', NULL, 0, 1, '17.25', 'XI', NULL, 5, 'valide', 'XI52.00.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 99.9%', NULL, 'automatique', '2025-08-12 16:01:05', '2025-08-12 16:01:05'),
+(130, 'Non spécifié', 'laine', NULL, 0, 1, '10.50', 'I', NULL, 5, 'valide', '0I05.00.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 99.9%', NULL, 'automatique', '2025-08-12 16:01:28', '2025-08-12 16:01:28'),
+(131, 'Non spécifié', 'laine', NULL, 0, 1, '17.25', 'XI', NULL, 5, 'valide', 'XI51.00.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 99.9%', NULL, 'automatique', '2025-08-12 16:07:43', '2025-08-12 16:07:43'),
+(132, 'Non spécifié', 'soie', NULL, 0, 1, '10.50', 'I', NULL, 5, 'valide', '0I01.00.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 99.9%', NULL, 'automatique', '2025-08-12 16:07:57', '2025-08-12 16:07:57'),
+(133, 'Non spécifié', 'coton', NULL, 0, 1, '17.25', 'XI', NULL, 5, 'valide', 'XI52.00.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 99.9%', NULL, 'automatique', '2025-08-12 16:08:17', '2025-08-12 16:08:17'),
+(134, 'Non spécifié', 'riz', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', 'II10.00.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 99.9%', NULL, 'automatique', '2025-08-12 16:11:09', '2025-08-12 16:11:09'),
+(135, 'Non spécifié', 'JUS', NULL, 0, 1, '15.25', 'IV', NULL, 5, 'valide', 'IV20.00.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 99.9%', NULL, 'automatique', '2025-08-12 16:46:11', '2025-08-12 16:46:11'),
+(136, 'Non spécifié', 'riz', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', 'II10.00.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 99.9%', NULL, 'automatique', '2025-08-12 17:07:00', '2025-08-12 17:07:00'),
+(137, 'Non spécifié', 'bonnet', NULL, 0, 1, '15.75', 'XX', NULL, 5, 'valide', '9999.00.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 91.070906975956%', NULL, 'automatique', '2025-08-12 17:07:24', '2025-08-12 17:07:24'),
+(138, 'Non spécifié', 'coton', NULL, 0, 1, '17.25', 'XI', NULL, 5, 'valide', 'XI50.00.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 99.9%', NULL, 'automatique', '2025-08-12 17:09:06', '2025-08-12 17:09:06'),
+(139, 'Non spécifié', 'avion', NULL, 0, 1, '20.75', 'XVII', NULL, 5, 'valide', 'XVII88.00.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 99.9%', NULL, 'automatique', '2025-08-12 17:26:37', '2025-08-12 17:26:37'),
+(140, 'Non spécifié', 'riz', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', 'II10.00.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 99.9%', NULL, 'automatique', '2025-08-12 17:26:55', '2025-08-12 17:26:55'),
+(141, 'Non spécifié', 'horloge', NULL, 0, 1, '9.25', 'XIII', NULL, 5, 'valide', 'XIII71.00.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 99.9%', NULL, 'automatique', '2025-08-12 17:27:08', '2025-08-12 17:27:08'),
+(142, 'Non spécifié', 'riz', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', 'II10.00.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 99.9%', NULL, 'automatique', '2025-08-13 00:07:49', '2025-08-13 00:07:49'),
+(143, 'Non spécifié', 'je veux du riz', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', 'II10.00.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 99.9%', NULL, 'automatique', '2025-08-13 00:08:11', '2025-08-13 00:08:11'),
+(144, 'Non spécifié', 'automobile', NULL, 0, 1, '22.50', 'XVI', NULL, 5, 'valide', 'XVI87.00.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 99.9%', NULL, 'automatique', '2025-08-13 00:09:24', '2025-08-13 00:09:24'),
+(145, 'Non spécifié', 'kiwi', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', 'II08.00.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 99.9%', NULL, 'automatique', '2025-08-13 00:10:01', '2025-08-13 00:10:01'),
+(146, 'Non spécifié', 'riz', NULL, 0, 1, '8.75', 'II', NULL, 5, 'valide', 'II10.00.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 99.9%', NULL, 'automatique', '2025-08-13 00:11:38', '2025-08-13 00:11:38'),
+(147, 'Non spécifié', 'avion commercial', NULL, 0, 1, '20.75', 'XVII', NULL, 5, 'valide', 'undefined', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 95%', NULL, 'automatique', '2025-08-13 09:49:11', '2025-08-13 09:49:11'),
+(148, 'Non spécifié', 'avion commercial', NULL, 0, 1, '20.75', 'XVII', NULL, 5, 'valide', '880100', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 95%', NULL, 'automatique', '2025-08-13 09:57:51', '2025-08-13 09:57:51'),
+(149, 'Non spécifié', 'ordinateur', NULL, 0, 1, '22.50', 'XVI', NULL, 5, 'valide', '840100', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 95%', NULL, 'automatique', '2025-08-13 10:02:12', '2025-08-13 10:02:12'),
+(150, 'Non spécifié', 'avion commercial', NULL, 0, 1, '20.75', 'XVII', NULL, 5, 'valide', 'XVII88.00.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 99.9%', NULL, 'automatique', '2025-08-13 10:23:01', '2025-08-13 10:23:01'),
+(151, 'Non spécifié', 'avion commercial', NULL, 0, 1, '20.75', 'XVII', NULL, 5, 'valide', 'XVII88.00.00.00', '0.00', '0.00', 'unité', 'Classification automatique - Confiance: 99.9%', NULL, 'automatique', '2025-08-13 10:25:46', '2025-08-13 10:25:46');
+
+--
+-- Triggers `produits`
+--
+DELIMITER $$
+CREATE TRIGGER `update_user_product_count` AFTER INSERT ON `produits` FOR EACH ROW BEGIN
+    UPDATE User 
+    SET nombre_produits_classes = (
+        SELECT COUNT(*) FROM Produits WHERE user_id = NEW.user_id
+    ) 
+    WHERE user_id = NEW.user_id;
+END
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -196,10 +443,32 @@ CREATE TABLE `user` (
 --
 
 INSERT INTO `user` (`user_id`, `nom_user`, `identifiant_user`, `mot_de_passe`, `email`, `nombre_produits_classes`, `is_admin`, `date_creation`, `derniere_connexion`, `statut_compte`) VALUES
-(5, 'Administrateur Système', 'admin', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin@douane.ci', 0, 1, '2025-08-07 11:51:01', NULL, 'actif'),
-(6, 'Marie Kouassi', 'marie.douane', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'marie@douane.ci', 0, 0, '2025-08-07 11:51:01', NULL, 'actif'),
+(5, 'Administrateur Système', 'momo', '$2y$10$qaycdapujJoiIbi.ip5g2.EaNCZYhX2fupd472YKKqRNTEUNOVz3m', 'admin@douane.ci', 148, 1, '2025-08-07 11:51:01', '2025-08-13 09:32:25', 'actif'),
+(6, 'Marie Kouassi', 'marie.douane', '$2y$10$qaycdapujJoiIbi.ip5g2.EaNCZYhX2fupd472YKKqRNTEUNOVz3m', 'marie@douane.ci', 0, 0, '2025-08-07 11:51:01', '2025-08-07 17:06:38', 'actif'),
 (7, 'Ahmed Traoré', 'ahmed.class', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'ahmed@douane.ci', 0, 0, '2025-08-07 11:51:01', NULL, 'actif'),
-(8, 'Fatou Koné', 'fatou.inspect', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'fatou@douane.ci', 0, 0, '2025-08-07 11:51:01', NULL, 'actif');
+(8, 'Fatou Koné', 'fatou.inspect', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'fatou@douane.ci', 0, 0, '2025-08-07 11:51:01', NULL, 'actif'),
+(9, 'serigne ndiaye', 'serigne', '$2y$10$/RVc/XhlGhdb2uIjlKRbEOlc7C7uXgWmust4buY2cnvNV1nqmHkbC', 'serigne@admin.ci', 0, 0, '2025-08-07 16:13:54', NULL, 'actif'),
+(10, 'momo', 'jeann', '$2y$10$id1Rm4xcm3Yl7Gm4ra6bbusTqTBsPZx19MZH/sNm2L8z8tBM6Q1Um', 'jeansamuel@douane.ci', 0, 0, '2025-08-12 16:26:44', NULL, 'actif');
+
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `vue_cedeo_complete`
+-- (See below for the actual view)
+--
+CREATE TABLE `vue_cedeo_complete` (
+`id_code` int(11)
+,`code_tarifaire` varchar(20)
+,`description_produit` text
+,`taux_imposition` decimal(5,2)
+,`unite_mesure` varchar(20)
+,`notes_specifiques` text
+,`code_chapitre` varchar(5)
+,`titre_chapitre` text
+,`code_section` varchar(5)
+,`titre_section` text
+,`mots_cles` text
+);
 
 -- --------------------------------------------------------
 
@@ -235,6 +504,15 @@ CREATE TABLE `vue_produits_complets` (
 -- --------------------------------------------------------
 
 --
+-- Structure for view `vue_cedeo_complete`
+--
+DROP TABLE IF EXISTS `vue_cedeo_complete`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vue_cedeo_complete`  AS SELECT `ct`.`id_code` AS `id_code`, `ct`.`code_tarifaire` AS `code_tarifaire`, `ct`.`description_produit` AS `description_produit`, `ct`.`taux_imposition` AS `taux_imposition`, `ct`.`unite_mesure` AS `unite_mesure`, `ct`.`notes_specifiques` AS `notes_specifiques`, `c`.`code_chapitre` AS `code_chapitre`, `c`.`titre_chapitre` AS `titre_chapitre`, `s`.`code_section` AS `code_section`, `s`.`titre_section` AS `titre_section`, group_concat(distinct `mc`.`mot_cle` order by `mc`.`poids_recherche` DESC separator '|') AS `mots_cles` FROM (((`cedeo_codes_tarifaires` `ct` join `cedeo_chapitres` `c` on((`ct`.`code_chapitre` = `c`.`code_chapitre`))) join `cedeo_sections` `s` on((`ct`.`code_section` = `s`.`code_section`))) left join `cedeo_mots_cles` `mc` on((`ct`.`code_tarifaire` = `mc`.`code_tarifaire`))) GROUP BY `ct`.`id_code`, `ct`.`code_tarifaire`, `ct`.`description_produit`, `ct`.`taux_imposition`, `ct`.`unite_mesure`, `ct`.`notes_specifiques`, `c`.`code_chapitre`, `c`.`titre_chapitre`, `s`.`code_section`, `s`.`titre_section``titre_section`  ;
+
+-- --------------------------------------------------------
+
+--
 -- Structure for view `vue_produits_complets`
 --
 DROP TABLE IF EXISTS `vue_produits_complets`;
@@ -244,6 +522,56 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 --
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `cedeo_cache_classifications`
+--
+ALTER TABLE `cedeo_cache_classifications`
+  ADD PRIMARY KEY (`id_cache`),
+  ADD UNIQUE KEY `produit_normalise` (`produit_normalise`),
+  ADD KEY `idx_produit_recherche` (`produit_recherche`),
+  ADD KEY `idx_produit_normalise` (`produit_normalise`),
+  ADD KEY `idx_code_tarifaire` (`code_tarifaire_trouve`),
+  ADD KEY `idx_utilisation` (`nombre_utilisations`,`date_derniere_utilisation`);
+
+--
+-- Indexes for table `cedeo_chapitres`
+--
+ALTER TABLE `cedeo_chapitres`
+  ADD PRIMARY KEY (`id_chapitre`),
+  ADD UNIQUE KEY `code_chapitre` (`code_chapitre`),
+  ADD KEY `idx_code_chapitre` (`code_chapitre`),
+  ADD KEY `idx_section` (`code_section`);
+
+--
+-- Indexes for table `cedeo_codes_tarifaires`
+--
+ALTER TABLE `cedeo_codes_tarifaires`
+  ADD PRIMARY KEY (`id_code`),
+  ADD UNIQUE KEY `code_tarifaire` (`code_tarifaire`),
+  ADD KEY `idx_code_tarifaire` (`code_tarifaire`),
+  ADD KEY `idx_chapitre` (`code_chapitre`),
+  ADD KEY `idx_section` (`code_section`),
+  ADD KEY `idx_description` (`description_produit`(255)),
+  ADD KEY `idx_cedeo_recherche_complete` (`description_produit`(255),`code_tarifaire`,`taux_imposition`);
+
+--
+-- Indexes for table `cedeo_mots_cles`
+--
+ALTER TABLE `cedeo_mots_cles`
+  ADD PRIMARY KEY (`id_mot_cle`),
+  ADD KEY `idx_mot_cle` (`mot_cle`),
+  ADD KEY `idx_code_tarifaire` (`code_tarifaire`),
+  ADD KEY `idx_recherche` (`mot_cle`,`poids_recherche`),
+  ADD KEY `idx_cedeo_mots_cles_recherche` (`mot_cle`,`poids_recherche`,`code_tarifaire`);
+
+--
+-- Indexes for table `cedeo_sections`
+--
+ALTER TABLE `cedeo_sections`
+  ADD PRIMARY KEY (`id_section`),
+  ADD UNIQUE KEY `code_section` (`code_section`),
+  ADD KEY `idx_code_section` (`code_section`);
 
 --
 -- Indexes for table `historique_classifications`
@@ -285,6 +613,36 @@ ALTER TABLE `user`
 --
 
 --
+-- AUTO_INCREMENT for table `cedeo_cache_classifications`
+--
+ALTER TABLE `cedeo_cache_classifications`
+  MODIFY `id_cache` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `cedeo_chapitres`
+--
+ALTER TABLE `cedeo_chapitres`
+  MODIFY `id_chapitre` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `cedeo_codes_tarifaires`
+--
+ALTER TABLE `cedeo_codes_tarifaires`
+  MODIFY `id_code` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `cedeo_mots_cles`
+--
+ALTER TABLE `cedeo_mots_cles`
+  MODIFY `id_mot_cle` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `cedeo_sections`
+--
+ALTER TABLE `cedeo_sections`
+  MODIFY `id_section` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `historique_classifications`
 --
 ALTER TABLE `historique_classifications`
@@ -294,7 +652,7 @@ ALTER TABLE `historique_classifications`
 -- AUTO_INCREMENT for table `produits`
 --
 ALTER TABLE `produits`
-  MODIFY `id_produit` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id_produit` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=152;
 
 --
 -- AUTO_INCREMENT for table `taux_imposition`
@@ -306,7 +664,36 @@ ALTER TABLE `taux_imposition`
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `cedeo_cache_classifications`
+--
+ALTER TABLE `cedeo_cache_classifications`
+  ADD CONSTRAINT `cedeo_cache_classifications_ibfk_1` FOREIGN KEY (`code_tarifaire_trouve`) REFERENCES `cedeo_codes_tarifaires` (`code_tarifaire`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `cedeo_chapitres`
+--
+ALTER TABLE `cedeo_chapitres`
+  ADD CONSTRAINT `cedeo_chapitres_ibfk_1` FOREIGN KEY (`code_section`) REFERENCES `cedeo_sections` (`code_section`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `cedeo_codes_tarifaires`
+--
+ALTER TABLE `cedeo_codes_tarifaires`
+  ADD CONSTRAINT `cedeo_codes_tarifaires_ibfk_1` FOREIGN KEY (`code_chapitre`) REFERENCES `cedeo_chapitres` (`code_chapitre`) ON DELETE CASCADE,
+  ADD CONSTRAINT `cedeo_codes_tarifaires_ibfk_2` FOREIGN KEY (`code_section`) REFERENCES `cedeo_sections` (`code_section`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `cedeo_mots_cles`
+--
+ALTER TABLE `cedeo_mots_cles`
+  ADD CONSTRAINT `cedeo_mots_cles_ibfk_1` FOREIGN KEY (`code_tarifaire`) REFERENCES `cedeo_codes_tarifaires` (`code_tarifaire`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

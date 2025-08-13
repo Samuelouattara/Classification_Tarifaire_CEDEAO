@@ -1,4 +1,5 @@
 // Système de Classification Tarifaire CEDEAO - Version avec Notifications Toast
+// Bot CEDEAO comme système principal de classification
 let aiClassifier;
 let isAIReady = false;
 let classificationHistory = [];
@@ -231,15 +232,43 @@ function showInfoToast(title, message = '', duration = 4000) {
 // Initialisation du système
 async function initializeSystem() {
     try {
+        // Charger les règles CEDEAO
+        await loadCEDEORules();
+        
         await initializeDatabaseManager();
         await initializeAIClassifier();
         initializeTableauIntegration();
         setupEventListeners();
         loadClassificationHistory();
         updateStatistics();
-        console.log('✅ Système initialisé');
+        console.log('✅ Système initialisé avec règles CEDEAO');
     } catch (error) {
         console.error('❌ Erreur initialisation:', error);
+    }
+}
+
+
+// Charger les règles CEDEAO
+async function loadCEDEORules() {
+    try {
+        // Vérifier si le script est déjà chargé
+        if (typeof classifyProductWithCEDEO === 'function') {
+            console.log('✅ Règles CEDEAO déjà disponibles');
+            return;
+        }
+        
+        // Charger le script des règles CEDEAO
+        const script = document.createElement('script');
+        script.src = 'cedeo-bot-rules.js';
+        script.onload = () => {
+            console.log('✅ Règles CEDEAO chargées avec succès');
+        };
+        script.onerror = () => {
+            console.warn('⚠️ Impossible de charger les règles CEDEAO, utilisation du système existant');
+        };
+        document.head.appendChild(script);
+    } catch (error) {
+        console.warn('⚠️ Erreur chargement règles CEDEAO:', error);
     }
 }
 
@@ -458,68 +487,121 @@ async function handleClassification() {
         await new Promise(resolve => setTimeout(resolve, 1500));
         
         let results;
-        if (isAIReady) {
-            results = await aiClassifier.classifyWithAI(description);
-        } else {
-                    // Utiliser l'IA personnalisée ultra-optimisée en priorité
-                    if (typeof window.CustomCedeoAI !== 'undefined') {
-                        try {
-                            const customAI = new window.CustomCedeoAI();
-                            results = await customAI.classifyWithAI(description);
-                            console.log('🚀 IA CEDEAO ultra-optimisée utilisée');
-                        } catch (error) {
-                            console.warn('Erreur avec CustomCedeoAI, fallback vers IntelligentTariffClassifier:', error);
-                            
-                            // Fallback vers IntelligentTariffClassifier
-                            if (typeof window.IntelligentTariffClassifier !== 'undefined') {
-                                try {
-                                    const intelligentClassifier = new window.IntelligentTariffClassifier();
-                                    results = await intelligentClassifier.classifyProduct(description);
-                                    console.log('🧠 Classification intelligente utilisée (fallback)');
-                                } catch (error2) {
-                                    console.warn('Erreur avec IntelligentTariffClassifier, fallback vers classifyProductImproved:', error2);
-                                    if (typeof classifyProductImproved === 'function') {
-                                        results = classifyProductImproved(description);
-                                    } else {
-            results = classifySimple(description);
-                                    }
-                                }
-                            } else if (typeof classifyProductImproved === 'function') {
-                                try {
+        
+        // Utiliser le bot CEDEAO comme système principal
+        try {
+            const response = await fetch('api.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    action: 'classify_cedeo',
+                    product_name: description
+                })
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                // Convertir le format CEDEAO au format attendu par le système
+                results = [{
+                    section: { 
+                        number: result.classification.section,
+                        title: getSectionTitle(result.classification.section) // Ajout du titre de la section
+                    },
+                    chapter: result.classification.chapter,
+                    description: description,
+                    confidence: Math.round(result.classification.confidence * 100),
+                    method: result.classification.classification_method,
+                    tax_rate: result.classification.tax_rate,
+                    code: result.classification.tariff_code, // Ajout du champ 'code' attendu par le frontend
+                    tariff_code: result.classification.tariff_code,
+                    source: result.source,
+                    fallback: result.fallback || false
+                }];
+                
+                console.log('🎯 Bot CEDEAO utilisé:', result);
+                
+                // Afficher une notification selon la source
+                if (result.source === 'CEDEAO_BOT') {
+                    showSuccessToast('Classification CEDEAO', 'Produit classifié avec le bot CEDEAO');
+                } else {
+                    showInfoToast('Système de secours', 'Classification avec le système existant (bot CEDEAO indisponible)');
+                }
+            } else {
+                throw new Error(result.message || 'Erreur de classification');
+            }
+        } catch (error) {
+            console.warn('⚠️ Erreur bot CEDEAO, fallback vers système existant:', error);
+            // Continuer avec la logique existante
+        }
+        
+        // Si CEDEAO n'a pas fonctionné, utiliser la logique existante
+        if (!results) {
+            if (isAIReady) {
+                results = await aiClassifier.classifyWithAI(description);
+            } else {
+                // Utiliser l'IA personnalisée ultra-optimisée en priorité
+                if (typeof window.CustomCedeoAI !== 'undefined') {
+                    try {
+                        const customAI = new window.CustomCedeoAI();
+                        results = await customAI.classifyWithAI(description);
+                        console.log('🚀 IA CEDEAO ultra-optimisée utilisée');
+                    } catch (error) {
+                        console.warn('Erreur avec CustomCedeoAI, fallback vers IntelligentTariffClassifier:', error);
+                        
+                        // Fallback vers IntelligentTariffClassifier
+                        if (typeof window.IntelligentTariffClassifier !== 'undefined') {
+                            try {
+                                const intelligentClassifier = new window.IntelligentTariffClassifier();
+                                results = await intelligentClassifier.classifyProduct(description);
+                                console.log('🧠 Classification intelligente utilisée (fallback)');
+                            } catch (error2) {
+                                console.warn('Erreur avec IntelligentTariffClassifier, fallback vers classifyProductImproved:', error2);
+                                if (typeof classifyProductImproved === 'function') {
                                     results = classifyProductImproved(description);
-                                } catch (error2) {
-                                    console.warn('Erreur avec classifyProductImproved, fallback vers classifySimple:', error2);
+                                } else {
                                     results = classifySimple(description);
                                 }
-                            } else {
-                                console.warn('classifyProductImproved non disponible, utilisation de classifySimple');
-                                results = classifySimple(description);
                             }
-                        }
-                    } else if (typeof window.IntelligentTariffClassifier !== 'undefined') {
-                        try {
-                            const intelligentClassifier = new window.IntelligentTariffClassifier();
-                            results = await intelligentClassifier.classifyProduct(description);
-                            console.log('🧠 Classification intelligente utilisée');
-                        } catch (error) {
-                            console.warn('Erreur avec IntelligentTariffClassifier, fallback vers classifyProductImproved:', error);
-                            if (typeof classifyProductImproved === 'function') {
+                        } else if (typeof classifyProductImproved === 'function') {
+                            try {
                                 results = classifyProductImproved(description);
-                            } else {
+                            } catch (error2) {
+                                console.warn('Erreur avec classifyProductImproved, fallback vers classifySimple:', error2);
                                 results = classifySimple(description);
                             }
-                        }
-                    } else if (typeof classifyProductImproved === 'function') {
-                        try {
-                            results = classifyProductImproved(description);
-                        } catch (error) {
-                            console.warn('Erreur avec classifyProductImproved, fallback vers classifySimple:', error);
+                        } else {
+                            console.warn('classifyProductImproved non disponible, utilisation de classifySimple');
                             results = classifySimple(description);
                         }
-                    } else {
-                        console.warn('classifyProductImproved non disponible, utilisation de classifySimple');
+                    }
+                } else if (typeof window.IntelligentTariffClassifier !== 'undefined') {
+                    try {
+                        const intelligentClassifier = new window.IntelligentTariffClassifier();
+                        results = await intelligentClassifier.classifyProduct(description);
+                        console.log('🧠 Classification intelligente utilisée');
+                    } catch (error) {
+                        console.warn('Erreur avec IntelligentTariffClassifier, fallback vers classifyProductImproved:', error);
+                        if (typeof classifyProductImproved === 'function') {
+                            results = classifyProductImproved(description);
+                        } else {
+                            results = classifySimple(description);
+                        }
+                    }
+                } else if (typeof classifyProductImproved === 'function') {
+                    try {
+                        results = classifyProductImproved(description);
+                    } catch (error) {
+                        console.warn('Erreur avec classifyProductImproved, fallback vers classifySimple:', error);
                         results = classifySimple(description);
                     }
+                } else {
+                    console.warn('classifyProductImproved non disponible, utilisation de classifySimple');
+                    results = classifySimple(description);
+                }
+            }
         }
         
         displayResults(results);
@@ -638,7 +720,7 @@ function displayResults(results) {
                     
                     <div class="bg-white/80 rounded-lg p-4 border border-gray-200">
                         <strong class="text-douane-or font-semibold">💰 Taux d'imposition :</strong>
-                        <p class="mt-2 text-gray-700 leading-relaxed text-lg font-semibold">${getTaxRate(result.section.number)}%</p>
+                        <p class="mt-2 text-gray-700 leading-relaxed text-lg font-semibold">${getTaxRate(result.section.number, result.code)}%</p>
                     </div>
                     
                     <div class="bg-white/80 rounded-lg p-4 border border-gray-200">
@@ -932,7 +1014,7 @@ async function saveProductToDatabase(productInfo, classificationResult) {
         description_produit: productInfo.description,
         section_produit: classificationResult.section.number,
         code_tarifaire: classificationResult.code,
-        taux_imposition: getTaxRate(classificationResult.section.number),
+        taux_imposition: getTaxRate(classificationResult.section.number, classificationResult.code),
         valeur_declaree: productInfo.value || 0,
         poids_kg: 0,
         unite_mesure: 'unité',
@@ -943,16 +1025,125 @@ async function saveProductToDatabase(productInfo, classificationResult) {
     return await dbManager.saveClassifiedProduct(productData);
 }
 
-// Taux d'imposition
-function getTaxRate(sectionNumber) {
-    const taxRates = {
-        'I': 10.50, 'II': 8.75, 'III': 12.00, 'IV': 15.25, 'V': 5.50,
-        'VI': 18.75, 'VII': 14.50, 'VIII': 16.25, 'IX': 11.75, 'X': 13.50,
-        'XI': 17.25, 'XII': 19.50, 'XIII': 9.25, 'XIV': 25.00, 'XV': 12.75,
-        'XVI': 22.50, 'XVII': 20.75, 'XVIII': 16.50, 'XIX': 35.00, 'XX': 15.75,
-        'XXI': 30.00
+// Taux d'imposition CORRIGÉS selon les codes tarifaires spécifiques du fichier TEC CEDEAO officiel
+function getTaxRate(sectionNumber, tariffCode = null) {
+    // Si on a un code tarifaire spécifique, l'utiliser en priorité
+    if (tariffCode) {
+        const specificRate = getSpecificTariffRate(tariffCode);
+        if (specificRate !== null) {
+            return specificRate;
+        }
+    }
+    
+    // Sinon, utiliser les taux par section (moyenne des codes de la section)
+    const sectionAverageRates = {
+        'I': 19,   // Moyenne des codes 0201-0210, 0301-0307, etc.
+        'II': 17,  // Moyenne des codes 0601-0614, 0701-0714, etc.
+        'III': 20, // Code 1501-1522
+        'IV': 23,  // Moyenne des codes 1601-1624, 1701-1724, etc.
+        'V': 8,    // Moyenne des codes 2501-2529, 2601-2621, 2701-2716
+        'VI': 11,  // Moyenne des codes 2801-2853, 2901-2942, etc.
+        'VII': 15, // Codes 3901-3926, 4001-4017
+        'VIII': 20, 'IX': 15, 'X': 15, 'XI': 20, 'XII': 25, 'XIII': 15,
+        'XIV': 10, 'XV': 15, 'XVI': 15, 'XVII': 5, 'XVIII': 15, 'XIX': 10,
+        'XX': 20, 'XXI': 5
     };
-    return taxRates[sectionNumber] || 10.50;
+    
+    return sectionAverageRates[sectionNumber] || 15;
+}
+
+// Fonction pour obtenir le taux spécifique d'un code tarifaire
+function getSpecificTariffRate(tariffCode) {
+    // Taux spécifiques extraits du fichier MON-TEC-CEDEAO-SH-2022-FREN-09-04-2024.txt
+    const specificRates = {
+        // Section I - Chapitre 02 (Viandes)
+        '0201.10.00.00': 35, '0201.20.00.00': 35, '0201.30.00.00': 35,
+        '0202.10.00.00': 35, '0202.20.00.00': 35, '0202.30.00.00': 35,
+        '0203.11.00.00': 35, '0203.12.00.00': 35, '0203.19.00.00': 35,
+        '0203.21.00.00': 35, '0203.22.00.00': 35, '0203.29.00.00': 35,
+        '0204.10.00.00': 35, '0204.21.00.00': 35, '0204.22.00.00': 35,
+        '0204.23.00.00': 35, '0204.30.00.00': 35, '0204.41.00.00': 35,
+        '0204.42.00.00': 35, '0204.43.00.00': 35, '0204.50.00.00': 35,
+        '0205.00.00.00': 20, // Viandes chevalines - taux différent !
+        '0206.10.00.00': 35, '0206.21.00.00': 35, '0206.22.00.00': 35,
+        '0206.29.00.00': 35, '0206.30.00.00': 35, '0206.41.00.00': 35,
+        '0206.49.00.00': 35, '0206.80.00.00': 35, '0206.90.00.00': 35,
+        '0207.11.00.00': 35, '0207.12.00.00': 35, '0207.13.00.00': 35,
+        '0207.14.00.00': 35, '0207.24.00.00': 35, '0207.25.00.00': 35,
+        '0207.26.00.00': 35, '0207.27.00.00': 35, '0207.41.00.00': 35,
+        '0207.42.00.00': 35, '0207.43.00.00': 35, '0207.44.00.00': 35,
+        '0207.45.00.00': 35, '0207.51.00.00': 35, '0207.52.00.00': 35,
+        '0207.53.00.00': 35, '0207.54.00.00': 35, '0207.55.00.00': 35,
+        '0207.60.00.00': 35, '0208.10.00.00': 20, '0208.30.00.00': 20,
+        '0208.40.00.00': 20, '0208.50.00.00': 20, '0208.60.00.00': 20,
+        '0208.90.00.00': 20, '0209.10.00.00': 20, '0209.90.00.00': 20,
+        '0210.11.00.00': 20, '0210.12.00.00': 20, '0210.19.00.00': 20,
+        '0210.20.00.00': 35, '0210.91.00.00': 20, '0210.92.00.00': 20,
+        '0210.93.00.00': 20, '0210.99.00.00': 20,
+        
+        // Section I - Chapitre 03 (Poissons)
+        '0301.11.00.00': 10, '0301.19.00.00': 10, '0301.91.10.00': 5,
+        '0301.91.90.00': 10, '0301.92.10.00': 5, '0301.92.90.00': 10,
+        '0301.93.10.00': 5, '0301.93.90.00': 10, '0301.94.10.00': 5,
+        '0301.94.90.00': 10, '0301.95.10.00': 5, '0301.95.90.00': 10,
+        '0301.99.10.00': 5, '0301.99.90.00': 10,
+        '0302.11.00.00': 10, '0302.13.00.00': 10, '0302.14.00.00': 10,
+        '0302.19.00.00': 10, '0302.21.00.00': 10, '0302.22.00.00': 10,
+        '0302.23.00.00': 10, '0302.24.00.00': 10, '0302.29.00.00': 10,
+        '0302.31.00.00': 10, '0302.32.00.00': 10, '0302.33.00.00': 10,
+        '0302.34.00.00': 10, '0302.35.00.00': 10, '0302.36.00.00': 10,
+        '0302.39.00.00': 10, '0302.41.00.00': 10, '0302.42.00.00': 10,
+        
+        // Section VI - Chapitre 28 (Produits chimiques)
+        '2843.10.00.00': 5, '2843.21.00.00': 5, '2843.29.00.00': 5,
+        '2843.30.00.00': 5, '2843.90.00.00': 5, '2844.10.00.00': 5,
+        '2844.20.00.00': 5, '2844.30.00.00': 5, '2844.41.00.00': 5,
+        '2844.42.00.00': 5, '2844.43.00.00': 5, '2844.44.00.00': 5,
+        '2844.50.00.00': 5, '2845.10.00.00': 5, '2845.20.00.00': 5,
+        '2845.30.00.00': 5, '2845.40.00.00': 5, '2845.90.00.00': 5,
+        '2846.10.00.00': 5, '2846.90.00.00': 5, '2847.00.00.00': 5,
+        '2849.10.00.00': 5, '2849.20.00.00': 5, '2849.90.00.00': 5,
+        '2850.00.00.00': 5,
+        
+        // Section XVII - Chapitre 88 (Véhicules aériens) - CORRIGÉ
+        '8801.00.00.00': 5,  // Ballons et dirigeables; planeurs, ailes volantes
+        '8802.11.00.00': 5,  // Hélicoptères, poids ≤ 2000 kg
+        '8802.12.00.00': 5,  // Hélicoptères, poids > 2000 kg
+        '8802.20.00.00': 5,  // Avions et autres véhicules aériens, poids ≤ 2000 kg
+        '8802.30.00.00': 5,  // Avions et autres véhicules aériens, 2000 kg < poids ≤ 15000 kg
+        '8802.40.00.00': 5,  // Avions et autres véhicules aériens, poids > 15000 kg
+        '8802.60.00.00': 5,  // Véhicules spatiaux et satellites
+        '8804.00.00.00': 5,  // Parachutes et leurs parties
+        '8805.10.00.00': 5,  // Appareils de lancement et d'appontage
+        '8805.21.00.00': 5,  // Simulateurs de combat aérien
+        '8805.29.00.00': 5,  // Autres simulateurs d'entraînement au vol
+        '8806.10.00.00': 5,  // Véhicules aériens sans pilote, transport passagers
+        '8806.21.00.00': 5,  // Drones téléguidés, poids ≤ 250 g
+        '8806.22.00.00': 5,  // Drones téléguidés, 250 g < poids ≤ 7 kg
+        '8806.23.00.00': 5,  // Drones téléguidés, 7 kg < poids ≤ 25 kg
+        '8806.24.00.00': 5,  // Drones téléguidés, 25 kg < poids ≤ 150 kg
+        '8806.29.00.00': 5,  // Autres drones téléguidés
+        '8806.91.00.00': 5,  // Autres drones, poids ≤ 250 g
+        '8806.92.00.00': 5,  // Autres drones, 250 g < poids ≤ 7 kg
+        '8806.93.00.00': 5,  // Autres drones, 7 kg < poids ≤ 25 kg
+        '8806.94.00.00': 5,  // Autres drones, 25 kg < poids ≤ 150 kg
+        '8806.99.00.00': 5,  // Autres drones
+        '8807.10.00.00': 5,  // Hélices et rotors
+        '8807.20.00.00': 5,  // Trains d'atterrissage
+        '8807.30.00.00': 5,  // Autres parties d'avions/hélicoptères
+        '8807.90.00.00': 5,  // Autres parties
+        
+        // Codes génériques utilisés par le bot CEDEAO
+        '880100': 5,  // Code générique pour avions (bot CEDEAO)
+        '880200': 5,  // Code générique pour hélicoptères (bot CEDEAO)
+        '880300': 5,  // Code générique pour autres véhicules aériens (bot CEDEAO)
+        '880400': 5,  // Code générique pour parachutes (bot CEDEAO)
+        '880500': 5,  // Code générique pour appareils de lancement (bot CEDEAO)
+        '880600': 5,  // Code générique pour drones (bot CEDEAO)
+        '880700': 5   // Code générique pour parties (bot CEDEAO)
+    };
+    
+    return specificRates[tariffCode] || null;
 }
 
 // Historique local

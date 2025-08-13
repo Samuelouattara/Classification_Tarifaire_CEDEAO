@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Correction Undefined</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-result { margin: 10px 0; padding: 10px; border: 1px solid #ccc; border-radius: 5px; }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test Correction des Valeurs Undefined</h1>
+    
+    <div>
+        <input type="text" id="product-input" placeholder="Nom du produit" value="avion commercial" style="padding: 10px; width: 300px;">
+        <button onclick="testClassification()">Tester Classification</button>
+    </div>
+    
+    <div id="results"></div>
+
+    <script>
+        async function testClassification() {
+            const productName = document.getElementById('product-input').value;
+            const resultsDiv = document.getElementById('results');
+            
+            resultsDiv.innerHTML = '<div class="test-result">🔄 Test en cours...</div>';
+            
+            try {
+                const response = await fetch('api.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: 'classify_cedeo',
+                        product_name: productName
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    const classification = result.classification;
+                    
+                    // Vérifier les champs critiques
+                    const checks = [
+                        { field: 'tariff_code', value: classification.tariff_code, expected: 'string' },
+                        { field: 'section', value: classification.section, expected: 'string' },
+                        { field: 'chapter', value: classification.chapter, expected: 'string' },
+                        { field: 'tax_rate', value: classification.tax_rate, expected: 'number' },
+                        { field: 'confidence', value: classification.confidence, expected: 'number' }
+                    ];
+                    
+                    let html = '<h3>✅ Résultats du Test</h3>';
+                    
+                    checks.forEach(check => {
+                        const isValid = check.value !== undefined && check.value !== null;
+                        const typeCorrect = typeof check.value === check.expected;
+                        
+                        html += `
+                            <div class="test-result ${isValid && typeCorrect ? 'success' : 'error'}">
+                                <strong>${check.field}:</strong> 
+                                ${isValid ? check.value : 'undefined/null'} 
+                                (${typeof check.value})
+                                ${isValid && typeCorrect ? '✅' : '❌'}
+                            </div>
+                        `;
+                    });
+                    
+                    html += `
+                        <div class="test-result success">
+                            <h4>🎯 Classification Complète:</h4>
+                            <pre>${JSON.stringify(classification, null, 2)}</pre>
+                        </div>
+                    `;
+                    
+                    resultsDiv.innerHTML = html;
+                } else {
+                    resultsDiv.innerHTML = `<div class="test-result error">❌ Erreur: ${result.message}</div>`;
+                }
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="test-result error">❌ Erreur de connexion: ${error.message}</div>`;
+            }
+        }
+        
+        // Test automatique au chargement
+        window.onload = function() {
+            setTimeout(testClassification, 1000);
+        };
+    </script>
+</body>
+</html>

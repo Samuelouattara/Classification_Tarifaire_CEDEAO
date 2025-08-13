@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Bot CEDEAO Complet</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+        
+        .status {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .status.warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .test-section {
+            margin: 30px 0;
+            padding: 20px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+        }
+        
+        .test-section h3 {
+            color: #495057;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+        
+        .form-group {
+            margin: 15px 0;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #495057;
+        }
+        
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        
+        input[type="text"]:focus, textarea:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+        
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+            transition: background 0.3s;
+        }
+        
+        button:hover {
+            background: #0056b3;
+        }
+        
+        button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+        
+        .result {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 10px 0;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .stat-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #dee2e6;
+        }
+        
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #007bff;
+        }
+        
+        .stat-label {
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #007bff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .product-examples {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .example-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+        
+        .example-btn:hover {
+            background: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 Test Bot CEDEAO Complet</h1>
+        
+        <div id="status" class="status warning">
+            🔄 Vérification de l'état du bot...
+        </div>
+        
+        <!-- Test de santé -->
+        <div class="test-section">
+            <h3>🏥 Test de Santé du Bot</h3>
+            <button onclick="testHealth()">Vérifier l'état du bot</button>
+            <div id="healthResult" class="result" style="display: none;"></div>
+        </div>
+        
+        <!-- Statistiques -->
+        <div class="test-section">
+            <h3>📊 Statistiques de la Base de Données</h3>
+            <button onclick="getStats()">Récupérer les statistiques</button>
+            <div id="statsResult" class="result" style="display: none;"></div>
+        </div>
+        
+        <!-- Classification -->
+        <div class="test-section">
+            <h3>🎯 Test de Classification</h3>
+            <div class="form-group">
+                <label for="productName">Nom du produit :</label>
+                <input type="text" id="productName" placeholder="Ex: avion commercial, ordinateur portable, téléphone mobile...">
+            </div>
+            
+            <div class="product-examples">
+                <button class="example-btn" onclick="setProduct('avion commercial')">✈️ Avion</button>
+                <button class="example-btn" onclick="setProduct('ordinateur portable')">💻 Ordinateur</button>
+                <button class="example-btn" onclick="setProduct('téléphone mobile')">📱 Téléphone</button>
+                <button class="example-btn" onclick="setProduct('voiture automobile')">🚗 Voiture</button>
+                <button class="example-btn" onclick="setProduct('jouet enfant')">🧸 Jouet</button>
+                <button class="example-btn" onclick="setProduct('vetement homme')">👔 Vêtement</button>
+            </div>
+            
+            <button onclick="classifyProduct()">Classifier le produit</button>
+            <div id="classificationResult" class="result" style="display: none;"></div>
+        </div>
+        
+        <!-- Recherche -->
+        <div class="test-section">
+            <h3>🔍 Recherche dans les Règles</h3>
+            <div class="form-group">
+                <label for="searchQuery">Terme de recherche :</label>
+                <input type="text" id="searchQuery" placeholder="Ex: avion, ordinateur, textile...">
+            </div>
+            <div class="form-group">
+                <label for="searchLimit">Nombre de résultats :</label>
+                <input type="text" id="searchLimit" value="5" style="width: 100px;">
+            </div>
+            <button onclick="searchRules()">Rechercher</button>
+            <div id="searchResult" class="result" style="display: none;"></div>
+        </div>
+        
+        <!-- Test d'intégration -->
+        <div class="test-section">
+            <h3>🔗 Test d'Intégration PHP</h3>
+            <button onclick="testIntegration()">Tester l'intégration PHP</button>
+            <div id="integrationResult" class="result" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        const BOT_URL = 'http://localhost:5001';
+        const API_URL = 'api.php';
+        
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            testHealth();
+        });
+        
+        function setProduct(name) {
+            document.getElementById('productName').value = name;
+        }
+        
+        function showResult(elementId, data, isError = false) {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            element.style.background = isError ? '#f8d7da' : '#f8f9fa';
+            element.style.color = isError ? '#721c24' : '#495057';
+            element.textContent = typeof data === 'object' ? JSON.stringify(data, null, 2) : data;
+        }
+        
+        function updateStatus(message, type = 'warning') {
+            const status = document.getElementById('status');
+            status.className = `status ${type}`;
+            status.textContent = message;
+        }
+        
+        async function testHealth() {
+            try {
+                updateStatus('🔄 Vérification de l\'état du bot...', 'warning');
+                
+                const response = await fetch(`${BOT_URL}/health`);
+                const data = await response.json();
+                
+                if (data.status === 'healthy') {
+                    updateStatus('✅ Bot CEDEAO complet opérationnel', 'success');
+                    showResult('healthResult', data);
+                } else {
+                    updateStatus('❌ Bot non disponible', 'error');
+                    showResult('healthResult', data, true);
+                }
+            } catch (error) {
+                updateStatus('❌ Erreur de connexion au bot', 'error');
+                showResult('healthResult', `Erreur: ${error.message}`, true);
+            }
+        }
+        
+        async function getStats() {
+            try {
+                const response = await fetch(`${BOT_URL}/stats`);
+                const data = await response.json();
+                
+                if (data.error) {
+                    showResult('statsResult', data, true);
+                } else {
+                    showResult('statsResult', data);
+                }
+            } catch (error) {
+                showResult('statsResult', `Erreur: ${error.message}`, true);
+            }
+        }
+        
+        async function classifyProduct() {
+            const productName = document.getElementById('productName').value.trim();
+            
+            if (!productName) {
+                alert('Veuillez entrer un nom de produit');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${BOT_URL}/classify`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ product_name: productName })
+                });
+                
+                const data = await response.json();
+                
+                if (data.error) {
+                    showResult('classificationResult', data, true);
+                } else {
+                    showResult('classificationResult', data);
+                }
+            } catch (error) {
+                showResult('classificationResult', `Erreur: ${error.message}`, true);
+            }
+        }
+        
+        async function searchRules() {
+            const query = document.getElementById('searchQuery').value.trim();
+            const limit = document.getElementById('searchLimit').value || 5;
+            
+            if (!query) {
+                alert('Veuillez entrer un terme de recherche');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${BOT_URL}/search?q=${encodeURIComponent(query)}&limit=${limit}`);
+                const data = await response.json();
+                
+                if (data.error) {
+                    showResult('searchResult', data, true);
+                } else {
+                    showResult('searchResult', data);
+                }
+            } catch (error) {
+                showResult('searchResult', `Erreur: ${error.message}`, true);
+            }
+        }
+        
+        async function testIntegration() {
+            const productName = document.getElementById('productName').value.trim() || 'avion commercial';
+            
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        action: 'classify_cedeo', 
+                        product_name: productName 
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showResult('integrationResult', data);
+                } else {
+                    showResult('integrationResult', data, true);
+                }
+            } catch (error) {
+                showResult('integrationResult', `Erreur: ${error.message}`, true);
+            }
+        }
+    </script>
+</body>
+</html>
