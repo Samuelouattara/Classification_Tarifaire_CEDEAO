@@ -1,0 +1,129 @@
+version: "3.1"
+
+nlu:
+# Intent: Classification de produits
+- intent: classify_product
+  examples: |
+    - Je veux classer [avion](product_type)
+    - Quel est le code tarifaire pour [poisson saumon](product_type)
+    - [Viande bœuf](product_type) dans quelle section
+    - Taux d'imposition pour [légume tomate](product_type)
+    - [Jouet poupée](product_type) code douane
+    - Classifie [fruit pomme](product_type)
+    - [Textile coton](product_type) classification
+    - [Métal fer](product_type) section TEC
+    - [Machine ordinateur](product_type) code tarifaire
+    - [Véhicule voiture](product_type) classification douane
+    - J'ai un [avion en plastique pour enfants](product_description)
+    - [Poisson saumon frais](product_description) code douane
+    - [Viande bœuf congelée](product_description) classification
+    - [Légume tomate bio](product_description) section
+    - [Fruit pomme rouge](product_description) taux
+
+# Intent: Demande de taux d'imposition
+- intent: ask_tax_rate
+  examples: |
+    - Quel est le taux pour [8802.20.00.00](tariff_code)
+    - Combien de droits pour [0201.10.00.00](tariff_code)
+    - Taux d'imposition [9503.00.00.00](tariff_code)
+    - Droits de douane [0302.11.00.00](tariff_code)
+    - Taux pour code [0702.00.00.00](tariff_code)
+    - [0808.10.00.00](tariff_code) taux
+    - [5201.00.00.00](tariff_code) droits
+    - [7201.10.00.00](tariff_code) imposition
+    - [8471.30.00.00](tariff_code) taux
+    - [8703.21.00.00](tariff_code) droits
+
+# Intent: Comparaison de produits
+- intent: compare_products
+  examples: |
+    - Compare [avion](product_type) et [avion jouet](product_type)
+    - Différence entre [poisson](product_type) et [viande](product_type)
+    - [Légume](product_type) vs [fruit](product_type) classification
+    - Comparer [textile](product_type) et [métal](product_type)
+    - [Machine](product_type) et [véhicule](product_type) différences
+    - Compare [8802.20.00.00](tariff_code) et [9503.00.00.00](tariff_code)
+    - Différence [0201.10.00.00](tariff_code) [0302.11.00.00](tariff_code)
+
+# Intent: Calcul des droits de douane
+- intent: calculate_duties
+  examples: |
+    - Calcule les droits pour [1000€](value) d'[avions jouets](product_type)
+    - Droits de douane [500€](value) [poisson saumon](product_type)
+    - Calcul [2000€](value) [viande bœuf](product_type)
+    - [1500€](value) [légume tomate](product_type) droits
+    - [3000€](value) [fruit pomme](product_type) imposition
+    - [1000€](value) code [9503.00.00.00](tariff_code)
+    - [500€](value) [8802.20.00.00](tariff_code) calcul
+    - [2000€](value) [0201.10.00.00](tariff_code) droits
+
+# Intent: Recherche par matériau
+- intent: search_by_material
+  examples: |
+    - Produits en [plastique](material_type)
+    - [Métal](material_type) classification
+    - [Textile](material_type) codes tarifaires
+    - [Bois](material_type) section TEC
+    - [Verre](material_type) classification
+    - [Caoutchouc](material_type) codes
+    - [Papier](material_type) section
+    - [Céramique](material_type) classification
+
+# Intent: Vérification de classification
+- intent: verify_classification
+  examples: |
+    - Vérifie la classification [8802.20.00.00](tariff_code)
+    - Valide [9503.00.00.00](tariff_code) classification
+    - Contrôle [0201.10.00.00](tariff_code) conformité
+    - Vérification [0302.11.00.00](tariff_code)
+    - Valide classification [avion](product_type)
+    - Vérifie [poisson saumon](product_type) code
+    - Contrôle [viande bœuf](product_type) section
+
+# Intent: Export documentation
+- intent: export_documentation
+  examples: |
+    - Exporte la documentation [8802.20.00.00](tariff_code)
+    - Génère rapport [9503.00.00.00](tariff_code)
+    - Documentation [0201.10.00.00](tariff_code)
+    - Rapport classification [avion](product_type)
+    - Export [poisson saumon](product_type) classification
+    - Documentation [viande bœuf](product_type)
+
+# Intent: Validation règles CEDEAO
+- intent: validate_cedeo_rules
+  examples: |
+    - Valide règles CEDEAO [8802.20.00.00](tariff_code)
+    - Vérifie conformité [9503.00.00.00](tariff_code)
+    - Règles TEC [0201.10.00.00](tariff_code)
+    - Validation CEDEAO [avion](product_type)
+    - Conformité [poisson saumon](product_type)
+    - Règles [viande bœuf](product_type)
+
+# Intent: Audit trail
+- intent: get_audit_trail
+  examples: |
+    - Audit trail [8802.20.00.00](tariff_code)
+    - Traçabilité [9503.00.00.00](tariff_code)
+    - Historique [0201.10.00.00](tariff_code)
+    - Audit [avion](product_type)
+    - Traçabilité [poisson saumon](product_type)
+    - Historique [viande bœuf](product_type)
+
+# Intent: Fallback
+- intent: nlu_fallback
+  examples: |
+    - Je ne comprends pas
+    - Pouvez-vous reformuler
+    - Je ne sais pas
+    - C'est pas clair
+    - Reformulez s'il vous plaît
+
+# Intent: Out of scope
+- intent: out_of_scope
+  examples: |
+    - Quel temps fait-il
+    - Raconte une blague
+    - Quelle est la date
+    - Comment allez-vous
+    - Parlez-moi de la météo

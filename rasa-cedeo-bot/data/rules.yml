@@ -1,0 +1,106 @@
+version: "3.1"
+
+rules:
+# Règle: Classification automatique pour cas simples
+- rule: Classification automatique
+  condition:
+  - slot_was_set:
+    - classification_confidence: 95
+  steps:
+  - intent: classify_product
+  - action: action_classify_product
+  - slot_was_set:
+    - validation_status: "validated"
+
+# Règle: Validation humaine requise pour cas complexes
+- rule: Validation humaine requise
+  condition:
+  - slot_was_set:
+    - classification_confidence: 50
+  steps:
+  - intent: classify_product
+  - action: action_classify_product
+  - slot_was_set:
+    - validation_status: "requires_human_review"
+
+# Règle: Audit trail automatique pour toutes les classifications
+- rule: Audit trail automatique
+  steps:
+  - intent: classify_product
+  - action: action_classify_product
+  - action: action_generate_audit_trail
+
+# Règle: Validation CEDEAO automatique
+- rule: Validation CEDEAO automatique
+  steps:
+  - intent: validate_cedeo_rules
+  - action: action_validate_cedeo_rules
+
+# Règle: Calcul automatique des droits
+- rule: Calcul automatique droits
+  condition:
+  - slot_was_set:
+    - tariff_code: true
+    - value: true
+  steps:
+  - intent: calculate_duties
+  - action: action_calculate_duties
+
+# Règle: Fallback pour cas non reconnus
+- rule: Fallback général
+  steps:
+  - intent: nlu_fallback
+  - action: action_default_fallback
+
+# Règle: Out of scope
+- rule: Out of scope
+  steps:
+  - intent: out_of_scope
+  - action: action_default_fallback
+
+# Règle: Classification avec exclusions
+- rule: Classification avec exclusions
+  condition:
+  - slot_was_set:
+    - product_description: "avion jouet"
+  steps:
+  - intent: classify_product
+  - action: action_classify_product
+  - slot_was_set:
+    - tariff_code: "9503.00.00.00"
+    - section_number: "XX"
+    - chapter_number: "95"
+
+# Règle: Classification avion réel
+- rule: Classification avion réel
+  condition:
+  - slot_was_set:
+    - product_description: "avion"
+  steps:
+  - intent: classify_product
+  - action: action_classify_product
+  - slot_was_set:
+    - tariff_code: "8802.20.00.00"
+    - section_number: "XVII"
+    - chapter_number: "88"
+
+# Règle: Validation stricte pour taux élevés
+- rule: Validation stricte taux élevés
+  condition:
+  - slot_was_set:
+    - tax_rate: 35
+  steps:
+  - intent: classify_product
+  - action: action_classify_product
+  - action: action_validate_cedeo_rules
+  - slot_was_set:
+    - validation_status: "requires_human_review"
+
+# Règle: Documentation automatique pour cas complexes
+- rule: Documentation automatique
+  condition:
+  - slot_was_set:
+    - validation_status: "requires_human_review"
+  steps:
+  - intent: export_documentation
+  - action: action_export_documentation

@@ -1,0 +1,119 @@
+version: "3.1"
+
+stories:
+# Story: Classification simple d'un produit
+- story: classification simple
+  steps:
+  - intent: classify_product
+    entities:
+    - product_type: "avion"
+  - action: action_classify_product
+  - slot_was_set:
+    - tariff_code: "8802.20.00.00"
+    - section_number: "XVII"
+    - chapter_number: "88"
+    - classification_confidence: 99.9
+    - validation_status: "validated"
+
+# Story: Classification avec validation humaine requise
+- story: classification complexe
+  steps:
+  - intent: classify_product
+    entities:
+    - product_description: "avion en plastique pour enfants"
+  - action: action_classify_product
+  - slot_was_set:
+    - tariff_code: "9503.00.00.00"
+    - section_number: "XX"
+    - chapter_number: "95"
+    - classification_confidence: 99.9
+    - validation_status: "validated"
+
+# Story: Demande de taux d'imposition
+- story: demande taux imposition
+  steps:
+  - intent: ask_tax_rate
+    entities:
+    - tariff_code: "8802.20.00.00"
+  - action: action_get_tax_rate
+
+# Story: Calcul des droits de douane
+- story: calcul droits douane
+  steps:
+  - intent: calculate_duties
+    entities:
+    - value: "1000"
+    - product_type: "avions jouets"
+  - action: action_classify_product
+  - slot_was_set:
+    - tariff_code: "9503.00.00.00"
+  - action: action_calculate_duties
+
+# Story: Validation des règles CEDEAO
+- story: validation regles cedeo
+  steps:
+  - intent: validate_cedeo_rules
+    entities:
+    - tariff_code: "8802.20.00.00"
+  - action: action_validate_cedeo_rules
+
+# Story: Génération audit trail
+- story: audit trail
+  steps:
+  - intent: get_audit_trail
+    entities:
+    - tariff_code: "8802.20.00.00"
+  - action: action_generate_audit_trail
+
+# Story: Comparaison de produits
+- story: comparaison produits
+  steps:
+  - intent: compare_products
+    entities:
+    - product_type: "avion"
+  - action: action_classify_product
+  - slot_was_set:
+    - tariff_code: "8802.20.00.00"
+  - action: action_compare_products
+
+# Story: Classification avec informations insuffisantes
+- story: informations insuffisantes
+  steps:
+  - intent: classify_product
+  - action: action_default_fallback
+
+# Story: Recherche par matériau
+- story: recherche materiau
+  steps:
+  - intent: search_by_material
+    entities:
+    - material_type: "plastique"
+  - action: action_classify_product
+
+# Story: Export documentation
+- story: export documentation
+  steps:
+  - intent: export_documentation
+    entities:
+    - tariff_code: "8802.20.00.00"
+  - action: action_export_documentation
+
+# Story: Vérification classification
+- story: verification classification
+  steps:
+  - intent: verify_classification
+    entities:
+    - tariff_code: "8802.20.00.00"
+  - action: action_verify_classification
+
+# Story: Fallback général
+- story: fallback general
+  steps:
+  - intent: nlu_fallback
+  - action: action_default_fallback
+
+# Story: Out of scope
+- story: out of scope
+  steps:
+  - intent: out_of_scope
+  - action: action_default_fallback

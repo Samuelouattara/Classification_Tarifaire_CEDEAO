@@ -1,0 +1,128 @@
+version: "3.1"
+
+intents:
+  # Intents spécialisés pour classification douanière
+  - classify_product
+  - ask_tax_rate
+  - compare_products
+  - explain_section
+  - calculate_duties
+  - search_by_material
+  - verify_classification
+  - export_documentation
+  - validate_cedeo_rules
+  - get_audit_trail
+  - nlu_fallback
+  - out_of_scope
+
+entities:
+  # Entités spécialisées TEC CEDEAO
+  - product_type
+  - tariff_code
+  - section_number
+  - chapter_number
+  - material_type
+  - origin_country
+  - product_description
+  - quantity
+  - value
+  - weight
+
+slots:
+  # Slots pour traçabilité douanière
+  product_description:
+    type: text
+    mappings:
+    - type: from_entity
+      entity: product_description
+  tariff_code:
+    type: text
+    mappings:
+    - type: from_entity
+      entity: tariff_code
+  section_number:
+    type: text
+    mappings:
+    - type: from_entity
+      entity: section_number
+  chapter_number:
+    type: text
+    mappings:
+    - type: from_entity
+      entity: chapter_number
+  material_type:
+    type: text
+    mappings:
+    - type: from_entity
+      entity: material_type
+  origin_country:
+    type: text
+    mappings:
+    - type: from_entity
+      entity: origin_country
+  quantity:
+    type: float
+    mappings:
+    - type: from_entity
+      entity: quantity
+  value:
+    type: float
+    mappings:
+    - type: from_entity
+      entity: value
+  weight:
+    type: float
+    mappings:
+    - type: from_entity
+      entity: weight
+  classification_confidence:
+    type: float
+    initial_value: 0.0
+  validation_status:
+    type: text
+    initial_value: "pending"
+  audit_trail_id:
+    type: text
+    initial_value: ""
+
+responses:
+  # Réponses spécialisées pour douane
+  utter_classification_result:
+    - text: "Classification TEC CEDEAO :\nSection {section}, Chapitre {chapter}\nCode tarifaire : {tariff_code}\nTaux d'imposition : {tax_rate}%\nConfiance : {confidence}%"
+  
+  utter_tax_rate_info:
+    - text: "Le taux d'imposition pour le code {tariff_code} est de {tax_rate}% selon le TEC CEDEAO."
+  
+  utter_validation_required:
+    - text: "⚠️ Classification nécessite validation humaine. Cas complexe détecté."
+  
+  utter_audit_trail:
+    - text: "Traçabilité : {audit_info}\nDécision validée par : {validator}\nTimestamp : {timestamp}"
+  
+  utter_compare_result:
+    - text: "Comparaison des produits :\n{comparison_details}"
+  
+  utter_duties_calculation:
+    - text: "Calcul des droits de douane :\nValeur : {value}€\nTaux : {tax_rate}%\nDroits : {duties}€"
+  
+  utter_insufficient_info:
+    - text: "❌ Informations insuffisantes pour classification. Veuillez préciser : {missing_info}"
+  
+  utter_cedeo_compliance:
+    - text: "✅ Classification conforme au TEC CEDEAO. Validation automatique approuvée."
+
+actions:
+  # Actions personnalisées pour douane
+  - action_classify_product
+  - action_get_tax_rate
+  - action_compare_products
+  - action_calculate_duties
+  - action_validate_cedeo_rules
+  - action_generate_audit_trail
+  - action_export_documentation
+  - action_verify_classification
+  - action_default_fallback
+
+session_config:
+  session_expiration_time: 60
+  carry_over_slots_to_new_session: true

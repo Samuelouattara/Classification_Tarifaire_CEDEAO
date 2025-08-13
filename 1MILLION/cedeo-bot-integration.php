@@ -59,7 +59,7 @@ class CEDEOBotIntegration {
             }
             
             $url = $this->apiBaseUrl . '/classify';
-            $data = ['product_name' => $productName];
+            $data = ['product' => $productName];
             
             $response = $this->makeRequest($url, 'POST', $data);
             

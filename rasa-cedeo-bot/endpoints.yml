@@ -1,0 +1,71 @@
+# Configuration des endpoints RASA pour intégration douane CEDEAO
+
+# Endpoint pour les actions personnalisées
+action_endpoint:
+  url: "http://localhost:5055/webhook"
+
+# Endpoint pour le modèle (optionnel)
+models:
+  url: "http://localhost:5005/models"
+  token: "your_token_here"
+
+# Endpoint pour les événements (optionnel)
+event_broker:
+  url: "localhost"
+  username: "your_username"
+  password: "your_password"
+  queue: "rasa_core_events"
+
+# Configuration pour l'intégration avec votre système existant
+# Endpoint personnalisé pour communication avec votre API
+custom_endpoints:
+  cedeo_api:
+    url: "http://localhost:8000/api/cedeo"
+    headers:
+      Content-Type: "application/json"
+      Authorization: "Bearer your_api_token"
+  
+  # Endpoint pour validation humaine
+  human_validation:
+    url: "http://localhost:8000/api/validation"
+    headers:
+      Content-Type: "application/json"
+  
+  # Endpoint pour audit trail
+  audit_trail:
+    url: "http://localhost:8000/api/audit"
+    headers:
+      Content-Type: "application/json"
+  
+  # Endpoint pour export documentation
+  documentation:
+    url: "http://localhost:8000/api/docs"
+    headers:
+      Content-Type: "application/json"
+
+# Configuration pour le webhook REST
+# Permet l'intégration avec votre interface web
+rest:
+  url: "http://localhost:5005/webhooks/rest/webhook"
+  headers:
+    Content-Type: "application/json"
+
+# Configuration pour le webhook Telegram (optionnel)
+telegram:
+  url: "http://localhost:5005/webhooks/telegram/webhook"
+  access_token: "your_telegram_token"
+  verify: "your_telegram_username"
+  webhook_url: "https://your-domain.com/webhooks/telegram/webhook"
+
+# Configuration pour le webhook Slack (optionnel)
+slack:
+  url: "http://localhost:5005/webhooks/slack/webhook"
+  slack_token: "your_slack_token"
+  slack_channel: "your_slack_channel"
+
+# Configuration pour le webhook Facebook (optionnel)
+facebook:
+  url: "http://localhost:5005/webhooks/facebook/webhook"
+  verify: "your_facebook_verify_token"
+  secret: "your_facebook_secret"
+  page_access_token: "your_facebook_page_access_token"

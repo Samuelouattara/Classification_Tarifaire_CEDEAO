@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧪 Test Prototype RASA - Douane CEDEAO</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            padding: 30px;
+        }
+
+        .left-panel, .right-panel {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+        }
+
+        .panel-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #3498db;
+        }
+
+        .test-input {
+            margin-bottom: 20px;
+        }
+
+        .test-input input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            margin-bottom: 10px;
+        }
+
+        .test-input input:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        }
+
+        .quick-tests {
+            margin-bottom: 20px;
+        }
+
+        .quick-tests h4 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .test-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .test-btn {
+            background: #ecf0f1;
+            color: #2c3e50;
+            border: 2px solid #bdc3c7;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+
+        .test-btn:hover {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .result-container {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            min-height: 200px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .result-item {
+            background: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .result-item.success {
+            border-left-color: #27ae60;
+            background: #d5f4e6;
+        }
+
+        .result-item.error {
+            border-left-color: #e74c3c;
+            background: #fadbd8;
+        }
+
+        .result-item.warning {
+            border-left-color: #f39c12;
+            background: #fdeaa7;
+        }
+
+        .console-output {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .console-line {
+            margin-bottom: 5px;
+            padding: 2px 0;
+        }
+
+        .console-line.info {
+            color: #3498db;
+        }
+
+        .console-line.success {
+            color: #27ae60;
+        }
+
+        .console-line.error {
+            color: #e74c3c;
+        }
+
+        .console-line.warning {
+            color: #f39c12;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .status-online {
+            background: #27ae60;
+        }
+
+        .status-offline {
+            background: #e74c3c;
+        }
+
+        .status-connecting {
+            background: #f39c12;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #3498db;
+        }
+
+        .stat-label {
+            color: #7f8c8d;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-buttons {
+                grid-template-columns: 1fr;
+            }
+            
+            .test-buttons {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧪 Test Prototype RASA - Douane CEDEAO</h1>
+            <p>Interface de test pour le bot RASA spécialisé classification tarifaire</p>
+        </div>
+
+        <div class="content">
+            <div class="left-panel">
+                <div class="panel-title">🚀 Tests de Classification</div>
+                
+                <div class="test-input">
+                    <input type="text" id="productInput" placeholder="Entrez une description de produit (ex: avion, poisson saumon, jouet poupée...)" />
+                    <button class="btn" onclick="testClassification()">🔍 Classifier avec RASA</button>
+                </div>
+
+                <div class="quick-tests">
+                    <h4>🎯 Tests rapides</h4>
+                    <div class="test-buttons">
+                        <button class="test-btn" onclick="quickTest('avion')">Avion</button>
+                        <button class="test-btn" onclick="quickTest('avion jouet')">Avion jouet</button>
+                        <button class="test-btn" onclick="quickTest('poisson saumon')">Poisson saumon</button>
+                        <button class="test-btn" onclick="quickTest('viande bœuf')">Viande bœuf</button>
+                        <button class="test-btn" onclick="quickTest('légume tomate')">Légume tomate</button>
+                        <button class="test-btn" onclick="quickTest('fruit pomme')">Fruit pomme</button>
+                        <button class="test-btn" onclick="quickTest('jouet poupée')">Jouet poupée</button>
+                        <button class="test-btn" onclick="quickTest('textile coton')">Textile coton</button>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn btn-success" onclick="testTaxRate()">💰 Taux d'imposition</button>
+                    <button class="btn btn-warning" onclick="testDutiesCalculation()">🧮 Calcul droits</button>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn" onclick="testCedeoValidation()">✅ Validation CEDEAO</button>
+                    <button class="btn" onclick="testAuditTrail()">📋 Audit Trail</button>
+                </div>
+
+                <div class="result-container" id="resultContainer">
+                    <div class="result-item info">
+                        <strong>Interface de test prête</strong><br>
+                        Entrez une description de produit pour commencer les tests RASA.
+                    </div>
+                </div>
+            </div>
+
+            <div class="right-panel">
+                <div class="panel-title">📊 Statut et Monitoring</div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalTests">0</div>
+                        <div class="stat-label">Tests effectués</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="successRate">0%</div>
+                        <div class="stat-label">Taux de succès</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="rasaStatus">
+                            <span class="status-indicator status-connecting"></span>Connexion
+                        </div>
+                        <div class="stat-label">Statut RASA</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="responseTime">0ms</div>
+                        <div class="stat-label">Temps de réponse</div>
+                    </div>
+                </div>
+
+                <div class="console-output" id="consoleOutput">
+                    <div class="console-line info">🚀 Initialisation du prototype RASA...</div>
+                    <div class="console-line info">📡 Test de connectivité RASA...</div>
+                    <div class="console-line warning">⚠️ RASA non connecté (mode simulation)</div>
+                    <div class="console-line info">✅ Interface de test prête</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="rasa-api-bridge.js"></script>
+    <script>
+        // Variables globales
+        let rasaBridge;
+        let testCount = 0;
+        let successCount = 0;
+        let startTime;
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeRasaBridge();
+            testRasaConnection();
+        });
+
+        // Initialisation du bridge RASA
+        function initializeRasaBridge() {
+            try {
+                rasaBridge = new RasaCedeoBridge();
+                addConsoleLine('info', '🌉 Bridge RASA initialisé');
+            } catch (error) {
+                addConsoleLine('error', '❌ Erreur initialisation bridge: ' + error.message);
+            }
+        }
+
+        // Test de connectivité RASA
+        async function testRasaConnection() {
+            startTime = Date.now();
+            
+            if (!rasaBridge) {
+                updateRasaStatus('offline', 'Bridge non initialisé');
+                return;
+            }
+
+            try {
+                updateRasaStatus('connecting', 'Test de connexion...');
+                const result = await rasaBridge.testRasaConnection();
+                
+                const responseTime = Date.now() - startTime;
+                updateResponseTime(responseTime);
+
+                if (result.success) {
+                    updateRasaStatus('online', 'Connecté');
+                    addConsoleLine('success', '✅ Connexion RASA établie (' + responseTime + 'ms)');
+                } else {
+                    updateRasaStatus('offline', 'Non connecté');
+                    addConsoleLine('warning', '⚠️ RASA non disponible - Mode simulation activé');
+                }
+            } catch (error) {
+                updateRasaStatus('offline', 'Erreur');
+                addConsoleLine('error', '❌ Erreur test connexion: ' + error.message);
+            }
+        }
+
+        // Test de classification
+        async function testClassification() {
+            const description = document.getElementById('productInput').value.trim();
+            
+            if (!description) {
+                addResult('error', '❌ Veuillez entrer une description de produit');
+                return;
+            }
+
+            startTime = Date.now();
+            testCount++;
+            updateTestStats();
+
+            addResult('info', `🔍 Classification de: "${description}"`);
+
+            try {
+                const result = await rasaBridge.classifyProduct(description);
+                const responseTime = Date.now() - startTime;
+                updateResponseTime(responseTime);
+
+                if (result.success) {
+                    successCount++;
+                    updateTestStats();
+                    
+                    const classification = result.classification;
+                    addResult('success', `
+                        ✅ Classification réussie (${responseTime}ms)<br>
+                        📋 Section: ${classification.section}<br>
+                        📖 Chapitre: ${classification.chapter}<br>
+                        🔢 Code: ${classification.tariff_code}<br>
+                        💰 Taux: ${classification.tax_rate}%<br>
+                        🎯 Confiance: ${classification.confidence}%<br>
+                        ✅ Statut: ${classification.validation_status}<br>
+                        🆔 Audit: ${classification.audit_id}
+                    `);
+                } else {
+                    addResult('error', `❌ Échec classification: ${result.error || 'Erreur inconnue'}`);
+                }
+            } catch (error) {
+                addResult('error', `❌ Erreur: ${error.message}`);
+            }
+        }
+
+        // Test rapide
+        function quickTest(description) {
+            document.getElementById('productInput').value = description;
+            testClassification();
+        }
+
+        // Test taux d'imposition
+        async function testTaxRate() {
+            const code = prompt('Entrez un code tarifaire (ex: 8802.20.00.00):');
+            if (!code) return;
+
+            startTime = Date.now();
+            addResult('info', `💰 Demande taux pour: ${code}`);
+
+            try {
+                const result = await rasaBridge.getTaxRateWithRasa(code);
+                const responseTime = Date.now() - startTime;
+                updateResponseTime(responseTime);
+
+                if (result.success) {
+                    addResult('success', `✅ Taux obtenu (${responseTime}ms): ${result.message}`);
+                } else {
+                    addResult('error', `❌ Erreur: ${result.error}`);
+                }
+            } catch (error) {
+                addResult('error', `❌ Erreur: ${error.message}`);
+            }
+        }
+
+        // Test calcul droits
+        async function testDutiesCalculation() {
+            const value = prompt('Entrez une valeur (ex: 1000):');
+            const description = prompt('Entrez une description (ex: avions jouets):');
+            
+            if (!value || !description) return;
+
+            startTime = Date.now();
+            addResult('info', `🧮 Calcul droits pour ${value}€ de ${description}`);
+
+            try {
+                const result = await rasaBridge.calculateDutiesWithRasa(value, description);
+                const responseTime = Date.now() - startTime;
+                updateResponseTime(responseTime);
+
+                if (result.success) {
+                    addResult('success', `✅ Calcul effectué (${responseTime}ms): ${result.message}`);
+                } else {
+                    addResult('error', `❌ Erreur: ${result.error}`);
+                }
+            } catch (error) {
+                addResult('error', `❌ Erreur: ${error.message}`);
+            }
+        }
+
+        // Test validation CEDEAO
+        async function testCedeoValidation() {
+            const code = prompt('Entrez un code tarifaire pour validation:');
+            if (!code) return;
+
+            startTime = Date.now();
+            addResult('info', `✅ Validation CEDEAO pour: ${code}`);
+
+            try {
+                const result = await rasaBridge.validateCedeoRulesWithRasa(code);
+                const responseTime = Date.now() - startTime;
+                updateResponseTime(responseTime);
+
+                if (result.success) {
+                    addResult('success', `✅ Validation effectuée (${responseTime}ms): ${result.message}`);
+                } else {
+                    addResult('error', `❌ Erreur: ${result.error}`);
+                }
+            } catch (error) {
+                addResult('error', `❌ Erreur: ${error.message}`);
+            }
+        }
+
+        // Test audit trail
+        async function testAuditTrail() {
+            addResult('info', `📋 Génération audit trail...`);
+
+            try {
+                // Simulation d'audit trail
+                const auditData = {
+                    timestamp: new Date().toISOString(),
+                    action: 'TEST_AUDIT_TRAIL',
+                    user: 'TEST_USER',
+                    data: {
+                        test_type: 'audit_trail',
+                        session_id: 'test_session_' + Date.now()
+                    }
+                };
+
+                addResult('success', `
+                    ✅ Audit trail généré<br>
+                    ⏰ Timestamp: ${auditData.timestamp}<br>
+                    🔍 Action: ${auditData.action}<br>
+                    👤 Utilisateur: ${auditData.user}<br>
+                    🆔 Session: ${auditData.data.session_id}
+                `);
+            } catch (error) {
+                addResult('error', `❌ Erreur: ${error.message}`);
+            }
+        }
+
+        // Fonctions utilitaires
+        function addResult(type, message) {
+            const container = document.getElementById('resultContainer');
+            const resultItem = document.createElement('div');
+            resultItem.className = `result-item ${type}`;
+            resultItem.innerHTML = message;
+            container.appendChild(resultItem);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function addConsoleLine(type, message) {
+            const console = document.getElementById('consoleOutput');
+            const line = document.createElement('div');
+            line.className = `console-line ${type}`;
+            line.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            console.appendChild(line);
+            console.scrollTop = console.scrollHeight;
+        }
+
+        function updateRasaStatus(status, message) {
+            const statusElement = document.getElementById('rasaStatus');
+            const indicator = statusElement.querySelector('.status-indicator');
+            
+            indicator.className = `status-indicator status-${status}`;
+            statusElement.innerHTML = indicator.outerHTML + message;
+        }
+
+        function updateResponseTime(time) {
+            document.getElementById('responseTime').textContent = time + 'ms';
+        }
+
+        function updateTestStats() {
+            document.getElementById('totalTests').textContent = testCount;
+            const rate = testCount > 0 ? Math.round((successCount / testCount) * 100) : 0;
+            document.getElementById('successRate').textContent = rate + '%';
+        }
+
+        // Gestion des événements clavier
+        document.getElementById('productInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                testClassification();
+            }
+        });
+    </script>
+</body>
+</html>
